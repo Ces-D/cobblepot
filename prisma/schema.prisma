@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Ledger {
+  id          Int       @id @default(autoincrement())
+  item        String    @unique
+  state       String // Asset or Liability
+  cyclic      Boolean   @default(false)
+  recurringId Int
+  Recurring   Recurring @relation(fields: [recurringId], references: [id])
+  History     History[]
+}
+
+model History {
+  id        Int      @id @default(autoincrement())
+  valuation Int
+  inputDate DateTime @default(now())
+  ledgerId  Int
+  Ledger    Ledger   @relation(fields: [ledgerId], references: [id])
+}
+
+model Recurring {
+  id        Int      @id @default(autoincrement())
+  frequency String // monthly, weekly, twice a year
+  due       String // fitfth of month, mondays
+  Ledger    Ledger[]
+}
+
+

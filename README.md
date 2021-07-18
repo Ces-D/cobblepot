@@ -1,34 +1,47 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Simple Personal Accounting
 
-## Getting Started
+What are the tools in my simple-accounting-tool?
 
-First, run the development server:
+- [ ] Assets and Liabilities
+- [ ] Profits and Losses
+- [ ] Cash Flow Graph
+- [ ] Scan Receipts ?
+- [ ] Data Imports and Exports ?
+- [ ] Expected Tax
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+## Database
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+SQLite with the possibility of hosting somewhere for increased security. Could find a way to encrypt the contents to the database while local.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Making the Assets and Liabilities functions
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.tsx`.
+- [ ] Base Structure
+  * will be keeping copies of each Name to have idea of how many 
+  - [ ] Input Date 
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+- [ ] Assets Data Structure
+  - [ ] Name
+  - [ ] Type (real estate, checking, saving, stocks, bonds, car, possessions, etc)
+  - [ ] Total Valuation (owning amount)
 
-## Learn More
+- [ ] Liabilities Data Structure
+  - [ ] Name
+  - [ ] Type (loans, rent, food, renovations, clothing, insurance, subscriptions, )
+  - [ ] Recurring (yes or no)
+  - [ ] Frequency (yearly, quarterly, bi-yearly, monthly, weekly, daily)
+  - [ ] Valuation (total or  per-frequency)
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Command: Either create assets or create liabilities 
+Command: Either read assets or read Liabilities (filter by type)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Should have the option to visualize what potential assets and liabilities can add or detract to or from the accounts. For example: How would a raise today affect my balance; in 1 month, 1 year? How would that subscription compare to my balance with and without it; in 1 month, 1 year? At the current cost of my liabilities, how would my account compare in 1 month, 1 year?
 
-## Deploy on Vercel
+The display should dynamically increase and decrease in input fields based on user input. Having an undo/redo button would be nice. The form should pre-populate with the data in the database or zeros. The visualization tool should update based on form inputs.
+### Necessary Components for the above
+- [ ] Plug-able projections system
+- [ ] A visualization tool
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+#### Visualization tool
+It should update based on the inputs of the data. Tabs containing the variety of visualization tools. Should have the filter system included Filter to start should only be by type, then include filtering by single name. 
+- [ ] Scroll-able bar graph. Could either add the new inputs to the end or sort and display on every insert.
