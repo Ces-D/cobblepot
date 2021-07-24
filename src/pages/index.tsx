@@ -1,13 +1,11 @@
 import Head from "next/head";
-import Menu from "../components/Menu/Container";
+import Container from "../components/assets/Container";
+import Header from "../components/Menu/Header";
 
 export default function Home() {
   return (
-    <>
-      <div className="container">
-        <Menu />
-        Hello
-      </div>
-    </>
+    <Container>
+      <Header />
+    </Container>
   );
 }
