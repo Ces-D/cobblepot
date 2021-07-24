@@ -1,8 +1,13 @@
-import Head from 'next/head'
-import Image from 'next/image'
+import Head from "next/head";
+import Menu from "../components/Menu/Container";
 
 export default function Home() {
   return (
-  <div className="container">Hello</div>
-  )
+    <>
+      <div className="container">
+        <Menu />
+        Hello
+      </div>
+    </>
+  );
 }
