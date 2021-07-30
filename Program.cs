@@ -1,12 +1,16 @@
 ﻿using System;
+using Controllers.Structure;
 
-namespace personal_accounting_tool
+namespace cobblepot
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Welcome");
+            new Ledger();
+            new Journal();
+            new Account();
         }
     }
 }

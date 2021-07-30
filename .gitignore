@@ -386,3 +386,7 @@ FodyWeavers.xsd
 # Ignore all local history of files
 .history
 .ionide
+
+
+## Project Specific 
+Ledger
