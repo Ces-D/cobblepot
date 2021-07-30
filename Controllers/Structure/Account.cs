@@ -1,14 +1,12 @@
 using System;
 using System.IO;
-using System.Text.RegularExpressions;
-
 namespace Controllers.Structure
 {
-    public class Account : LedgerStructure
+    public class AccountClean : LedgerStructure
     {
         protected readonly static string Account_Path = Path.Combine(Ledger_Path, "Account");
 
-        public Account()
+        public AccountClean()
         {
             if (!Directory.Exists(Account_Path))
             {

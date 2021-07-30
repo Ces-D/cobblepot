@@ -1,16 +1,20 @@
 ﻿using System;
-using Controllers.Structure;
-
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using 
 namespace cobblepot
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            Console.WriteLine("Welcome");
             new Ledger();
-            new Journal();
-            new Account();
+
+            RootCommand rootCommand = new RootCommand("cobblepot"){
+            };
+            rootCommand.Description = "A finance tool for the poor";
+
+            return rootCommand.Invoke(args);
         }
     }
 }
