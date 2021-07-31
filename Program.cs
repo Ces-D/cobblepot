@@ -1,20 +1,22 @@
-﻿using System;
+﻿using System.IO;
 using System.CommandLine;
-using System.CommandLine.Invocation;
-using 
+using Controllers.Commands;
+using Config;
 namespace cobblepot
 {
     class Program
     {
-        static int Main(string[] args)
+        static void Main(string[] args)
         {
-            new Ledger();
-
-            RootCommand rootCommand = new RootCommand("cobblepot"){
+            new Vault();
+            
+            RootCommand rootCommand = new RootCommand("cobblepot")
+            {
+                new ViewCommand()
             };
             rootCommand.Description = "A finance tool for the poor";
 
-            return rootCommand.Invoke(args);
+            rootCommand.InvokeAsync(args).Wait();
         }
     }
 }
