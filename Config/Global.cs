@@ -2,6 +2,13 @@ using System.IO;
 
 namespace Config
 {
+
+    public static class VaultFeatures
+    {
+        public static readonly string Journal = "journal";
+        public static readonly string Account = "account";
+        public static readonly string Report = "report";
+    }
     public static class Paths
     {
         public readonly static string BasePath = Directory.GetCurrentDirectory();

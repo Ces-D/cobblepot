@@ -10,11 +10,23 @@ namespace Controllers.Commands
     {
         public ViewCommand() : base("view", "Look at the contents of a vault file")
         {
-            AddArgument(new Argument<string>("vaultFile", "Name of the Vault File"));
-            Handler = CommandHandler.Create<string>(ViewContents);
+            AddArgument(VaultFileArgument());
+            Handler = CommandHandler.Create<string>(ViewVaultFileContents);
         }
 
-        public void ViewContents(string vaultFile)
+        private Argument<string> VaultFileArgument()
+        {
+            Argument<string> VaultFile = new Argument<string>();
+            VaultFile.Name = "vaultFile";
+            VaultFile.Description = "Look at the contents of the chosen vault file";
+
+            ArgumentArity argumentArity = new ArgumentArity(1, 1);
+            VaultFile.Arity = argumentArity;
+
+            return VaultFile;
+        }
+
+        private void ViewVaultFileContents(string vaultFile)
         {
             string[] SupposedVaultFile = Directory.GetFiles(Paths.VaultPath, vaultFile);
             if (SupposedVaultFile.Length == 1)
