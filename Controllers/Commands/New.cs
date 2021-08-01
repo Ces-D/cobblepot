@@ -7,35 +7,82 @@ namespace Controllers.Commands
 {
     public class NewCommand : Command
     {
-        public NewCommand() : base("new", "Creating a new vault feature entry")
+        public NewCommand() : base("new", "Create a new vault entry")
         {
-            AddArgument(VaultFeatureArgument());
+            AddOption(DateOption());
+            AddOption(DirectiveOption());
+            AddOption(ArgumentOption());
+            AddOption(GainLossOption());
+            AddOption(ValueOption());
         }
 
-        private Argument VaultFeatureArgument()
+        private Option<string> DateOption()
         {
-            Argument<string> vFeature = new Argument<string>();
-            vFeature.Name = "feature";
-            vFeature.Description = "Creates a new vault feature file";
+            Option<string> date = new Option<string>("--date");
+            date.AddAlias("-d");
+            date.Description = "Date associated, default to today";
+            date.SetDefaultValue(DateTime.Now);
 
-            vFeature.FromAmong(VaultFeatures.Account, VaultFeatures.Journal, VaultFeatures.Report);
-
-            ArgumentArity argumentArity = new ArgumentArity(1, 1);
-            vFeature.Arity = argumentArity;
-
-            return vFeature;
+            return date;
         }
 
-        private void CreateVaultFeatureFile(string feature)
+        private Option<string> DirectiveOption()
         {
-            // needs to check if feature already has an existing feature file
-            // yes ? check if that file expired : create new file 
-            // file expired ? create new file : add the 
+            Option<string> directive = new Option<string>("--directive");
+            directive.AddAlias("-dir");
+            directive.Description = "The kind of entry from available options";
+
+            directive.FromAmong(DirectiveOptions.Balance, DirectiveOptions.Close,
+            DirectiveOptions.Note, DirectiveOptions.Open,
+            DirectiveOptions.Price, DirectiveOptions.Default);
+
+            directive.SetDefaultValue(DirectiveOptions.Default);
+
+            return directive;
         }
 
-        // consider adding another layer of commands
-        // one for each of the vault features features 
-        // otherwise you'll have to create a lot of options and option requirements may become messy
+        private Option<string> ArgumentOption()
+        {
+            Option<string> argument = new Option<string>("--argument");
+            argument.AddAlias("-a");
+            argument.Description = "The details of this journal entry";
+
+            argument.IsRequired = true;
+
+            return argument;
+        }
+
+        private Option<bool> GainLossOption()
+        {
+            Option<bool> gainLoss = new Option<bool>("--gain");
+            gainLoss.AddAlias("-g");
+            gainLoss.Description = "Include if the following price is a gain, Omit if the following is a loss";
+
+            return gainLoss;
+        }
+
+        private Option<string> ValueOption()
+        {
+            Option<string> value = new Option<string>("--value");
+            value.AddAlias("-v");
+            value.Description = "The value of this entry, either change in value or current value";
+
+            value.IsRequired = true;
+            return value;
+        }
+
+        private void NewHandler()
+        {
+            // TODO: handle the various cases
+        }
     }
-    // TODO: descide on the above
 }
+
+/**
+Everything is going to go through the journal
+It will add the item into a journal file, this will be the most complete record
+From the journal depending on the directive
+We will be able to generate the reports. 
+
+// TODO: redo the schema and folder structure of the vault. Journal and Reports are the only folders
+*/

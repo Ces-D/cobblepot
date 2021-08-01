@@ -9,6 +9,18 @@ namespace Config
         public static readonly string Account = "account";
         public static readonly string Report = "report";
     }
+
+    public static class DirectiveOptions
+    {
+        public static readonly string Open = "open";
+        public static readonly string Close = "close";
+        public static readonly string Note = "note";
+        public static readonly string Price = "price";
+        public static readonly string Balance = "bal";
+        public static readonly string Default = "*";
+    }
+
+
     public static class Paths
     {
         public readonly static string BasePath = Directory.GetCurrentDirectory();

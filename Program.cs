@@ -9,10 +9,11 @@ namespace cobblepot
         static void Main(string[] args)
         {
             new Vault();
-            
+
             RootCommand rootCommand = new RootCommand("cobblepot")
             {
-                new ViewCommand()
+                new ViewCommand(),
+                new NewCommand(),
             };
             rootCommand.Description = "A finance tool for the poor";
 
