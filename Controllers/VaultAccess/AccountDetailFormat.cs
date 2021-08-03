@@ -1,14 +1,8 @@
-using System;
 using System.Text.RegularExpressions;
 
-namespace Schemas
+namespace Controllers.VaultAccess
 {
-    interface IFormatting
-    {
-        bool matchesNamingConvention(string potential);
-    }
-
-    public class AccountSchema : IFormatting
+    public static class AccountDetailFormat
     {
         public enum AccountTypes
         {
@@ -18,10 +12,12 @@ namespace Schemas
             Expenses,
             Equity
         }
-        public bool matchesNamingConvention(string potential)
+
+        public static bool matchesNamingConvention(string potential)
         {
             string pattern = @"(\w{4,7})(:([\w\d]{2,20})){1,6}";
             return Regex.IsMatch(potential, pattern);
         }
+
     }
 }

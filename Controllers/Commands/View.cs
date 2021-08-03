@@ -7,6 +7,9 @@ using Config;
 namespace Controllers.Commands
 {
     public class ViewCommand : Command
+    // TODO: Update these
+    // This is outdated relative to the new  vault file structure
+    // ViewVaultFileContents is looking for files in Vault root folder, but everything is now in sub folders
     {
         public ViewCommand() : base("view", "Look at the contents of a vault file")
         {

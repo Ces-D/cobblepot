@@ -16,6 +16,7 @@ namespace cobblepot
                 new NewCommand(),
             };
             rootCommand.Description = "A finance tool for the poor";
+            rootCommand.TreatUnmatchedTokensAsErrors = true;
 
             rootCommand.InvokeAsync(args).Wait();
         }
