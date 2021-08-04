@@ -1,20 +1,26 @@
 using System;
-using System.IO;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using Controllers.VaultAccess;
 using Config;
 
 namespace Controllers.Commands
 {
+
     public class NewCommand : Command
     {
+
         public NewCommand() : base("new", "Create a new vault entry")
         {
             AddArgument(DetailsArgument());
             AddOption(DateOption());
             AddOption(DirectiveOption());
             AddOption(ValueOption());
-            Handler = CommandHandler.Create<string, DateTime, string, int>(JournalEntryHandler);
+            Handler = CommandHandler.Create((DateTime date, string directiveType, string details, double currency) =>
+            {
+                JournalEntry entry = new JournalEntry(date, directiveType, details, currency);
+                Console.WriteLine(entry.ToString());
+            });
         }
 
         private Argument<string> DetailsArgument()
@@ -50,29 +56,14 @@ namespace Controllers.Commands
             return directive;
         }
 
-        private Option<int> ValueOption()
+        private Option<double> ValueOption()
         {
-            Option<int> value = new Option<int>("--currency");
-            value.AddAlias("-c");
+            Option<double> value = new Option<double>("--currency");
+            value.AddAlias("-cur");
             value.IsRequired = true;
             value.Description = "The currency change";
 
             return value;
-        }
-
-
-        // TODO: create entry pipeline
-        /**
-         - handle cleaning - ensure proper formatting
-         - into vault connection
-*/
-
-        private void JournalEntryHandler(string details, DateTime date, string directiveType, int currency)
-        {
-            Console.WriteLine($"Details: {details}");
-            Console.WriteLine($"Date: {date}");
-            Console.WriteLine($"Directive: {directiveType}");
-            Console.WriteLine($"value: {currency}");
         }
     }
 

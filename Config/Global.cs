@@ -15,7 +15,7 @@ namespace Config
         public static readonly string Close = "close";
         public static readonly string Note = "note";
         public static readonly string Price = "price";
-        public static readonly string Balance = "balance";
+        public static readonly string Balance = "bal";
         public static readonly string Default = "*";
     }
 }

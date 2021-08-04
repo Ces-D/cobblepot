@@ -11,7 +11,7 @@ namespace Controllers.VaultAccess
 
         internal static void CreateThenAppendFile() { }
 
-        public static void JournalEntryIntoVaultHandler(DateTime entryDate, string directive, string details, string currency)
+        public static void JournalEntryIntoVaultHandler(JournalEntry entry)
         {
             // TODO: complete this
             // create interface for type of input aka entryDate, directive ...
