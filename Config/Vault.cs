@@ -5,12 +5,12 @@ namespace Config
 {
     /** Project Structure
         Vault
-
+            |
             |_Report
-                    |_Accounts
-                    |_Balance
-                    |_Assets
-
+            |       |_Accounts
+            |       |_Balance
+            |       |_Assets
+            |
             |_Journal
     */
     public static class Paths

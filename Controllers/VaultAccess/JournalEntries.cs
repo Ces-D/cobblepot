@@ -2,12 +2,21 @@ using System;
 using System.Globalization;
 namespace Controllers.VaultAccess
 {
+    public static class JournalDirectives
+    {
+        public static readonly string Open = "open";
+        public static readonly string Close = "close";
+        public static readonly string Note = "note";
+        public static readonly string Price = "price";
+        public static readonly string Balance = "bal";
+        public static readonly string Default = "*";
+    }
 
-    public class JournalEntry : JournalDetail
+    public class JournalEntry
     {
         private readonly int DATE_MAX_WIDTH = 13;
         private readonly int DIRECTIVE_MAX_WIDTH = 7;
-        private readonly int DETAILS_MAX_WIDTH = 45;
+        private readonly int DETAILS_MAX_WIDTH = 55;
         private DateTime entryDate { get; set; }
         private string directive { get; set; }
         private string details { get; set; }
@@ -18,12 +27,12 @@ namespace Controllers.VaultAccess
         {
             entryDate = date;
             directive = dir;
-            details = det;
             credit = cred;
+            details = det;
             currency = new CultureInfo(cur);
         }
 
-        public string Date
+        public string DateString
         {
             get
             {
@@ -31,6 +40,7 @@ namespace Controllers.VaultAccess
                 return entryDate.ToShortDateString();
             }
         }
+        public DateTime Date { get { return entryDate; } }
 
         public string Directive
         {

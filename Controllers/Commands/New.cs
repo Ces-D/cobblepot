@@ -1,12 +1,12 @@
 using System;
-using System.Globalization;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using Controllers.VaultAccess;
-using Config;
 
 namespace Controllers.Commands
 {
+
+
 
     public class NewCommand : Command
     {
@@ -21,7 +21,7 @@ namespace Controllers.Commands
             Handler = CommandHandler.Create((DateTime date, string directiveType, string details, double credit, string currency) =>
             {
                 JournalEntry entry = new JournalEntry(date, directiveType, details, credit, currency);
-                Console.WriteLine(entry.ToString());
+                JournalFiles.EntryCLIHandler(entry);
             });
         }
 
@@ -49,11 +49,11 @@ namespace Controllers.Commands
             directive.AddAlias("-t");
             directive.Description = "The kind of entry from available options";
 
-            directive.FromAmong(DirectiveOptions.Balance, DirectiveOptions.Close,
-            DirectiveOptions.Note, DirectiveOptions.Open,
-            DirectiveOptions.Price, DirectiveOptions.Default);
+            directive.FromAmong(JournalDirectives.Balance, JournalDirectives.Close,
+            JournalDirectives.Note, JournalDirectives.Open,
+            JournalDirectives.Price, JournalDirectives.Default);
 
-            directive.SetDefaultValue(DirectiveOptions.Default);
+            directive.SetDefaultValue(JournalDirectives.Default);
 
             return directive;
         }
