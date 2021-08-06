@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using Controllers.VaultAccess;
@@ -15,10 +16,11 @@ namespace Controllers.Commands
             AddArgument(DetailsArgument());
             AddOption(DateOption());
             AddOption(DirectiveOption());
-            AddOption(ValueOption());
-            Handler = CommandHandler.Create((DateTime date, string directiveType, string details, double currency) =>
+            AddOption(CreditOption());
+            AddOption(CurrencyOption());
+            Handler = CommandHandler.Create((DateTime date, string directiveType, string details, double credit, string currency) =>
             {
-                JournalEntry entry = new JournalEntry(date, directiveType, details, currency);
+                JournalEntry entry = new JournalEntry(date, directiveType, details, credit, currency);
                 Console.WriteLine(entry.ToString());
             });
         }
@@ -56,14 +58,25 @@ namespace Controllers.Commands
             return directive;
         }
 
-        private Option<double> ValueOption()
+        private Option<double> CreditOption()
         {
-            Option<double> value = new Option<double>("--currency");
-            value.AddAlias("-cur");
+            Option<double> value = new Option<double>("--credit");
+            value.AddAlias("-cred");
             value.IsRequired = true;
-            value.Description = "The currency change";
+            value.Description = "The credit or debit";
 
             return value;
+        }
+
+        private Option<string> CurrencyOption()
+        {
+            Option<string> currency = new Option<string>("--currency");
+            currency.AddAlias("-c");
+            currency.Description = "The currency of your entry";
+
+            currency.SetDefaultValue("en-US");
+
+            return currency;
         }
     }
 

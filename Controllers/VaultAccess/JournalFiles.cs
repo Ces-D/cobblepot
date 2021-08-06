@@ -13,8 +13,7 @@ namespace Controllers.VaultAccess
 
         public static void JournalEntryIntoVaultHandler(JournalEntry entry)
         {
-            // TODO: complete this
-            // create interface for type of input aka entryDate, directive ...
+            
         }
 
         // enter date for entry into cli
