@@ -1,9 +1,9 @@
 ﻿using System.CommandLine;
 using System.CommandLine.Builder;
-using Controllers.Commands;
 using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 using Config;
+using Commands;
 
 namespace Cobblepot
 {
@@ -17,7 +17,6 @@ namespace Cobblepot
             root.AddAlias("cp");
 
             root.AddCommand(new NewEntryCommand());
-            // root.AddCommand(new ViewCommand());
 
             return new CommandLineBuilder(root);
         }
@@ -33,6 +32,3 @@ namespace Cobblepot
         }
     }
 }
-
-// https://dev.to/nikiforovall/develop-clean-command-line-applications-with-system-commandline-clean-cli-1lfp
-// TODO: See if you can switch over to this kind of method.

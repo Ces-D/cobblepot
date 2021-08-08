@@ -1,9 +1,6 @@
 using System.Text.RegularExpressions;
-using System.CommandLine;
-using System.CommandLine.Invocation;
-using Controllers.Commands;
 
-namespace Controllers.VaultAccess.Middleware
+namespace Controllers.Middleware
 {
     public static class JournalDetail
     {

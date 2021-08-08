@@ -3,14 +3,12 @@ using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.CommandLine.Invocation;
 using Controllers.VaultAccess;
-using Controllers.VaultAccess.Middleware;
+using Controllers.Middleware;
 
-namespace Controllers.Commands
+namespace Commands
 {
-
     public class NewEntryCommand : Command
     {
-
         public NewEntryCommand() : base("new", "Create a new vault entry")
         {
             AddArgument(DetailsArgument());
