@@ -26,9 +26,9 @@ namespace Config
     }
 
 
-    public class Vault
+    public static class Vault
     {
-        public Vault()
+        public static void Build()
         {
             if (!Directory.Exists(Paths.VaultPath))
             {

@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+
 namespace Controllers.VaultAccess
 {
     public static class JournalDirectives

@@ -1,23 +1,24 @@
 using System;
 using System.CommandLine;
+using System.CommandLine.Parsing;
 using System.CommandLine.Invocation;
 using Controllers.VaultAccess;
+using Controllers.VaultAccess.Middleware;
 
 namespace Controllers.Commands
 {
 
-
-
-    public class NewCommand : Command
+    public class NewEntryCommand : Command
     {
 
-        public NewCommand() : base("new", "Create a new vault entry")
+        public NewEntryCommand() : base("new", "Create a new vault entry")
         {
             AddArgument(DetailsArgument());
             AddOption(DateOption());
             AddOption(DirectiveOption());
             AddOption(CreditOption());
             AddOption(CurrencyOption());
+
             Handler = CommandHandler.Create((DateTime date, string directiveType, string details, double credit, string currency) =>
             {
                 JournalEntry entry = new JournalEntry(date, directiveType, details, credit, currency);
@@ -29,6 +30,18 @@ namespace Controllers.Commands
         {
             Argument<string> details = new Argument<string>("details");
             details.Description = "The details of this journal entry";
+
+            details.AddValidator(det =>
+            {
+                if (!JournalDetail.MatchesFormatConvention(det.ToString()))
+                {
+                    return $"{det} does not match the proper format. /w:/w:/w";
+                }
+                else
+                {
+                    return null;
+                }
+            });
 
             return details;
         }
