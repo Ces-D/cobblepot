@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace Controllers.VaultAccess
+namespace Controllers.VaultAccess.Journal
 {
     public static class JournalDirectives
     {
@@ -21,16 +21,24 @@ namespace Controllers.VaultAccess
         private DateTime entryDate { get; set; }
         private string directive { get; set; }
         private string details { get; set; }
-        private double credit { get; set; }
+        private double number { get; set; }
         private CultureInfo currency { get; set; }
 
-        public JournalEntry(DateTime date, string dir, string det, double cred, string cur)
+        public JournalEntry(DateTime DateOption, string DirectiveType, string DetailArgument, double NumberOption, string CurrencyOption)
         {
-            entryDate = date;
-            directive = dir;
-            credit = cred;
-            details = det;
-            currency = new CultureInfo(cur);
+            entryDate = DateOption;
+            directive = DirectiveType;
+            number = NumberOption;
+            details = DetailArgument;
+            currency = new CultureInfo(CurrencyOption);
+        }
+
+        public JournalEntry(DateTime DateOption, string DirectiveType, string DetailArgument)
+        {
+            entryDate = DateOption;
+            directive = DirectiveType;
+            details = DetailArgument;
+            currency = CultureInfo.CurrentCulture;
         }
 
         public string DateString
@@ -66,7 +74,7 @@ namespace Controllers.VaultAccess
                 NumberFormatInfo moneyFormat = currency.NumberFormat;
                 moneyFormat.CurrencyPositivePattern = 2;
 
-                return credit.ToString("C", moneyFormat);
+                return number.ToString("C", moneyFormat);
             }
         }
 
@@ -78,6 +86,14 @@ namespace Controllers.VaultAccess
             details.PadRight(DETAILS_MAX_WIDTH),
             Money
             );
+        }
+
+        public string ToNoteString()
+        {
+            return string.Format("{0}{1}{2}",
+            entryDate.ToShortDateString().PadRight(DATE_MAX_WIDTH),
+            directive.PadRight(DIRECTIVE_MAX_WIDTH),
+            details.PadRight(DETAILS_MAX_WIDTH + 25));
         }
     }
 

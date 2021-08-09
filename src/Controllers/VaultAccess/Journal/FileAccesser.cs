@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Config;
 
-namespace Controllers.VaultAccess
+namespace Controllers.VaultAccess.Journal
 {
     public static class JournalFiles
     {
@@ -19,7 +19,7 @@ namespace Controllers.VaultAccess
         // create file
         // add line to bottom
 
-        public static void EntryCLIHandler(JournalEntry journalEntry)
+        public static void InsertHandler(JournalEntry journalEntry)
         {
             string belongQuarter = QuarterDates.LocatedInQuarterPeriod(journalEntry.Date);
             string entryFilePath = Path.Combine(Paths.JournalPath, $"Entry_{belongQuarter}");
@@ -35,6 +35,26 @@ namespace Controllers.VaultAccess
                 CreateFileAppend(entryFilePath, journalEntry);
                 Console.WriteLine($"\nEntry_{belongQuarter} Created and Updated");
                 Console.WriteLine($"{journalEntry.ToString()}");
+                Console.WriteLine($"Path File: {entryFilePath.ToString()}\n");
+            }
+        }
+
+        public static void InsertHandler(JournalEntry journalEntry, bool note)
+        {
+            string belongQuarter = QuarterDates.LocatedInQuarterPeriod(journalEntry.Date);
+            string entryFilePath = Path.Combine(Paths.JournalPath, $"Entry_{belongQuarter}");
+            if (File.Exists(entryFilePath))
+            {
+                FileAppend(entryFilePath, journalEntry);
+                Console.WriteLine($"\nEntry_{belongQuarter} Content Updated");
+                Console.WriteLine($"{journalEntry.ToNoteString()}");
+                Console.WriteLine($"Path File: {entryFilePath.ToString()}\n");
+            }
+            else
+            {
+                CreateFileAppend(entryFilePath, journalEntry);
+                Console.WriteLine($"\nEntry_{belongQuarter} Created and Updated");
+                Console.WriteLine($"{journalEntry.ToNoteString()}");
                 Console.WriteLine($"Path File: {entryFilePath.ToString()}\n");
             }
         }

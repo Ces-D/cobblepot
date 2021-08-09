@@ -16,7 +16,10 @@ namespace Cobblepot
             root.TreatUnmatchedTokensAsErrors = true;
             root.AddAlias("cp");
 
-            root.AddCommand(new NewEntryCommand());
+            root.AddCommand(new NewOpenCommand());
+            root.AddCommand(new NewCloseCommand());
+            root.AddCommand(new NewNoteCommand());
+            root.AddCommand(new NewBalanceCommand());
 
             return new CommandLineBuilder(root);
         }
