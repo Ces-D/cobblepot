@@ -3,6 +3,7 @@ using System.CommandLine;
 using Controllers.Middleware;
 using System.CommandLine.Invocation;
 using Controllers.VaultAccess.Journal;
+using Controllers.VaultAccess.Directive;
 
 namespace Commands
 {
@@ -16,17 +17,16 @@ namespace Commands
             AddOption(CurrencyOption());
             TreatUnmatchedTokensAsErrors = true;
 
-            AddValidator(entry =>
-            {
-                // Add logic to check if previously opened
-                return null;
-            });
 
             Handler = CommandHandler.Create(
               (string DetailArgument, DateTime DateOption, double NumberOption, string CurrencyOption) =>
               {
                   JournalEntry entry = new JournalEntry(DateOption, "bal", DetailArgument, NumberOption, CurrencyOption);
                   JournalFiles.InsertHandler(entry);
+                  if (!DirectiveFile.findTarget(DetailArgument))
+                  {
+                      DirectiveFile.appendTarget(DirectiveFile.toEntryString(DateOption, DetailArgument));
+                  }
               });
         }
 

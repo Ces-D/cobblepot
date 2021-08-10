@@ -3,9 +3,10 @@ using System.CommandLine;
 using Controllers.Middleware;
 using System.CommandLine.Invocation;
 using Controllers.VaultAccess.Journal;
-
+using Controllers.VaultAccess.Directive;
 namespace Commands
 {
+    // AKA * scenario
     public class NewEntryCommand : Command
     {
         public NewEntryCommand() : base("new", "For when updating account. Create a new entry in Journal.")
@@ -15,12 +16,6 @@ namespace Commands
             AddOption(NumberOption());
             AddOption(CurrencyOption());
             TreatUnmatchedTokensAsErrors = true;
-
-            AddValidator(entry =>
-            {
-                // Add logic to check if previously opened
-                return null;
-            });
 
             Handler = CommandHandler.Create(
               (string DetailArgument, DateTime DateOption, double NumberOption, string CurrencyOption) =>
@@ -40,6 +35,10 @@ namespace Commands
                 if (!JournalDetail.MatchesFormatConvention(det.ToString()))
                 {
                     return JournalDetail.FORMAT_ERROR_RESPONSE;
+                }
+                else if (!DirectiveFile.findTarget(det.ToString()))
+                {
+                    return DirectiveFile.TARGET_NOT_FOUND_ERROR;
                 }
                 else { return null; }
             });

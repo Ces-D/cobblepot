@@ -3,7 +3,7 @@ using System.CommandLine;
 using Controllers.Middleware;
 using System.CommandLine.Invocation;
 using Controllers.VaultAccess.Journal;
-
+using Controllers.VaultAccess.Directive;
 namespace Commands
 {
     public class NewOpenCommand : Command
@@ -16,17 +16,12 @@ namespace Commands
             AddOption(CurrencyOption());
             TreatUnmatchedTokensAsErrors = true;
 
-            AddValidator(entry =>
-            {
-                // Add logic to check if previously opened
-                return null;
-            });
-
             Handler = CommandHandler.Create(
               (string DetailArgument, DateTime DateOption, double NumberOption, string CurrencyOption) =>
               {
                   JournalEntry entry = new JournalEntry(DateOption, "open", DetailArgument, NumberOption, CurrencyOption);
                   JournalFiles.InsertHandler(entry);
+                  DirectiveFile.appendTarget(DirectiveFile.toEntryString(DateOption, DetailArgument));
               });
         }
 
@@ -40,6 +35,10 @@ namespace Commands
                 if (!JournalDetail.MatchesFormatConvention(det.ToString()))
                 {
                     return JournalDetail.FORMAT_ERROR_RESPONSE;
+                }
+                else if (DirectiveFile.findTarget(det.ToString()))
+                {
+                    return DirectiveFile.TARGET_ALREADY_EXISTS_ERROR;
                 }
                 else { return null; }
             });

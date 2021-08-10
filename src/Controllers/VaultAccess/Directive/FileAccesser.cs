@@ -7,7 +7,9 @@ namespace Controllers.VaultAccess.Directive
 {
     public static class DirectiveFile
     {
-        public static bool searchForTarget(string searchTerm)
+        public static string TARGET_NOT_FOUND_ERROR = "You must 'open' this account before you can begin updating its balance. Use command 'new-open'";
+        public static string TARGET_ALREADY_EXISTS_ERROR = "You have already 'opened' this account. Use command 'new-close'";
+        public static bool findTarget(string searchTerm)
         {
             string? fileLine;
             StreamReader streamReader = new StreamReader(Paths.DirectiveCache);
@@ -42,5 +44,14 @@ namespace Controllers.VaultAccess.Directive
                 directiveFileWriter.Close();
             }
         }
+
+        public static string toEntryString(DateTime DateTimeOption, string DetailArgument)
+        {
+            return string.Format("{0}{1}",
+            arg0: DateTimeOption.ToShortDateString(),
+            arg1: DetailArgument.PadLeft(30));
+        }
     }
 }
+
+// TODO: test
