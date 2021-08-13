@@ -23,7 +23,7 @@ namespace Config
         public readonly static string AccountsPath = Path.Combine(ReportsPath, "Accounts");
         public readonly static string BalancePath = Path.Combine(ReportsPath, "Balance");
         public readonly static string AssetsPath = Path.Combine(ReportsPath, "Assets");
-        public readonly static string DirectiveCache = Path.Combine(VaultPath, "directive_cache");
+        public readonly static string Account_Records = Path.Combine(VaultPath, "Accounts_Records");
 
     }
 
@@ -62,9 +62,9 @@ namespace Config
                 Directory.CreateDirectory(Paths.AssetsPath);
                 Console.WriteLine("Assets Created");
             }
-            if (!File.Exists(Paths.DirectiveCache))
+            if (!File.Exists(Paths.Account_Records))
             {
-                File.Create(Paths.DirectiveCache);
+                File.Create(Paths.Account_Records);
                 Console.WriteLine("Vault Directive Cache Created");
             }
         }

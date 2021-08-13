@@ -28,7 +28,7 @@ namespace Commands
             income-statement
             expenditures * rate of asset changes
             */
-
+            // or like git. We change account using cobble account Asset:Cheese:Froth:Goat
         }
     }
 }
