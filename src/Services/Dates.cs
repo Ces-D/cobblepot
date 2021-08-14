@@ -1,8 +1,9 @@
 using System;
+using System.IO;
 
-namespace Services.Journal
+namespace Services
 {
-    public static class QuarterDates
+    internal static class QuarterDates
     {
         private static DateTime firstQuarterStart = new DateTime(DateTime.Today.Year, 1, 1);
         private static DateTime secondQuarterStart = new DateTime(DateTime.Today.Year, 3, 1);

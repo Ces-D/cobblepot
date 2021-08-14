@@ -1,7 +1,8 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using Services.Account;
+using Services.AccountFile;
+using Services.JournalFile;
 
 
 namespace Commands
@@ -12,10 +13,14 @@ namespace Commands
         public CloseCommand() : base("close", "Close and Account")
         {
             AddArgument(AccountName());
+            AddOption(AccountCloseDate());
 
-            Handler = CommandHandler.Create((string AccountName) =>
+            Handler = CommandHandler.Create<DateTime, string>((DateTime AccountCloseDate, string AccountName) =>
             {
-                AccountWriter.Remove(accountName: AccountName);
+                AccountEntry accountEntry = new AccountEntry(AccountCloseDate, AccountName);
+                JournalEntry journalEntry = new JournalEntry("close", accountEntry);
+                AccountWriter.Remove(accountEntry);
+                JournalWriter.Append(journalEntry);
             });
         }
 
@@ -27,14 +32,23 @@ namespace Commands
 
             account.AddValidator(acc =>
             {
-                if (!AccountFormat.MatchesConvention(acc.ToString()))
+                if (!AccountEntry.MatchesConvention(acc.ToString()))
                 {
-                    return AccountFormat.FORMAT_ERROR_RESPONSE;
+                    return AccountEntry.FORMAT_ERROR_RESPONSE;
                 }
                 else { return null; }
             });
 
             return account;
+        }
+        private Option<DateTime> AccountCloseDate()
+        {
+            Option<DateTime> date = new Option<DateTime>("--date");
+            date.AddAlias("-d");
+            date.Description = "Date of entry";
+            date.SetDefaultValue(DateTime.Now);
+
+            return date;
         }
     }
 }

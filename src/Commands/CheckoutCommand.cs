@@ -1,7 +1,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using Services.Account;
+using Services.AccountFile;
 using Services;
 
 namespace Commands
@@ -27,9 +27,9 @@ namespace Commands
 
             account.AddValidator(acc =>
             {
-                if (!AccountFormat.MatchesConvention(acc.ToString()))
+                if (!AccountEntry.MatchesConvention(acc.ToString()))
                 {
-                    return AccountFormat.FORMAT_ERROR_RESPONSE;
+                    return AccountEntry.FORMAT_ERROR_RESPONSE;
                 }
                 else { return null; }
             });

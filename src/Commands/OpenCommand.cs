@@ -1,7 +1,8 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using Services.Account;
+using Services.AccountFile;
+using Services.JournalFile;
 
 namespace Commands
 {
@@ -13,9 +14,12 @@ namespace Commands
             AddArgument(AccountName());
             AddOption(AccountEntryDate());
 
-            Handler = CommandHandler.Create((string AccountName, DateTime AccountEntryDate) =>
+            Handler = CommandHandler.Create<DateTime, string>((DateTime AccountEntryDate, string AccountName) =>
             {
-                AccountWriter.Append(accountName: AccountName, entryDate: AccountEntryDate);
+                AccountEntry accountEntry = new AccountEntry(AccountEntryDate, AccountName);
+                JournalEntry journalEntry = new JournalEntry("open", accountEntry);
+                AccountWriter.Remove(accountEntry);
+                JournalWriter.Append(journalEntry);
             });
         }
 
@@ -27,9 +31,9 @@ namespace Commands
 
             account.AddValidator(acc =>
             {
-                if (!AccountFormat.MatchesConvention(acc.ToString()))
+                if (!AccountEntry.MatchesConvention(acc.ToString()))
                 {
-                    return AccountFormat.FORMAT_ERROR_RESPONSE;
+                    return AccountEntry.FORMAT_ERROR_RESPONSE;
                 }
                 else { return null; }
             });

@@ -3,7 +3,7 @@ using System.Linq;
 using System.IO;
 using Config;
 
-namespace Services.Account
+namespace Services.AccountFile
 {
     public static class AccountWriter
     {
@@ -24,45 +24,36 @@ namespace Services.Account
             return false;
         }
 
-        public static string ToEntryString(string accountName, DateTime entryDate)
+        public static void Append(AccountEntry accountEntry)
         {
-            return string.Format("{0}{1}",
-                          arg0: entryDate.ToShortDateString(),
-                          arg1: accountName.PadLeft(30));
-        }
-
-        public static void Append(string accountName, DateTime entryDate)
-        {
-            if (AccountWriter.Find(accountName))
+            if (AccountWriter.Find(accountEntry.Account))
             {
-                Console.WriteLine($"{accountName} has previously been opened");
+                Console.WriteLine($"{accountEntry.Account} has previously been opened");
             }
             else
             {
-                string fileLine = AccountWriter.ToEntryString(accountName, entryDate);
-
                 using (StreamWriter directiveFileWriter = File.AppendText(Paths.Account_Records))
                 {
-                    directiveFileWriter.WriteLineAsync(fileLine);
+                    directiveFileWriter.WriteLineAsync(accountEntry.ToString());
                     directiveFileWriter.Close();
                 }
 
-                Console.WriteLine($"{accountName} has been opened");
+                Console.WriteLine($"{accountEntry.Account} has been opened");
             }
 
         }
 
-        public static void Remove(string accountName)
+        public static void Remove(AccountEntry accountEntry)
         {
             var tempFile = Path.GetTempFileName();
-            var linesToKeep = File.ReadLines(Paths.Account_Records).Where(line => !line.Contains(accountName));
+            var linesToKeep = File.ReadLines(Paths.Account_Records).Where(line => !line.Contains(accountEntry.Account));
 
             File.WriteAllLines(tempFile, linesToKeep);
 
             File.Delete(Paths.Account_Records);
             File.Move(tempFile, Paths.Account_Records);
 
-            Console.WriteLine($"{accountName} has been closed");
+            Console.WriteLine($"{accountEntry.Account} has been closed");
         }
 
         public static void List()
