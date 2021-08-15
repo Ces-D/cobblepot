@@ -1,63 +1,8 @@
 using System;
 using System.IO;
-using Config;
 
-namespace Controllers.VaultAccess
+namespace Services
 {
-    public static class JournalFiles
-    {
-
-        // enter date for entry into cli
-        // check date for the quarter it is located in
-        // create the file name
-        // check if the file name exists
-        // if exists 
-        // open 
-        // write line at bottom
-        // close
-        // if not exists
-        // create file
-        // add line to bottom
-
-        public static void EntryCLIHandler(JournalEntry journalEntry)
-        {
-            string belongQuarter = QuarterDates.LocatedInQuarterPeriod(journalEntry.Date);
-            string entryFilePath = Path.Combine(Paths.JournalPath, $"Entry_{belongQuarter}");
-            if (File.Exists(entryFilePath))
-            {
-                FileAppend(entryFilePath, journalEntry);
-                Console.WriteLine($"\nEntry_{belongQuarter} Content Updated");
-                Console.WriteLine($"{journalEntry.ToString()}");
-                Console.WriteLine($"Path File: {entryFilePath.ToString()}\n");
-            }
-            else
-            {
-                CreateFileAppend(entryFilePath, journalEntry);
-                Console.WriteLine($"\nEntry_{belongQuarter} Created and Updated");
-                Console.WriteLine($"{journalEntry.ToString()}");
-                Console.WriteLine($"Path File: {entryFilePath.ToString()}\n");
-            }
-        }
-
-        private static void FileAppend(string entryFilePath, JournalEntry journalEntry)
-        {
-            using (StreamWriter sw = File.AppendText(entryFilePath))
-            {
-                sw.WriteLineAsync(journalEntry.ToString());
-                sw.Close();
-            }
-        }
-
-        private static void CreateFileAppend(string entryFilePath, JournalEntry journalEntry)
-        {
-            using (StreamWriter fs = File.CreateText(entryFilePath))
-            {
-                fs.WriteLineAsync(journalEntry.ToString());
-                fs.Close();
-            }
-        }
-    }
-
     internal static class QuarterDates
     {
         private static DateTime firstQuarterStart = new DateTime(DateTime.Today.Year, 1, 1);

@@ -12,6 +12,7 @@ namespace Config
             |       |_Assets
             |
             |_Journal
+            |_directive_cache
     */
     public static class Paths
     {
@@ -22,13 +23,14 @@ namespace Config
         public readonly static string AccountsPath = Path.Combine(ReportsPath, "Accounts");
         public readonly static string BalancePath = Path.Combine(ReportsPath, "Balance");
         public readonly static string AssetsPath = Path.Combine(ReportsPath, "Assets");
+        public readonly static string Account_Records = Path.Combine(VaultPath, "Accounts_Records");
 
     }
 
 
-    public class Vault
+    public static class Vault
     {
-        public Vault()
+        public static void Build()
         {
             if (!Directory.Exists(Paths.VaultPath))
             {
@@ -59,6 +61,11 @@ namespace Config
             {
                 Directory.CreateDirectory(Paths.AssetsPath);
                 Console.WriteLine("Assets Created");
+            }
+            if (!File.Exists(Paths.Account_Records))
+            {
+                File.Create(Paths.Account_Records);
+                Console.WriteLine("Vault Directive Cache Created");
             }
         }
     }
