@@ -20,9 +20,10 @@ namespace Services
                 }
                 else
                 {
-                    throw new Exception("Initialize your Working Account");
+                    return null;
                 }
             }
         }
     }
 }
+

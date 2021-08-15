@@ -19,9 +19,10 @@ namespace Cobblepot
 
             root.AddCommand(new OpenCommand());
             root.AddCommand(new CloseCommand());
+            root.AddCommand(new BranchCommand());
+            root.AddCommand(new CheckoutCommand());
             root.AddCommand(new AddTransactionCommand());
             root.AddCommand(new AddNoteCommand());
-            root.AddCommand(new CheckoutCommand());
 
             return new CommandLineBuilder(root);
         }
