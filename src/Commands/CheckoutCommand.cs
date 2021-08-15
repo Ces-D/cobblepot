@@ -12,7 +12,7 @@ namespace Commands
         {
             AddArgument(AccountName());
 
-            Handler = CommandHandler.Create((string AccountName) =>
+            Handler = CommandHandler.Create<string>((AccountName) =>
             {
                 new VaultBranch(AccountName);
                 Console.WriteLine($"Current working Account Branch: {AccountName}");

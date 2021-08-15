@@ -14,7 +14,7 @@ namespace Commands
             AddArgument(AccountName());
             AddOption(AccountEntryDate());
 
-            Handler = CommandHandler.Create<DateTime, string>((DateTime AccountEntryDate, string AccountName) =>
+            Handler = CommandHandler.Create<DateTime, string>((AccountEntryDate, AccountName) =>
             {
                 AccountEntry accountEntry = new AccountEntry(AccountEntryDate, AccountName);
                 JournalEntry journalEntry = new JournalEntry("open", accountEntry);

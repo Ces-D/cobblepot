@@ -7,6 +7,7 @@ using Commands;
 
 namespace Cobblepot
 {
+    // TODO: Test all commands
     class Program
     {
         static CommandLineBuilder BuildCommandLine()

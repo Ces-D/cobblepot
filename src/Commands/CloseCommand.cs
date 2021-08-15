@@ -15,7 +15,7 @@ namespace Commands
             AddArgument(AccountName());
             AddOption(AccountCloseDate());
 
-            Handler = CommandHandler.Create<DateTime, string>((DateTime AccountCloseDate, string AccountName) =>
+            Handler = CommandHandler.Create<DateTime, string>((AccountCloseDate, AccountName) =>
             {
                 AccountEntry accountEntry = new AccountEntry(AccountCloseDate, AccountName);
                 JournalEntry journalEntry = new JournalEntry("close", accountEntry);

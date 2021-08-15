@@ -1,6 +1,9 @@
 using System;
 using System.CommandLine;
-
+using System.CommandLine.Invocation;
+using Services.AccountFile;
+using Services.JournalFile;
+using Services;
 namespace Commands
 {
     public class AddTransactionCommand : Command
@@ -11,7 +14,26 @@ namespace Commands
             AddOption(NumberOption());
             AddOption(CurrencyOption());
 
-            // TODO: create handlers
+            AddValidator((cmd) =>
+            {
+                if (VaultBranch.Account != null)
+                {
+                    return null;
+                }
+                else { return "You must activate a vault branch"; }
+            });
+
+            Handler = CommandHandler.Create<string, DateTime, double, string>((DetailsArgument, DateOption, NumberOption, CurrencyOption) =>
+            {
+                if (VaultBranch.Account != null)
+                {
+                    AccountEntry accountEntry = new AccountEntry(DateOption, VaultBranch.Account);
+                    TransactionEntry transactionEntry = new TransactionEntry(accountEntry, DetailsArgument, NumberOption, CurrencyOption);
+                    JournalEntry journalEntry = new JournalEntry(transactionEntry, accountEntry);
+
+                    JournalWriter.Append(journalEntry);
+                }
+            });
         }
 
         private Argument<string> DetailsArgument()
