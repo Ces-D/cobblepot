@@ -1,8 +1,11 @@
 using System;
 using System.IO;
 
+// TODO: create a method for configuring the vault
+
 namespace Config
 {
+
     /** Project Structure
         Vault
             |
@@ -24,7 +27,6 @@ namespace Config
         public readonly static string BalancePath = Path.Combine(ReportsPath, "Balance");
         public readonly static string AssetsPath = Path.Combine(ReportsPath, "Assets");
         public readonly static string Account_Records = Path.Combine(VaultPath, "Accounts_Records");
-
     }
 
 

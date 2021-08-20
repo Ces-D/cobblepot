@@ -2,6 +2,7 @@ using Services;
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.CommandLine.Hosting;
 
 namespace Commands
 {
