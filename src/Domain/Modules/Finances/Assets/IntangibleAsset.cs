@@ -8,14 +8,14 @@ public class IntangibleAsset : Entity, IAsset
     private DateTime _createDate;
     private Money _value;
 
-    public IntangibleAsset(Guid id, string title, string description, , Money value) : base(id)
+    public IntangibleAsset(Guid id, string title, string description, Money value) : base(id)
     {
         _title = title;
         _description = description;
         _createDate = SystemClock.Now;
         _value = value;
     }
-    public IntangibleAsset(Guid id, string title, ShortTermAssetType assetType, Money value) : base(id)
+    public IntangibleAsset(Guid id, string title, Money value) : base(id)
     {
         _title = title;
         _value = value;

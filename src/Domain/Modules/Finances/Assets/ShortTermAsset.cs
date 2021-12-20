@@ -32,3 +32,5 @@ public class ShortTermAsset : Entity, IAsset
     public string Description() => $"{_description ?? "no description"}: {_createDate}";
     public string AssetType() => _type.ToString();
 }
+
+// TODO: add functions for updating these values
