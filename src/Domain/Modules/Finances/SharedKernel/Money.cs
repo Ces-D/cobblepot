@@ -1,4 +1,4 @@
-﻿namespace Cobblepot.Domain.Modules.Finances;
+﻿namespace Cobblepot.Domain.Modules.Finances.SharedKernel;
 using System.Globalization;
 public record Money : ValueObject
 {

@@ -1,41 +1,46 @@
 ﻿namespace Cobblepot.Domain.Modules.Finances.Assets;
 
-// see - https://www.investopedia.com/terms/c/asset.asp
-public class FixedAsset : Entity, IAsset
+// see - https://www.investopedia.com/terms/f/fixedasset.asp
+public class FixedAsset : Entity, IAsset, IDescribable
 {
     private string _title;
-    private string? _description;
-    private DateTime _createDate;
+    private string _description;
     private TimeSpan _usefulLife;
     private Money _purchasePrice;
     private bool _isRealEstate;
     private Money _value;
+    private List<Note> _notes;
 
-    public FixedAsset(Guid id, string title, string description, Money purchasePrice, TimeSpan usefulLife, bool? acceleratedDepreciation, bool isRealEstate) : base(id)
+    public string Title { get { return _title; } set { _title = value; } }
+    public string Description { get { return _description; } set { _description = value; } }
+    public Money Value { get { return _value; } }
+    public bool IsRealEstate { get { return _isRealEstate; } }
+
+    public FixedAsset(Guid id, string title, string? description, Money purchasePrice, TimeSpan usefulLife, bool? acceleratedDepreciation) : base(id, SystemClock.Now)
     {
         _title = title;
-        _description = description;
-        _createDate = SystemClock.Now;
+        _description = description ?? "no description";
         _usefulLife = usefulLife;
         _purchasePrice = purchasePrice;
-        _isRealEstate = isRealEstate;
+        _isRealEstate = false;
         _value = DetermineValue(acceleratedDepreciation ?? false);
+        _notes = new List<Note>();
     }
 
-
-    public Money Value() => _value;
-    public override string ToString() => $"Fixed Asset: {_title}";
-    public string Title() => _title;
-    public string Description() => $"{_description ?? "no description"}: {_createDate}";
-
-    private int UsefulLifeInYears()
+    public FixedAsset(Guid id, string title, string? description, Money purchasePrice, TimeSpan usefulLife, Money realEstateValue) : base(id, SystemClock.Now)
     {
-        return _usefulLife.Days / 365;
+        _title = title;
+        _description = description ?? "no description";
+        _usefulLife = usefulLife;
+        _purchasePrice = purchasePrice;
+        _isRealEstate = true;
+        _value = realEstateValue;
+        _notes = new List<Note>();
     }
 
     private Money DetermineValue(bool acceleratedDepreciation)
     {
-        var timeInPossession = SystemClock.Now.Subtract(_createDate);
+        var timeInPossession = SystemClock.Now.Subtract(_created);
         if (acceleratedDepreciation)
         {
             var rateOfDepreciation = (1 / UsefulLifeInYears()) * 2;
@@ -50,9 +55,13 @@ public class FixedAsset : Entity, IAsset
             return new Money(valueAmount, _purchasePrice.Currency);
         }
     }
+
+    private int UsefulLifeInYears() => _usefulLife.Days / 365;
+
+    public void AddNote(Note note) => _notes.Add(note);
+
+    public override string ToString() => $"Fixed Asset: {_title}, {_created}";
 }
 
 // see - https://www.investopedia.com/ask/answers/051215/how-do-you-determine-tangible-assets-useful-life.asp for one method of determing depreciation
 // see - https://www.investopedia.com/terms/a/accelerateddepreciation.asp for the other method 
-
-// TODO: determine value of fixed real estate assets

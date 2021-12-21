@@ -4,7 +4,7 @@ public abstract class Equity : Entity
 {
     private decimal _totalAssets;
     private decimal _totalLiabilities;
-    public Equity(Guid id, decimal totalAssetValue, decimal totalLiabilityValue) : base(id)
+    public Equity(Guid id, decimal totalAssetValue, decimal totalLiabilityValue) : base(id, SystemClock.Now)
     {
         _totalAssets = totalAssetValue;
         _totalLiabilities = totalLiabilityValue;

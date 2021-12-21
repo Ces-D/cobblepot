@@ -1,33 +1,29 @@
 ﻿namespace Cobblepot.Domain.Modules.Finances.Assets;
 
-// see - https://www.investopedia.com/terms/c/asset.asp
-public class IntangibleAsset : Entity, IAsset
+// see - https://www.investopedia.com/terms/i/intangibleasset.asp
+public class IntangibleAsset : Entity, IAsset, IDescribable
 {
     private string _title;
-    private string? _description;
-    private DateTime _createDate;
+    private string _description;
     private Money _value;
+    private List<Note> _notes;
 
-    public IntangibleAsset(Guid id, string title, string description, Money value) : base(id)
+    public string Title { get { return _title; } set { _title = value; } }
+    public string Description { get { return _description; } set { _description = value; } }
+    public Money Value { get { return _value; } }
+
+    public IntangibleAsset(Guid id, string title, string? description) : base(id, SystemClock.Now)
     {
         _title = title;
-        _description = description;
-        _createDate = SystemClock.Now;
-        _value = value;
-    }
-    public IntangibleAsset(Guid id, string title, Money value) : base(id)
-    {
-        _title = title;
-        _value = value;
-        _createDate = SystemClock.Now;
+        _description = description ?? "no description";
+        _value = new Money(0, Currency.USD);
+        _notes = new List<Note>();
     }
 
+    public void AddNote(Note note) => _notes.Add(note);
 
-    public Money Value() => _value;
-    public override string ToString() => $"Intangible Asset: {_title}";
-    public string Title() => _title;
-    public string Description() => $"{_description ?? "no description"}: {_createDate}";
+    public override string ToString() => $"Intangible Asset: {_title}, {_created}";
+
 }
 
-// TODO: Determine a method for gaining insights of value
 // Accounting for intangible assets differs depending on the type of asset, and they can be either amortized or tested for impairment each year.

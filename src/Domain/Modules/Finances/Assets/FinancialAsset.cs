@@ -1,32 +1,33 @@
 ﻿namespace Cobblepot.Domain.Modules.Finances.Assets;
 
-// see - https://www.investopedia.com/terms/c/asset.asp
-public class FinancialAsset : Entity, IAsset
+// see - https://www.investopedia.com/terms/f/financialasset.asp
+public class FinancialAsset : Entity, IAsset, IDescribable
 {
     private string _title;
-    private string? _description;
-    private DateTime _createDate;
+    private string _description;
     private Money _value;
+    private List<Note> _notes;
+    private Money _purchasePrice;
+    private TimeSpan _timeOwned;
 
-    public FinancialAsset(Guid id, string title, string description, Money value) : base(id)
+    public string Title { get { return _title; } set { _title = value; } }
+    public string Description { get { return _description; } set { _description = value; } }
+    public Money Value { get { return _value; } }
+    public Money PurchasePrice { get { return _purchasePrice; } }
+    public TimeSpan TimeOwned { get { return _timeOwned; } }
+
+    public FinancialAsset(Guid id, string title, string? description, Money value, Money purchasePrice, TimeSpan? timeOwned) : base(id, SystemClock.Now)
     {
         _title = title;
-        _description = description;
-        _createDate = SystemClock.Now;
+        _description = description ?? "no description";
         _value = value;
-    }
-    public FinancialAsset(Guid id, string title, Money value) : base(id)
-    {
-        _title = title;
-        _value = value;
-        _createDate = SystemClock.Now;
+        _purchasePrice = purchasePrice;
+        _timeOwned = timeOwned ?? SystemClock.Now.Subtract(_created);
+        _notes = new List<Note>();
     }
 
-
-    public Money Value() => _value;
-    public override string ToString() => $"Financial Asset: {_title}";
-    public string Title() => _title;
-    public string Description() => $"{_description ?? "no description"}: {_createDate}";
+    public void AddNote(Note note) => _notes.Add(note);
+    public override string ToString() => $"Financial Asset: {_title}, {_created}";
 }
 
 // TODO: Determine a method for gaining insights of value
