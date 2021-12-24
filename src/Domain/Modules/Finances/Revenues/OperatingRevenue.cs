@@ -27,5 +27,3 @@ public class OperatingRevenue : Entity, IRevenue, IDescribable
 
     public override string ToString() => $"Operating Revenue: {_title}, {_created}";
 }
-
-// TODO: descide if anything is missing

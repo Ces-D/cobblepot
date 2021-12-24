@@ -1,5 +1,7 @@
 ﻿namespace Cobblepot.Domain.Modules.Finances.Equities;
+
 // see - https://www.investopedia.com/terms/e/equity.asp 
+
 public abstract class Equity : Entity
 {
     private decimal _totalAssets;

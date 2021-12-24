@@ -28,5 +28,3 @@ public class NonOperatingRevenue : Entity, IRevenue, IDescribable
 
     public override string ToString() => $"Non-Operating Revenue: {_title}, {_created}";
 }
-
-// TODO: review to decide if any methods are missing

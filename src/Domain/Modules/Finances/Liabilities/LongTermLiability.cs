@@ -24,6 +24,14 @@ public class LongTermLiability : Entity, ILiability, IDescribable
         _notes = new List<Note>();
     }
 
+    public void AddCredit(Money credit)
+    {
+        this.CheckRule(new CreditAddedIsNotMoreThanCostRule(_cost, credit));
+
+        var newCostBalance = _cost.Amount - credit.Amount;
+        _cost = new Money(newCostBalance, _cost.Currency);
+    }
+
     public void AddNote(Note note) => _notes.Add(note);
 
     public override string ToString() => $"Long-Term Liability: {_title}, {_created}";

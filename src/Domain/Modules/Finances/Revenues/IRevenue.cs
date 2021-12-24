@@ -13,3 +13,5 @@ internal interface IRevenue
     // Non-operating Revenue - derived from secondary sources, unpredicatble, non recurring
     // 
 }
+
+// TODO: consider adding rules to revenues
