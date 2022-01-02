@@ -27,5 +27,8 @@ public record Money : ValueObject
 
         return string.Format(nfi, "{0:C}", Amount);
     }
+
+    public static Money operator +(Money a, Money b) => new(a.Amount + b.Amount, a.Currency);
+    public static Money operator -(Money a, Money b) => new(a.Amount - b.Amount, a.Currency);
 }
 

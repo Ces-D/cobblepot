@@ -1,4 +1,5 @@
-﻿namespace Cobblepot.Domain.Accounting.Account;
+namespace Cobblepot.Domain.Accounting.Accounts;
+
 public enum AccountType
 {
     Asset,

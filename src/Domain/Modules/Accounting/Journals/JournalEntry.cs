@@ -1,5 +1,5 @@
-﻿namespace Cobblepot.Domain.Accounting.Journal;
-using Cobblepot.Domain.Accounting.Account;
+﻿namespace Cobblepot.Domain.Accounting.Journals;
+using Cobblepot.Domain.Accounting.Accounts;
 
 public class JournalEntry : Entity
 {

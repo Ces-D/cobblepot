@@ -1,4 +1,4 @@
-namespace Cobblepot.Domain.Accounting.Journal;
+namespace Cobblepot.Domain.Accounting.Journals;
 
 internal record TransactionsCountIsEvenRule : IBusinessRule
 {

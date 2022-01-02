@@ -1,18 +1,18 @@
-﻿namespace Cobblepot.Domain.Accounting.Account;
+﻿namespace Cobblepot.Domain.Accounting.Accounts;
 
 internal record Transaction : ValueObject, IAccountTransaction
 {
     private DateTime _transactionDate;
-    private string _name;
+    private string _title;
     private string _memo;
     private bool _isCredit;
     private Money _amount;
     private AccountType _accountType;
 
-    public Transaction(DateTime? transactionDate, string name, string memo, bool isCredit, Money amount, AccountType accountType) : base(DateTime.UtcNow)
+    public Transaction(DateTime? transactionDate, string title, string memo, bool isCredit, Money amount, AccountType accountType) : base(DateTime.UtcNow)
     {
         _transactionDate = transactionDate ?? DateTime.UtcNow;
-        _name = name;
+        _title = title;
         _memo = memo;
         _isCredit = isCredit;
         _amount = amount;
@@ -20,7 +20,7 @@ internal record Transaction : ValueObject, IAccountTransaction
     }
 
     public DateTime TransactionDate { get => _transactionDate; }
-    public string Name { get => _name; }
+    public string Title { get => _title; }
     public string Memo { get => _memo; }
     public bool IsCredit { get => _isCredit; }
     public Money Amount { get => _amount; }
