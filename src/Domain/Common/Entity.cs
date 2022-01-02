@@ -2,11 +2,11 @@ namespace Cobblepot.Domain.Common;
 using System.Reflection;
 public abstract class Entity
 {
-    protected DateTime _created { get; init; }
+    protected DateTime DateCreated { get; init; }
     public Guid Id { get; init; }
     private List<PropertyInfo>? _properties { get; set; }
     private List<FieldInfo>? _fields { get; set; }
-    protected Entity(Guid id, DateTime created) { Id = id; _created = created; }
+    protected Entity(Guid id, DateTime dateCreated) { Id = id; DateCreated = dateCreated; }
     public override bool Equals(object? obj)
     {
         if (obj is null) return false;

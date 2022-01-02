@@ -27,3 +27,5 @@ public class OperatingRevenue : Entity, IRevenue, IDescribable
 
     public override string ToString() => $"Operating Revenue: {_title}, {_created}";
 }
+
+// TODO: review for any possible changes to revenues, including adding rules

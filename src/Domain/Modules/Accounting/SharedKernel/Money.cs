@@ -1,15 +1,18 @@
-﻿namespace Cobblepot.Domain.Modules.Finances.SharedKernel;
+﻿namespace Cobblepot.Domain.Accounting.SharedKernel;
 using System.Globalization;
+
 public record Money : ValueObject
 {
     public decimal Amount { get; init; }
     public Currency Currency { get; init; }
-
-    public Money(decimal amount, Currency currency)
+    public Money(decimal amount, Currency currency) : base(DateTime.UtcNow)
     {
+        this.CheckRule(new MoneyAmountIsPositiveRule(amount));
+
         Amount = amount;
         Currency = currency;
     }
+
     public override string ToString()
     {
         string culture = Currency switch
@@ -24,8 +27,5 @@ public record Money : ValueObject
 
         return string.Format(nfi, "{0:C}", Amount);
     }
-
-    public static Money operator +(Money a, Money b) => new(a.Amount + b.Amount, a.Currency);
-    public static Money operator -(Money a, Money b) => new(a.Amount - b.Amount, a.Currency);
 }
 

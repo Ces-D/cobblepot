@@ -5,5 +5,5 @@ public interface ILiability
 {
     public Money Cost { get; }
     public DateTime Maturity { get; }
-    public void AddCredit(Money credit);
+    public void CreditAccount(Money credit);
 }

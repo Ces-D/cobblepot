@@ -57,5 +57,3 @@ public class ShortTermAsset : Entity, IAsset, IDescribable
     public void AddNote(Note note) => _notes.Add(note);
     public override string ToString() => $"Short-Term Asset: {_title}, {_created}";
 }
-
-// TODO: add functions for updating these values
