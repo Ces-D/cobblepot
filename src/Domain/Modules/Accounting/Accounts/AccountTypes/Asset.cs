@@ -1,4 +1,6 @@
-namespace Cobblepot.Domain.Accounting.Accounts;
+using Cobblepot.Domain.Accounting.Accounts;
+
+namespace Cobblepot.Domain.Accounting.Accounts.AccountTypes;
 
 public class Asset : IAccountType
 {

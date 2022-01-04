@@ -1,5 +1,7 @@
 ﻿namespace Cobblepot.Domain.Accounting.Journals;
+
 using Cobblepot.Domain.Accounting.Accounts;
+using Cobblepot.Domain.Accounting.Journals.Rules;
 
 public class JournalEntry : Entity
 {
@@ -14,22 +16,22 @@ public class JournalEntry : Entity
 
     public void AddTransactions(List<IAccountTransaction> transactions)
     {
-        this.CheckRule(new TransactionsCountIsEvenRule(transactions.Count));
+        CheckRule(new TransactionsCountIsEvenRule(transactions.Count));
 
         var step = 0;
 
         while (step < transactions.Count)
         {
-            this.Add(transactions[step], transactions[step++]);
+            Add(transactions[step], transactions[step++]);
             step += 2;
         }
     }
 
     private void Add(IAccountTransaction initialTransaction, IAccountTransaction balancingTransaction)
     {
-        this.CheckRule(new TransactionCreditsBalanceRule(initialTransaction, balancingTransaction));
-        this.CheckRule(new TranscationAmountsBalanceToNetZeroRule(initialTransaction, balancingTransaction));
-        this.CheckRule(new TransactionAccountTypesOppositeRule(initialTransaction, balancingTransaction));
+        CheckRule(new TransactionCreditsBalanceRule(initialTransaction, balancingTransaction));
+        CheckRule(new TranscationAmountsBalanceToNetZeroRule(initialTransaction, balancingTransaction));
+        CheckRule(new TransactionAccountTypesOppositeRule(initialTransaction, balancingTransaction));
 
         _transactions.Add(initialTransaction);
         _transactions.Add(balancingTransaction);

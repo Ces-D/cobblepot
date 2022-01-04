@@ -1,5 +1,7 @@
 ﻿namespace Cobblepot.Domain.Accounting.Accounts;
 
+using Cobblepot.Domain.Accounting.Accounts.AccountTypes;
+
 public interface IAccountTransaction
 {
     string Title { get; }

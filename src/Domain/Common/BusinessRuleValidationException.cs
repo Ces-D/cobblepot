@@ -7,11 +7,19 @@ public class BusinessRuleValidationException : Exception
     public BusinessRuleValidationException(IBusinessRule brokenRule)
     {
         BrokenRule = brokenRule;
-        this.Details = brokenRule.Message;
+        Details = brokenRule.Message;
     }
     public override string ToString()
     {
         return $"{BrokenRule.GetType().FullName}: {BrokenRule.Message}";
+    }
+
+    public static void CheckRule(IBusinessRule rule)
+    {
+        if (rule.IsBroken())
+        {
+            throw new BusinessRuleValidationException(rule);
+        }
     }
 }
 

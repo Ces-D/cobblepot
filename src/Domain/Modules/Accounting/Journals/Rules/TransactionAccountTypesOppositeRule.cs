@@ -1,5 +1,7 @@
-namespace Cobblepot.Domain.Accounting.Journals;
+namespace Cobblepot.Domain.Accounting.Journals.Rules;
+
 using Cobblepot.Domain.Accounting.Accounts;
+using Cobblepot.Domain.Accounting.Accounts.AccountTypes;
 
 internal record TransactionAccountTypesOppositeRule : IBusinessRule
 {

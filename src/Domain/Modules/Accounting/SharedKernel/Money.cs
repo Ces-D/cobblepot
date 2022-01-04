@@ -1,17 +1,20 @@
 ﻿namespace Cobblepot.Domain.Accounting.SharedKernel;
+
+using Cobblepot.Domain.Accounting.SharedKernel.Rules;
 using System.Globalization;
 
-public record Money : ValueObject
+public record Money
 {
-    public decimal Amount { get; init; }
-    public Currency Currency { get; init; }
-    public Money(decimal amount, Currency currency) : base(DateTime.UtcNow)
+    public Money(decimal amount, Currency currency)
     {
-        this.CheckRule(new MoneyAmountIsPositiveRule(amount));
+        BusinessRuleValidationException.CheckRule(new MoneyAmountIsPositiveRule(amount));
 
         Amount = amount;
         Currency = currency;
     }
+
+    public decimal Amount { get; init; }
+    public Currency Currency { get; init; }
 
     public override string ToString()
     {

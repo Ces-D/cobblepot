@@ -1,4 +1,5 @@
-﻿namespace Cobblepot.Domain.Accounting.Journals;
+﻿namespace Cobblepot.Domain.Accounting.Journals.Rules;
+
 using Cobblepot.Domain.Accounting.Accounts;
 
 internal class TransactionCreditsBalanceRule : IBusinessRule

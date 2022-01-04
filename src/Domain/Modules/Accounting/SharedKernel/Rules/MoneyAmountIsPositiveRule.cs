@@ -1,8 +1,8 @@
-﻿namespace Cobblepot.Domain.Accounting.SharedKernel;
+﻿namespace Cobblepot.Domain.Accounting.SharedKernel.Rules;
 
 internal record MoneyAmountIsPositiveRule : IBusinessRule
 {
-    private bool _amountIsPositive;
+    private readonly bool _amountIsPositive;
 
     public MoneyAmountIsPositiveRule(decimal amount)
     {

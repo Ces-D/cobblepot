@@ -1,4 +1,4 @@
-namespace Cobblepot.Domain.Accounting.Accounts;
+namespace Cobblepot.Domain.Accounting.Accounts.AccountTypes;
 
 public enum AccountType
 {

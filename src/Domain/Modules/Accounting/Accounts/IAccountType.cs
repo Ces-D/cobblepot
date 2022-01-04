@@ -1,5 +1,7 @@
 namespace Cobblepot.Domain.Accounting.Accounts;
 
+using Cobblepot.Domain.Accounting.Accounts.AccountTypes;
+
 public interface IAccountType
 {
     Money Value { get; }
