@@ -1,5 +1,6 @@
 ﻿namespace Cobblepot.Domain.Common;
-public interface IEntityId
+
+public interface IEntity
 {
     Guid Id { get; }
 }

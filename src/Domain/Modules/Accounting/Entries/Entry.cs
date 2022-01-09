@@ -1,14 +1,16 @@
 ﻿namespace Cobblepot.Domain.Accounting.Entries;
 using Cobblepot.Domain.Accounting.Accounts.AccountTypes;
 
-public class Entry : Entity
+public class Entry : EntityBase, IAggregateRoot, IEntity
 {
+    private readonly Guid _id;
     private bool _isCredit;
     private AccountType _accountType;
     private Transaction _transaction;
 
-    private Entry(Transaction transaction, AccountType accountType, bool isCredit) : base(new EntryId(Guid.NewGuid()), DateTime.UtcNow)
+    private Entry(Transaction transaction, AccountType accountType, bool isCredit) : base(DateTime.UtcNow)
     {
+        _id = Guid.NewGuid();
         _transaction = transaction;
         _accountType = accountType;
         _isCredit = isCredit;
@@ -16,6 +18,7 @@ public class Entry : Entity
 
     public DateTime TransactionDate => _transaction.TransactionDate;
     public Money TransactionAmount => _transaction.Amount;
+    public Guid Id => _id;
 
     public static Entry CreateNew(DateTime transactionDate, string title, string memo, bool isCredit, Money amount, AccountType accountType)
     {
