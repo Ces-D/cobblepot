@@ -6,9 +6,14 @@ public class Entry : EntityBase, IAggregateRoot, IEntity
     private readonly Guid _id;
     private bool _isCredit;
     private AccountType _accountType;
-    private Transaction _transaction;
+    private readonly Transaction _transaction;
 
-    private Entry(Transaction transaction, AccountType accountType, bool isCredit) : base(DateTime.UtcNow)
+    public Guid Id { get { return _id; } }
+    public DateTime TransactionDate { get { return _transaction.TransactionDate; } }
+    public AccountType AccountType { get { return _accountType; } }
+    public Money TransactionAmount { get { return _transaction.Amount; } }
+
+    internal Entry(Transaction transaction, AccountType accountType, bool isCredit) : base(DateTime.UtcNow)
     {
         _id = Guid.NewGuid();
         _transaction = transaction;
@@ -16,13 +21,12 @@ public class Entry : EntityBase, IAggregateRoot, IEntity
         _isCredit = isCredit;
     }
 
-    public DateTime TransactionDate => _transaction.TransactionDate;
-    public Money TransactionAmount => _transaction.Amount;
-    public Guid Id => _id;
-
-    public static Entry CreateNew(DateTime transactionDate, string title, string memo, bool isCredit, Money amount, AccountType accountType)
+    internal Entry(Guid id, DateTime createdDate, Transaction transaction, AccountType accountType, bool isCredit) : base(createdDate)
     {
-        return new Entry(new Transaction(transactionDate, title, memo, amount), accountType, isCredit);
+        _id = id;
+        _transaction = transaction;
+        _accountType = accountType;
+        _isCredit = isCredit;
     }
 
     public Entry CreateOpposite()
