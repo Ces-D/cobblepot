@@ -16,4 +16,5 @@ public class AccountingContext : DbContext
     {
         _loggerFactory = logger;
     }
+
 }

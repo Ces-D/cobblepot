@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.EntityFrameworkSqlLite.Accounting.Modules.Entries;
+﻿namespace Infrastructure.EntityFrameworkSqlLite.Accounting.Entries;
 using Cobblepot.Domain.Accounting.Accounts;
 using System.Linq.Expressions;
 
@@ -40,6 +40,11 @@ internal class AccountRepository : IRepository<Account>
     public void Update(Account entity)
     {
         _accountingContext.Entry(entity).State = EntityState.Modified;
+    }
+
+    public void Save()
+    {
+        _accountingContext.SaveChanges();
     }
 }
 
