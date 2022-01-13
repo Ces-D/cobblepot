@@ -9,7 +9,7 @@ public class Journal : EntityBase, IAggregateRoot, IEntity
     public Guid Id { get { return _id; } }
     public List<Entry> Entries { get { return _entries; } }
 
-    internal Journal() : base(DateTime.UtcNow)
+    public Journal() : base(DateTime.UtcNow)
     {
         _id = Guid.NewGuid();
         _entries = new List<Entry>();
@@ -28,6 +28,17 @@ public class Journal : EntityBase, IAggregateRoot, IEntity
         var opposite = entry.CreateOpposite();
         _entries.Add(entry);
         _entries.Add(opposite);
+    }
+
+    public IEnumerable<Entry> Add(Entry entry, bool includeOpposite)
+    {
+        this.CheckRule(new NoDuplicateJournalEntriesRule(_entries, entry));
+
+        var opposite = entry.CreateOpposite();
+        _entries.Add(entry);
+        _entries.Add(opposite);
+
+        return includeOpposite ? new List<Entry>(2) { entry, opposite } : new List<Entry>(1) { entry };
     }
 }
 // Create Context for Journals and do this but gor Accounts

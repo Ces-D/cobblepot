@@ -11,7 +11,16 @@ public class Entry : EntityBase, IAggregateRoot, IEntity
     public Guid Id { get { return _id; } }
     public DateTime TransactionDate { get { return _transaction.TransactionDate; } }
     public AccountType AccountType { get { return _accountType; } }
-    public Money TransactionAmount { get { return _transaction.Amount; } }
+    public string TransactionAmount { get { return _isCredit ? _transaction.Amount.ToString() : $"( {_transaction.Amount.ToString()} )"; } }
+    public string TransactionTitle { get { return _transaction.Title; } }
+
+    public Entry(DateTime transactionDate, string title, string memo, Money amount, AccountType accountType, bool isCredit) : base(DateTime.UtcNow)
+    {
+        _id = Guid.NewGuid();
+        _transaction = new Transaction(transactionDate, title, memo, amount);
+        _accountType = accountType;
+        _isCredit = isCredit;
+    }
 
     internal Entry(Transaction transaction, AccountType accountType, bool isCredit) : base(DateTime.UtcNow)
     {

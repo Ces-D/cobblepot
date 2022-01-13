@@ -9,4 +9,5 @@ public interface IRepository<T> where T : IAggregateRoot
     Task AddRangeAsync(IEnumerable<T> entities);
     void Update(T entity);
     void Delete(T entity);
+    void Save();
 }
