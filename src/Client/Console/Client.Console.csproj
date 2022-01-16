@@ -5,6 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Cobblepot.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+    <OutputType>Exe</OutputType>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +19,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Domain\Modules\Accounting\Domain.Accounting.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

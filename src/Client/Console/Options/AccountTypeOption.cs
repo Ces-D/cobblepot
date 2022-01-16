@@ -1,10 +1,12 @@
 namespace Cobblepot.Client.Console.Options;
 using Cobblepot.Domain.Accounting.Accounts.AccountTypes;
 
-public class AccountTypeOption : Option<AccountType>
+internal class AccountTypeOption : Option<AccountType>
 {
-    public AccountTypeOption() : base("Account Types", "Account of type Asset, Liability, Revenue, Expense")
+    public AccountTypeOption() : base("--accountType", "Type of account this transaction affects")
     {
+        this.AddAlias("-acc");
         this.SetDefaultValue(AccountType.Asset);
+        this.IsRequired = false;
     }
 }

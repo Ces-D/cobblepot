@@ -2,7 +2,7 @@ namespace Cobblepot.Client.Console.Arguments;
 using Cobblepot.Domain.Accounting.SharedKernel;
 using System.CommandLine.Parsing;
 
-public class MoneyArgument : Argument<decimal>
+internal class MoneyArgument : Argument<decimal>
 {
     public MoneyArgument()
     {
@@ -11,7 +11,7 @@ public class MoneyArgument : Argument<decimal>
         this.SetDefaultValue(0);
         this.AddValidator(val =>
         {
-            if (Convert.ToDecimal(val) >= 0)
+            if (Convert.ToDecimal(val.GetValueOrDefault()) >= 0)
             {
                 return null;
             }

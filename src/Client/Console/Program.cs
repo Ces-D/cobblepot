@@ -1,28 +1,45 @@
 ﻿namespace Cobblepot.Client.Console;
-using Cobblepot.Client.Console.Commands.Accounting;
-using Cobblepot.Domain.Accounting.Journals;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using Microsoft.Extensions.Hosting;
+using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using Cobblepot.Client.Console.Commands.Accounting;
+using Cobblepot.Domain.Accounting.Journals;
+
 public class Program
 {
-    private static CommandLineBuilder BuildCommandLine()
+
+    private static Parser BuildParser(ServiceProvider serviceProvider)
     {
-        var journal = new Journal();
-        var rootCommand = new RootCommand("cobblepot");
-        rootCommand.AddCommand(new AddJournalEntryCommand(journal));
+        var rootCommand = new RootCommand("The easiest personal finance tool for command line junkies.");
+        var instanceJournal = new Journal();
+        rootCommand.AddCommand(new AddJournalEntryCommand(instanceJournal, serviceProvider.GetService<IConfiguration>()));
 
         var commandLineBuilder = new CommandLineBuilder(rootCommand);
-        return commandLineBuilder;
+        return commandLineBuilder.UseDefaults().Build();
+    }
+
+    private static ServiceProvider BuildServiceProvider()
+    {
+        var servicesCollection = new ServiceCollection();
+        IConfigurationRoot config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appSettings.json", optional: false, reloadOnChange: true)
+            .Build();
+        servicesCollection.AddSingleton<IConfiguration>(config);
+
+        return servicesCollection.BuildServiceProvider();
     }
 
 
     public static async Task Main(string[] args)
     {
-        await BuildCommandLine().UseDefaults().Build().InvokeAsync(args);
-        // TODO: figure out if hosting is going to be necessary for this app
+        ServiceProvider services = BuildServiceProvider();
+        Parser parser = BuildParser(services);
+
+        await parser.InvokeAsync(args);
     }
 }

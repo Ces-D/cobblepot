@@ -1,10 +1,11 @@
 namespace Cobblepot.Client.Console.Options;
 using Cobblepot.Domain.Accounting.SharedKernel;
 
-public class CurrencyOption : Option<Currency>
+internal class CurrencyOption : Option<Currency>
 {
-    public CurrencyOption() : base("Currency", "Currency of type USD, MXN, EUR")
+    public CurrencyOption(Currency? baseCurrency = null) : base("--currency", "Currency of type USD, MXN, EUR")
     {
-        this.SetDefaultValue(Currency.USD);
+        this.SetDefaultValue(baseCurrency ?? Currency.USD);
+        this.IsRequired = false;
     }
 }

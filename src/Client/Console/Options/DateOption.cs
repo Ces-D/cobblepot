@@ -1,9 +1,10 @@
 namespace Cobblepot.Client.Console.Options;
 
-public class DateOption : Option<DateTime>
+internal class DateOption : Option<DateTime>
 {
-    public DateOption(string? description = null) : base("Date", description)
+    public DateOption(string? description = null) : base("--date", description)
     {
         this.SetDefaultValue(DateTime.UtcNow);
+        this.IsRequired = false;
     }
 }

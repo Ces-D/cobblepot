@@ -5,24 +5,37 @@ using Cobblepot.Domain.Accounting.Accounts.AccountTypes;
 using Cobblepot.Domain.Accounting.SharedKernel;
 using Cobblepot.Domain.Accounting.Journals;
 using Cobblepot.Domain.Accounting.Entries;
+using Microsoft.Extensions.Configuration;
 
 internal class AddJournalEntryCommand : Command
 {
     private Journal _workingJournal;
-    public AddJournalEntryCommand(Journal journal) : base("add", "Add new entry to your accounting journal")
+    private readonly IConfiguration? _config;
+    public AddJournalEntryCommand(Journal journal, IConfiguration? config) : base("add", "Add new entry to your accounting journal")
     {
         _workingJournal = journal;
-        this.AddArgument(new TitleArgument());
-        this.AddArgument(new MemoArgument());
-        this.AddArgument(new MoneyArgument());
-        this.AddOption(new AccountTypeOption());
-        this.AddOption(new DateOption());
-        this.AddOption(new IsCreditOption());
-        this.AddGlobalOption(new CurrencyOption());
+        _config = config;
 
-        this.SetHandler((string title, string memo, decimal money, AccountType accountType, DateTime date, bool isCredit, Currency currency) =>
+        var titleArgument = new TitleArgument("Title of this transaction");
+        var moneyArgument = new MoneyArgument();
+        var memoOption = new MemoOption();
+        var accountTypeOption = new AccountTypeOption();
+        var dateOption = new DateOption();
+        var isCreditOption = new IsCreditOption();
+        var currencyOption = new CurrencyOption(_config.GetValue<Currency>("Currency"));
+
+        this.AddArgument(titleArgument);
+        this.AddArgument(moneyArgument);
+        this.AddOption(memoOption);
+        this.AddOption(accountTypeOption);
+        this.AddOption(dateOption);
+        this.AddOption(isCreditOption);
+        this.AddOption(currencyOption);
+
+        this.SetHandler((string[] title, decimal money, string[] memo, AccountType accountType, DateTime date, bool isCredit, Currency currency) =>
         {
-            var entry = new Entry(date, title, memo, new Money(money, currency), accountType, isCredit);
+
+            var entry = new Entry(date, String.Join(' ', title), String.Join(' ', memo), new Money(money, currency), accountType, isCredit);
             var entries = _workingJournal.Add(entry, true);
 
             foreach (Entry item in entries)
@@ -33,7 +46,7 @@ internal class AddJournalEntryCommand : Command
                 System.Console.WriteLine(string.Format("{0}{1}", "Amount".PadRight(25), item.TransactionAmount));
                 System.Console.WriteLine();
             }
-        });
+        }, titleArgument, moneyArgument, memoOption, accountTypeOption, dateOption, isCreditOption, currencyOption);
     }
 }
 
