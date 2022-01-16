@@ -15,10 +15,13 @@ public class Program
     private static Parser BuildParser(ServiceProvider serviceProvider)
     {
         var rootCommand = new RootCommand("The easiest personal finance tool for command line junkies.");
+        rootCommand.Name = "Cobblepot";
+
         var instanceJournal = new Journal();
         rootCommand.AddCommand(new AddJournalEntryCommand(instanceJournal, serviceProvider.GetService<IConfiguration>()));
 
         var commandLineBuilder = new CommandLineBuilder(rootCommand);
+
         return commandLineBuilder.UseDefaults().Build();
     }
 
@@ -40,6 +43,6 @@ public class Program
         ServiceProvider services = BuildServiceProvider();
         Parser parser = BuildParser(services);
 
-        await parser.InvokeAsync(args);
+        await parser.InvokeAsync("add Tree 0");
     }
 }

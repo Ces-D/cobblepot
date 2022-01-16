@@ -32,9 +32,9 @@ internal class AddJournalEntryCommand : Command
         this.AddOption(isCreditOption);
         this.AddOption(currencyOption);
 
-        this.SetHandler((string[] title, decimal money, string[] memo, AccountType accountType, DateTime date, bool isCredit, Currency currency) =>
+        this.SetHandler(
+            (string title, decimal money, string memo, AccountType accountType, DateTime date, bool isCredit, Currency currency) =>
         {
-
             var entry = new Entry(date, String.Join(' ', title), String.Join(' ', memo), new Money(money, currency), accountType, isCredit);
             var entries = _workingJournal.Add(entry, true);
 
@@ -46,7 +46,8 @@ internal class AddJournalEntryCommand : Command
                 System.Console.WriteLine(string.Format("{0}{1}", "Amount".PadRight(25), item.TransactionAmount));
                 System.Console.WriteLine();
             }
-        }, titleArgument, moneyArgument, memoOption, accountTypeOption, dateOption, isCreditOption, currencyOption);
+        },
+         titleArgument, moneyArgument, memoOption, accountTypeOption, dateOption, isCreditOption, currencyOption);
     }
 }
 
