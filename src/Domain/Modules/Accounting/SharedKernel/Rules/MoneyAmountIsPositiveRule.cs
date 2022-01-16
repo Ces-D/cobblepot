@@ -11,5 +11,5 @@ internal record MoneyAmountIsPositiveRule : IBusinessRule
 
     public string Message => "Money amount cannot be negative";
 
-    public bool IsBroken() => _amountIsPositive;
+    public bool IsBroken() => !_amountIsPositive;
 }
