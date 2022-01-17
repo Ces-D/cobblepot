@@ -1,6 +1,6 @@
 namespace Cobblepot.Domain.Accounting.Entries;
 
-internal record Transaction
+public record Transaction
 {
     internal Transaction(DateTime transactionDate, string title, string memo, Money amount)
     {
@@ -10,8 +10,8 @@ internal record Transaction
         Amount = amount;
     }
 
-    internal DateTime TransactionDate { get; }
-    internal string Title { get; }
-    internal string Memo { get; }
-    internal Money Amount { get; }
+    public DateTime TransactionDate { get; }
+    public string Title { get; }
+    public string Memo { get; }
+    public Money Amount { get; }
 }

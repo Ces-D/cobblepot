@@ -12,20 +12,21 @@ using Cobblepot.Domain.Accounting.Journals;
 public class Program
 {
 
-    private static Parser BuildParser(ServiceProvider serviceProvider)
+    public static Parser BuildParser(ServiceProvider serviceProvider)
     {
         var rootCommand = new RootCommand("The easiest personal finance tool for command line junkies.");
         rootCommand.Name = "Cobblepot";
 
         var instanceJournal = new Journal();
         rootCommand.AddCommand(new AddJournalEntryCommand(instanceJournal, serviceProvider.GetService<IConfiguration>()));
+        rootCommand.AddCommand(new ListJournalEntryCommand(instanceJournal, serviceProvider.GetService<IConfiguration>()));
 
         var commandLineBuilder = new CommandLineBuilder(rootCommand);
 
         return commandLineBuilder.UseDefaults().Build();
     }
 
-    private static ServiceProvider BuildServiceProvider()
+    public static ServiceProvider BuildServiceProvider()
     {
         var servicesCollection = new ServiceCollection();
         IConfigurationRoot config = new ConfigurationBuilder()
@@ -43,6 +44,6 @@ public class Program
         ServiceProvider services = BuildServiceProvider();
         Parser parser = BuildParser(services);
 
-        await parser.InvokeAsync("add Tree 0");
+        await parser.InvokeAsync(args);
     }
 }

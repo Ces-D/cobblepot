@@ -9,10 +9,9 @@ public class Entry : EntityBase, IAggregateRoot, IEntity
     private readonly Transaction _transaction;
 
     public Guid Id { get { return _id; } }
-    public DateTime TransactionDate { get { return _transaction.TransactionDate; } }
     public AccountType AccountType { get { return _accountType; } }
-    public string TransactionAmount { get { return _isCredit ? _transaction.Amount.ToString() : $"( {_transaction.Amount.ToString()} )"; } }
-    public string TransactionTitle { get { return _transaction.Title; } }
+    public Transaction Transaction { get { return _transaction; } }
+    public bool IsCredit { get { return _isCredit; } }
 
     public Entry(DateTime transactionDate, string title, string memo, Money amount, AccountType accountType, bool isCredit) : base(DateTime.UtcNow)
     {
