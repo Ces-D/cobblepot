@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.EntityFrameworkSqlLite.Accounting;
+﻿namespace Cobblepot.Infrastructure.EntityFrameworkSqlLite.Accounting;
 using Microsoft.EntityFrameworkCore;
 using Cobblepot.Domain.Accounting.Journals;
 using Cobblepot.Domain.Accounting.Accounts;
@@ -12,7 +12,7 @@ public class AccountingContext : DbContext
     public DbSet<Account> Accounts { get; set; }
     public DbSet<Entry> Entries { get; set; }
 
-    public AccountingContext(DbContextOptions dbContextOptions, ILoggerFactory logger) : base(dbContextOptions)
+    public AccountingContext(DbContextOptions<AccountingContext> options, ILoggerFactory logger) : base(options)
     {
         _loggerFactory = logger;
     }

@@ -1,5 +1,6 @@
-﻿namespace Infrastructure.EntityFrameworkSqlLite.Accounting.Entries;
+﻿namespace Cobblepot.Infrastructure.EntityFrameworkSqlLite.Accounting.Entries;
 using Cobblepot.Domain.Accounting.Entries;
+using Cobblepot.Infrastructure.EntityFrameworkSqlLite.Accounting;
 using System.Linq.Expressions;
 
 internal class EntryRepository : IRepository<Entry>
@@ -42,7 +43,7 @@ internal class EntryRepository : IRepository<Entry>
         _accountingContext.Entry(entity).State = EntityState.Modified;
     }
 
-        public void Save()
+    public void Save()
     {
         _accountingContext.SaveChanges();
     }

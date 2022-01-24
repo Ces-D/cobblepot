@@ -1,5 +1,6 @@
-﻿namespace Infrastructure.EntityFrameworkSqlLite.Accounting.Entries;
+﻿namespace Cobblepot.Infrastructure.EntityFrameworkSqlLite.Accounting.Accounts;
 using Cobblepot.Domain.Accounting.Accounts;
+using Cobblepot.Infrastructure.EntityFrameworkSqlLite.Accounting;
 using System.Linq.Expressions;
 
 internal class AccountRepository : IRepository<Account>
