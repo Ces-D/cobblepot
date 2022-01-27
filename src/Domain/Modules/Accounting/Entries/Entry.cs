@@ -9,7 +9,9 @@ public class Entry : EntityBase, IAggregateRoot, IEntity
     private readonly Transaction _transaction;
 
     public Guid Id { get { return _id; } }
-    public AccountType AccountType { get { return _accountType; } }
+    public AccountType AccountType { get { return _accountType; } } // TODO: change this to use the Account entity 
+    /// reason being that the there is right no way to connect an account to a accounts payable for example 
+    // Some of these properties should be removed from being private because they do not require any kind of special modification
     public Transaction Transaction { get { return _transaction; } }
     public bool IsCredit { get { return _isCredit; } }
 

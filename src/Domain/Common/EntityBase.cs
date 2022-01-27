@@ -1,16 +1,23 @@
 namespace Cobblepot.Domain.Common;
 
-public abstract class EntityBase
+public abstract class EntityBase : IEntity
 {
     private List<IDomainEvent>? _domainEvents;
-    private readonly DateTime _createdAt;
+    public DateTime CreatedAt { get; init; }
+    public Guid Id { get; init; }
 
-    protected EntityBase(DateTime createdAt)
+    protected EntityBase()
     {
-        _createdAt = createdAt;
+        CreatedAt = DateTime.UtcNow;
+        Id = Guid.NewGuid();
     }
 
-    protected DateTime CreatedAt { get => _createdAt; }
+
+    protected EntityBase(Guid id, DateTime createdDate)
+    {
+        CreatedAt = createdDate.ToUniversalTime();
+        Id = id;
+    }
 
     public void ClearDomainEvents()
     {
