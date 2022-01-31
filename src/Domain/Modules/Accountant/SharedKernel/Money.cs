@@ -1,5 +1,7 @@
 namespace Cobblepot.Domain.Accountant;
+using Cobblepot.Domain.Accountant.Rules;
 using Cobblepot.Domain.Common;
+using System.Globalization;
 
 public record Money
 {
@@ -29,6 +31,21 @@ public record Money
         return string.Format(nfi, "{0:C}", Amount);
     }
 
-    public static Money operator +(Money a, Money b) => new(a.Amount + b.Amount, a.Currency);
-    public static Money operator -(Money a, Money b) => new(a.Amount - b.Amount, a.Currency);
+    // public static Money operator +(Money a, Money b) => new(a.Amount + b.Amount, a.Currency);
+    public static Money operator +(Money a, Money b)
+    {
+        return new Money()
+        {
+            Amount = a.Amount + b.Amount,
+            Currency = a.Currency
+        };
+    }
+    public static Money operator -(Money a, Money b)
+    {
+        return new Money()
+        {
+            Amount = a.Amount - b.Amount,
+            Currency = a.Currency
+        };
+    }
 }
