@@ -5,13 +5,11 @@ VisualStudioVersion = 17.0.32002.185
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Common", "src\Domain\Common\Domain.Common.csproj", "{D2F28203-F2BE-4941-832C-DA1F6D4C19E3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Accounting", "src\Domain\Modules\Accounting\Domain.Accounting.csproj", "{C3AF29CA-9FC7-4EE0-8716-1CBC1E0F8A32}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.EntityFrameworkSqlLite.Accounting", "src\Infrastructure\EntityFrameworkSqlLite\Modules\Accounting\Infrastructure.EntityFrameworkSqlLite.Accounting.csproj", "{3B0C1DFF-E374-48E1-8D65-F15153ED65E9}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.CommandLine", "src\Client\CommandLine\Client.CommandLine.csproj", "{A566B935-5E4E-4A95-B95A-BCE042FFD73A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Accountant", "src\Domain\Modules\Accountant\Domain.Accountant.csproj", "{0C103F1B-6DBA-4A08-9D99-8538EE2A3A86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.DoubleEntryBookeeping", "src\Domain\DoubleEntryBookeeping\Domain.DoubleEntryBookeeping.csproj", "{93752F9E-16BB-464F-8BF7-866BAE3128B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +21,6 @@ Global
 		{D2F28203-F2BE-4941-832C-DA1F6D4C19E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2F28203-F2BE-4941-832C-DA1F6D4C19E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2F28203-F2BE-4941-832C-DA1F6D4C19E3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C3AF29CA-9FC7-4EE0-8716-1CBC1E0F8A32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C3AF29CA-9FC7-4EE0-8716-1CBC1E0F8A32}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C3AF29CA-9FC7-4EE0-8716-1CBC1E0F8A32}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C3AF29CA-9FC7-4EE0-8716-1CBC1E0F8A32}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3B0C1DFF-E374-48E1-8D65-F15153ED65E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3B0C1DFF-E374-48E1-8D65-F15153ED65E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3B0C1DFF-E374-48E1-8D65-F15153ED65E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3B0C1DFF-E374-48E1-8D65-F15153ED65E9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A566B935-5E4E-4A95-B95A-BCE042FFD73A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A566B935-5E4E-4A95-B95A-BCE042FFD73A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A566B935-5E4E-4A95-B95A-BCE042FFD73A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +29,10 @@ Global
 		{0C103F1B-6DBA-4A08-9D99-8538EE2A3A86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C103F1B-6DBA-4A08-9D99-8538EE2A3A86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C103F1B-6DBA-4A08-9D99-8538EE2A3A86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93752F9E-16BB-464F-8BF7-866BAE3128B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93752F9E-16BB-464F-8BF7-866BAE3128B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93752F9E-16BB-464F-8BF7-866BAE3128B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93752F9E-16BB-464F-8BF7-866BAE3128B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
