@@ -16,12 +16,25 @@
     - **Income Accounts** - The second largest range of values. The sub groups can include revenue, and other income
     - **Expense Accounts** - The largest range of values. The sub groups can include research and development, sales and marketing, general and administrative, depreciation, finance costs, and income tax expense.
   - **To Increase** - This column is for indicating whether the account is normally increased by a debit or a credit
+  - This might be part of the General Ledger Domain
 
 ### General Ledger
 
-- **General Ledger** - _Record_ of all past _Transactions_, organized by _accounts_.
-- **Account** - Contain all _Debit_ and _Credit_ transactions affecting them. Also include detailed information about each _transaction_, such as date, description, amount, and may include descriptive information on what the transaction was
+- **Ledger** - _Record_ of all past _transactions_, organized by _accounts_. Sorts all transaction information through the accounts. Typically there are three different kinds of _Ledgers_ that can be prepared.
+
+  - **Debtors Ledger or Sales Ledgers** - It records all the transactions that take place between you and your debtors, where debtors are whomever you have sold goods that you manufacture. It contains a collection of accounts associated with your customers, and shows the amount owed to you or yet to be received. The following details are recorded: _date of sales_, _type of goods sold_, _amount of goods_, _name of the customers_, _tax details_.
+  - **Creditors Ledger or Purchases Ledger** - Records all transactions related to purchases that your business entity makes or between you and your suppliers. Showcases the amount you pay your suppliers or the amount your to be paid for the purchases.The following details are recorded: _type and quantity of goods purchased_, _list of suppliers_, _purchases involving huge sums of money_.
+  - **General Ledger** - Contains all the ledger accounts other than sales and purchases accounts. Various sub ledgers* can be provided with requisite details to prepare a single General Ledger.The General Ledger accounts provide information that helps prepare financial statements. The General Ledger Accounts include: \_Assets*, _Liabilities_, _Shareholder's Equity_, _Revenue_, and _Expenses_.
+
+- **Account** - Contain all _Debit_ and _Credit_ transactions affecting them. Also include detailed information about each _transaction_, such as date, description, amount, and may include descriptive information on what the transaction was. At least two accounts are managed whenever a transaction takes place
+- **Transaction** - They are `closed out` or `summarized` to the general ledger. Each transaction affects at least two accounts, and each entry has at least one debit and one credit transaction
+- **Trial Balance** - Validates the ledgers accuracy. A report that lists every general ledger account and its balance, makes adjustments easier to check and errors easier to locate.
+- **General Ledger Reconciliation** - helps ensure accuracy of the information contained win your Accounts
+
+- **Financial Statement** -
 
 ### General Journal
 
-- **General Journal**
+- **General Journal** - records in order they occur
+- **Entry**
+- **Transaction**
