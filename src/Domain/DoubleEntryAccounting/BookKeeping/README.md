@@ -45,12 +45,11 @@
       - **PR** - Post Reference Entries and is recorded to the relevant account (Customer Account) daily. Enter certain no. and the same no. to be alloted to Customer Account for tracking
       - **Account Receivable and Sales** - The _Amount_ to be mentioned which will receive from the customer. Account receivables to be debited and sales to be credited by the same account
       - **Cost of Goods Sold and Inventory** - The cost of price of goods sold to be mentioned and the cost of goods sold to be debited and inventory to be credited to the same account
-    - **Cash Receipts Journal** - Is used to record all receipts of cash during an accounting period and works on the golden rule of accounting - debit what comes in and credits what goes out. The receipts can be further divided into: _Receipt of Cash from Cash Sales_, _receipt of Cash from Credit Customers_, _Receipt of Cash from Other Services_. The format of these transactions are _date_, _account credited_, _Ref_, _Explanation_, _Cash Dr_, _Sales Discount Dr_, _Accounts Receivable Cr_, _Sales Cr_, _Other Accounts Cr_.
-    - TODO: https://www.wallstreetmojo.com/cash-receipts-journal/
-      - **Receipt of Cash from Cash Sales**
-      - **Receipt of Cash from Credit Customers**
-      - **Receipt of Cash from Other Services**
-    - **Purchases Journal**
-    - **Cash Disbursement Journal**
+    - **Cash Receipts Journal** - Is used to record all receipts of cash during an accounting period and works on the golden rule of accounting - debit what comes in and credits what goes out. The receipts can be further divided into: _Receipt of Cash from Cash Sales_, _receipt of Cash from Credit Customers_, _Receipt of Cash from Other Services_. The format of these transactions are _date_, _account credited_, _Ref_, _Explanation_, _Cash Dr_, _Sales Discount Dr_, _Accounts Receivable Cr_, _Sales Cr_, _Other Accounts Cr_. The single disadvantage of the cash receipts journal is that it only takes into account the cash basis of accounting. FIXME: might not be relevant for double entry accounting context
+      - **Receipt of Cash from Cash Sales** - All cash received from cash sales of goods and services to customers, mentioning the name of the counter-party in the narration
+      - **Receipt of Cash from Credit Customers** - All cash subsequently collected after making credit sales to the customer basis the credit period
+      - **Receipt of Cash from Other Services** - All other sources of cash such as Bank Interest, Maturity of Investments, sales of non-inventory assets, sales of fixed assets
+    - **Purchases Journal** - A special journal used to keep track of all the credit purchases. While credit transactions are recorded in the Purchase Book, cash purchases are recorded in the general Journal. Capital expenditures are also excluded from this journal. The _details of supplier_, _invoice number_, _currency_, _quantity_, _particulars_ and other details are included in entry.
+    - **Cash Disbursement Journal** - https://www.investopedia.com/terms/c/cash-disbursement-journal.asp
   - **General Journal** - All other _transactions_ that are not contained in the specialty journals are in the General Journal. The following types of transaction: _Accounts Receivables_, _Accounts Payable_, _Equipment_, _Accumulated Depreciation_, _Expenses_, _Interest Income and Expenses_
     - **Transaction** - each transaction is an exchange between two accounts. Two equal and opposite accounts for all the transactions, namely _credit_ and _debit_. `credits` one _account_ and `debits` another account. The general format for transactions include: _date of transaction_, _memo_, _debit amount_, _credit amount_, _reference number_.

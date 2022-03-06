@@ -1,4 +1,4 @@
-﻿namespace Cobblepot.Domain.DoubleEntryAccounting.Bookeeping.Journal;
+﻿namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.Journal;
 public class Class1
 {
 
