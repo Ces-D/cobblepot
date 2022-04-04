@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 
 namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts
 {
+    /// <summary>
+    ///  Code specific to this app. Each user of the app gets a unique profile id. In case one accountant is maintaining
+    ///  multiple profiles
+    /// </summary>
     public record Code
     {
-        /// <summary>
-        ///  Code specific to this app. Each user of the app gets a unique profile id. In case one accountant is maintaining
-        ///  multiple profiles
-        /// </summary>
+        // The id of the owner of the account 
         public int ProfileCode { get; init; }
+        // The code of the account following numbering norms
         public int AccountCode { get; init; }
 
         internal Code(int profileCode, int accountCode)
