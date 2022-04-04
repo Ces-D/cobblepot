@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32002.185
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Common", "src\Domain\Common\Domain.Common.csproj", "{D2F28203-F2BE-4941-832C-DA1F6D4C19E3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.CommandLine", "src\Client\CommandLine\Client.CommandLine.csproj", "{A566B935-5E4E-4A95-B95A-BCE042FFD73A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts", "src\Domain\DoubleEntryAccounting\BookKeeping\ChartOfAccounts\Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.csproj", "{92937FFC-09F0-44EB-8F1E-12BCD421732D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.DoubleEntryAccounting.BookKeeping.Journal", "src\Domain\DoubleEntryAccounting\BookKeeping\Journal\Domain.DoubleEntryAccounting.BookKeeping.Journal.csproj", "{5489A466-7CCD-4069-BEC0-BA6DDBDC7EA1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.DoubleEntryAccounting.BookKeeping.Ledger", "src\Domain\DoubleEntryAccounting\BookKeeping\Ledger\Domain.DoubleEntryAccounting.BookKeeping.Ledger.csproj", "{C69DC4B9-2029-4AB9-90FF-C07A09DDD7E7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D2F28203-F2BE-4941-832C-DA1F6D4C19E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2F28203-F2BE-4941-832C-DA1F6D4C19E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2F28203-F2BE-4941-832C-DA1F6D4C19E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2F28203-F2BE-4941-832C-DA1F6D4C19E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A566B935-5E4E-4A95-B95A-BCE042FFD73A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A566B935-5E4E-4A95-B95A-BCE042FFD73A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A566B935-5E4E-4A95-B95A-BCE042FFD73A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A566B935-5E4E-4A95-B95A-BCE042FFD73A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92937FFC-09F0-44EB-8F1E-12BCD421732D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92937FFC-09F0-44EB-8F1E-12BCD421732D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92937FFC-09F0-44EB-8F1E-12BCD421732D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92937FFC-09F0-44EB-8F1E-12BCD421732D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5489A466-7CCD-4069-BEC0-BA6DDBDC7EA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5489A466-7CCD-4069-BEC0-BA6DDBDC7EA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5489A466-7CCD-4069-BEC0-BA6DDBDC7EA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5489A466-7CCD-4069-BEC0-BA6DDBDC7EA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C69DC4B9-2029-4AB9-90FF-C07A09DDD7E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C69DC4B9-2029-4AB9-90FF-C07A09DDD7E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C69DC4B9-2029-4AB9-90FF-C07A09DDD7E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C69DC4B9-2029-4AB9-90FF-C07A09DDD7E7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DD56285D-12B2-487D-AD3D-4C8CB151D3D7}
+	EndGlobalSection
+EndGlobal
