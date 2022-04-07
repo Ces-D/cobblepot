@@ -11,15 +11,15 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Ser
     /// Generates the identification code of each account in the Chart of Accounts. The code should be consistent across the entire
     /// application 
     /// </summary>
-    internal class IdentificationCodeCreator
+    internal class IdentificationCodeCreator<T> where T : Enum
     {
         private AccountType _accountType;
-        private string _subAccounttype;
+        private T? _subAccountType;
 
-        public IdentificationCodeCreator(AccountType accountType, string subAccountType)
+        public IdentificationCodeCreator(AccountType accountType, T? subAccountType)
         {
             _accountType = accountType;
-            _subAccounttype = subAccountType;
+            _subAccountType = subAccountType;
         }
 
         public Code GenerateNew()
@@ -41,5 +41,4 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Ser
     }
 }
 
-// TODO: complete the code creation for account and profile.This class is called during initilization of an account and after the other account
-// properties where generated
+// TODO: complete the code creation for account and profile.

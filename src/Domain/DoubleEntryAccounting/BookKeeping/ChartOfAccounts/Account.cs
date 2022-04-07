@@ -9,22 +9,25 @@ using Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Standar
 
 namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts
 {
-    public class Account
+    public class Account<T> where T : Enum
     {
         public Code IdentificationCode { get; init; }
         public AccountType Type { get; init; }
-        public string SubType { get; private set; }
+        public T? SubType { get; private set; }
         public EntryType ToIncrease { get; private set; }
 
         // TODO: Add property public FinancialStatementId {get;set;} to Account Entity or Aggregate? 
 
-        internal Account(AccountType accountType, Enum? subAccountGroup)
+        internal Account(AccountType accountType, T? subAccountGroup)
         {
             Type = accountType;
             ToIncrease = DetermineToIncrease();
-            SubType = DetermineSubType(subAccountGroup);
+            if (subAccountGroup is not null)
+            {
+                SubType = DetermineSubType(subAccountGroup);
+            }
 
-            var idCodeCreator = new IdentificationCodeCreator(Type, SubType);
+            var idCodeCreator = new IdentificationCodeCreator<T>(Type, SubType);
             IdentificationCode = idCodeCreator.GenerateNew();
 
         }
@@ -42,34 +45,32 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts
             };
         }
 
-        private string DetermineSubType(Enum? subAccountGroup)
+        private T DetermineSubType(T subAccountGroup)
         {
-            var subGroup = "Unknown";
-            if (subAccountGroup is not null)
+            if (Type == AccountType.Assets && subAccountGroup is AssetCode)
             {
-                if (Type == AccountType.Assets && subAccountGroup is AssetCode)
-                {
-                    subGroup = subAccountGroup.ToString("G");
-                }
-                else if (Type == AccountType.Liabilities && subAccountGroup is LiabilityCode)
-                {
-                    subGroup = subAccountGroup.ToString("G");
-                }
-                else if (Type == AccountType.ShareholderEquity && subAccountGroup is ShareholderEquityCode)
-                {
-                    subGroup = subAccountGroup.ToString("G");
-                }
-                else if (Type == AccountType.Revenue && subAccountGroup is RevenueCode)
-                {
-                    subGroup = subAccountGroup.ToString("G");
-                }
-                else if (Type == AccountType.Expenses && subAccountGroup is ExpenseCode)
-                {
-                    subGroup = subAccountGroup.ToString("G");
-                }
+                return subAccountGroup;
             }
-            return subGroup;
+            else if (Type == AccountType.Liabilities && subAccountGroup is LiabilityCode)
+            {
+                return subAccountGroup;
+            }
+            else if (Type == AccountType.ShareholderEquity && subAccountGroup is ShareholderEquityCode)
+            {
+                return subAccountGroup;
+            }
+            else if (Type == AccountType.Revenue && subAccountGroup is RevenueCode)
+            {
+                return subAccountGroup;
+            }
+            else if (Type == AccountType.Expenses && subAccountGroup is ExpenseCode)
+            {
+                return subAccountGroup;
+            }
+            else throw new ArgumentOutOfRangeException(nameof(subAccountGroup), "Is of incorrect type");
         }
 
     }
 }
+
+// TODO: redo this and the Id Code Creator because the T generic code can be shortened. 
