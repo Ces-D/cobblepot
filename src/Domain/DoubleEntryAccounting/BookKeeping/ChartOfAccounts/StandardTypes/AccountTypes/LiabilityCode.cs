@@ -8,6 +8,7 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Sta
 {
     public enum LiabilityCode:int
     {
+        Unknown,
         AccountsPayable,
         CharitableContributionsPayable,
         FederalIncomeTaxPayable,
