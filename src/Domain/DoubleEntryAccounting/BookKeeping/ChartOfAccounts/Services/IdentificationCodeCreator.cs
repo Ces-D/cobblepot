@@ -13,16 +13,12 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Ser
     /// </summary>
     internal class IdentificationCodeCreator<T> where T : Enum
     {
-        private AccountType _accountType;
-        private T? _subAccountType;
 
-        public IdentificationCodeCreator(AccountType accountType, T? subAccountType)
+        public IdentificationCodeCreator()
         {
-            _accountType = accountType;
-            _subAccountType = subAccountType;
         }
 
-        public Code GenerateNew()
+        public Code GenerateIdCode()
         {
             int profileCode = GenerateProfileCode();
             int accountCode = GenerateAccountCode();

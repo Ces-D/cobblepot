@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.StandardTypes.AccountTypes
 {
+    
     public enum AssetCode : int
     {
+        Unknown,
         AccountsReceivable,
         Building,
         Cash,

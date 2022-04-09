@@ -8,5 +8,6 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Sta
 {
     public enum RevenueCode
     {
+        Unknown
     }
 }
