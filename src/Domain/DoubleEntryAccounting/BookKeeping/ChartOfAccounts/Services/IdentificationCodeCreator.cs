@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.StandardTypes.AccountTypes;
 
 namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Services
 {
@@ -11,7 +10,7 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Ser
     /// Generates the identification code of each account in the Chart of Accounts. The code should be consistent across the entire
     /// application 
     /// </summary>
-    internal class IdentificationCodeCreator<T> where T : Enum
+    internal class IdentificationCodeCreator
     {
 
         public IdentificationCodeCreator()
@@ -37,4 +36,7 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Ser
     }
 }
 
-// TODO: complete the code creation for account and profile.
+// TODO: complete the code creation for account and profile. This service should be montired by the chart of acccounts. Only a single instance of this 
+// in the entrire app. The single instance makes sure that no duplicate code are created. When the user makes the account, either they provide the sub group
+// or it is unknown.
+// Decide on a system for creating the account codes.
