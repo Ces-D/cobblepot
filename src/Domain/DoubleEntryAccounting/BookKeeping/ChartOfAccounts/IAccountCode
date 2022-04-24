@@ -1,0 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts
+{
+    internal interface IAccountCode
+    {
+
+        int MinCodeValue { get; }
+        int MaxCodeValue { get; }
+    }
+}
+
+// TODO: this may need to be deleted if its not used

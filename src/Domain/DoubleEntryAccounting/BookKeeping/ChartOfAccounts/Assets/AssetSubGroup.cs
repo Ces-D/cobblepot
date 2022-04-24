@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.StandardTypes
+namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Assets
 {
-
-    public enum AssetCode
+    public enum AssetSubGroup
     {
         Unknown,
+
         /// <summary>
         /// current asset
         /// 
@@ -19,12 +19,14 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Sta
         /// Cash Equivalents are short-term investments with very near maturity dates making them assets that are "as good as cash".
         /// </summary>
         Cash_and_Cash_Equivalents,
+
         /// <summary>
         /// current asset
         /// 
         /// Trading Securities are investments in stocks that are held with the purpose of trading (speculative investments)
         /// </summary>
         Trading_Securities,
+
         /// <summary>
         /// current asset
         /// 
@@ -34,6 +36,7 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Sta
         /// Allowance for Bad Debts - a contra-asset account deducted from Accounts Receivable. It represents the estimated uncollectible amount of the receivable.
         /// </summary>
         Trade_and_Other_Receivables,
+
         /// <summary>
         /// current asset
         /// 
@@ -41,6 +44,7 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Sta
         /// A service business normally has no inventory account.
         /// </summary>
         Inventories,
+
         /// <summary>
         /// current assets
         /// 
@@ -48,6 +52,7 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Sta
         /// Common prepaid expense accounts include: Office Supplies, Service Supplies, Prepaid Rent, and Prepaid Insurance.
         /// </summary>
         PrePaid_Expenses,
+
         /// <summary>
         /// non-current assets
         /// 
@@ -59,6 +64,7 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Sta
         /// but is rather held for appreciation is not part of PPE but of investments.
         /// </summary>
         Property_Plant_and_Equipment,
+
         /// <summary>
         /// non-current assets
         /// 
@@ -66,6 +72,7 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Sta
         /// Investment Property, Long-Term Funds; these are investments that are intended to be held for more than one year.
         /// </summary>
         Long_Term_Investments,
+
         /// <summary>
         /// non-current assets
         /// 
@@ -75,6 +82,7 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Sta
         /// compositions and other literary works, Trademark, Franchise, Lease Rights, and Goodwill.
         /// </summary>
         Intangibles,
+
         /// <summary>
         /// non-current assets
         /// 
@@ -84,4 +92,6 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Sta
         /// </summary>
         Other_Non_Current_Assets,
     }
+
+
 }

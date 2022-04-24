@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.StandardTypes;
 
 namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts
 {
@@ -13,7 +12,7 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts
         string Group();
         string SubGroup();
         EntryType ToIncrease();
-
+        string FinancialStatementId();
     }
 }
 
