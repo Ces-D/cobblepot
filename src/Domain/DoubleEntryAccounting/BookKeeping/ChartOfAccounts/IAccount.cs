@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.StandardTypes;
 
 namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts
 {
-    internal interface IAccount
+    public interface IAccount
     {
-        Code IdentificationCode();
-        string Group();
-        string SubGroup();
-        EntryType ToIncrease();
-
+        Code IdentificationCode { get; }
+        ChartAccountType Group { get; }
+        string SubGroup { get; }
+        EntryType ToIncrease { get; }
+        string FinancialStatementId { get; }
     }
 }
 
