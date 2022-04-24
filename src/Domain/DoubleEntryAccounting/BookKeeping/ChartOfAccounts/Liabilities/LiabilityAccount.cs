@@ -8,32 +8,17 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Lia
 {
     public class LiabilityAccount : IAccount
     {
-        internal int MinCodeValue = 20_000;
-        internal int MaxCodeValue = 29_999;
+        internal readonly static int MinCodeValue = 20_000;
+        internal readonly static int MaxCodeValue = 29_999;
 
-        public string FinancialStatementId()
-        {
-            throw new NotImplementedException();
-        }
+        public Code IdentificationCode => throw new NotImplementedException();
 
-        public string Group()
-        {
-            throw new NotImplementedException();
-        }
+        public ChartAccountType Group => ChartAccountType.Liability;
 
-        public Code IdentificationCode()
-        {
-            throw new NotImplementedException();
-        }
+        public string SubGroup => throw new NotImplementedException();
 
-        public string SubGroup()
-        {
-            throw new NotImplementedException();
-        }
+        public EntryType ToIncrease => throw new NotImplementedException();
 
-        public EntryType ToIncrease()
-        {
-            throw new NotImplementedException();
-        }
+        public string FinancialStatementId => throw new NotImplementedException();
     }
 }

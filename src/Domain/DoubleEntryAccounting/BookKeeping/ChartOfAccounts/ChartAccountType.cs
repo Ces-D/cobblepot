@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts
 {
-    internal interface IAccountCode
+    public enum ChartAccountType
     {
-
-        int MinCodeValue { get; }
-        int MaxCodeValue { get; }
+        Asset,
+        Liability,
+        Revenue,
+        Expense,
+        Equity
     }
 }
-
-// TODO: this may need to be deleted if its not used

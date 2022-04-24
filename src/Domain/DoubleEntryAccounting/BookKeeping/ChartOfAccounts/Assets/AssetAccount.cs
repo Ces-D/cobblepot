@@ -11,29 +11,14 @@ namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts.Ass
         internal int MinCodeValue = 10000;
         internal int MaxCodeValue = 19_999;
 
-        public string FinancialStatementId()
-        {
-            throw new NotImplementedException();
-        }
+        public Code IdentificationCode => throw new NotImplementedException();
 
-        public string Group()
-        {
-            throw new NotImplementedException();
-        }
+        public ChartAccountType Group => ChartAccountType.Asset;
 
-        public Code IdentificationCode()
-        {
-            throw new NotImplementedException();
-        }
+        public string SubGroup => throw new NotImplementedException();
 
-        public string SubGroup()
-        {
-            throw new NotImplementedException();
-        }
+        public EntryType ToIncrease => throw new NotImplementedException();
 
-        public EntryType ToIncrease()
-        {
-            throw new NotImplementedException();
-        }
+        public string FinancialStatementId => throw new NotImplementedException();
     }
 }

@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Cobblepot.Domain.DoubleEntryAccounting.BookKeeping.ChartOfAccounts
 {
-    internal interface IAccount
+    public interface IAccount
     {
-        Code IdentificationCode();
-        string Group();
-        string SubGroup();
-        EntryType ToIncrease();
-        string FinancialStatementId();
+        Code IdentificationCode { get; }
+        ChartAccountType Group { get; }
+        string SubGroup { get; }
+        EntryType ToIncrease { get; }
+        string FinancialStatementId { get; }
     }
 }
 
