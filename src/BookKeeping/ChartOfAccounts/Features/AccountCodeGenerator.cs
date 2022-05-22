@@ -1,6 +1,6 @@
 using System;
 using Cobblepot.BookKeeping.ChartOfAccounts.ChartOfAccount;
-
+using Cobblepot.BookKeeping.ChartOfAccounts.Data;
 namespace Cobblepot.BookKeeping.ChartOfAccounts.Features;
 
 public class AccountCodeGenerator
@@ -18,9 +18,17 @@ public class AccountCodeGenerator
 
     public AccountCode CreateNew(AccountGroup accountGroup, Enum SubAccountGroup, byte departmentCode)
     {
+        int accountCode = accountGroup switch
+        {
+            AccountGroup.Asset => this._assetMinCode,
+            AccountGroup.Liability => this._liabilityMinCode,
+            AccountGroup.Equity => this._equityMinCode,
+            AccountGroup.Revenue => this._revenueMinCode,
+            AccountGroup.Expense => this._expenseMinCode,
+            _ => 0
+        };
 
-        return new AccountCode(departmentCode);
+
+        return new AccountCode(departmentCode, accountCode);
     }
 }
-
-// TODO: complete the AccountCode Generator

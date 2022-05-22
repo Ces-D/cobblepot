@@ -5,14 +5,14 @@ using Cobblepot.BuildingBlocks.Domain;
 
 namespace Cobblepot.BookKeeping.ChartOfAccounts.ChartOfAccount;
 
-public class ChartOfAccount : Aggregate
+public class Account : Aggregate
 {
-    public ChartOfAccount() { }
 
     [Key]
-    public AccountCode AccountCode { get; private set; }
-    public string AccountName { get; private set; }
+    public AccountCode Code { get; private set; }
+    public string Name { get; private set; }
+    public AccountGroup AccountGroup { get; private set; }
+    public string SubGroup { get; private set; }
     public TransactionType ToIncrease { get; private set; }
     public string FinancialStatementId { get; private set; }
-    public DateTime LastUpdated { get; set; }
 }

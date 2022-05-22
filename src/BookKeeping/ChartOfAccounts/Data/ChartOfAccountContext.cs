@@ -7,7 +7,8 @@ namespace Cobblepot.BookKeeping.ChartOfAccounts.Data;
 internal class ChartOfAccountsContext : DbContext
 {
     private readonly string _connectionString;
-    public DbSet<ChartOfAccount.ChartOfAccount> ChartOfAccounts { get; set; }
+    public DbSet<Account> Accounts { get; set; }
+
 
     public ChartOfAccountsContext(string connectionString)
     {
