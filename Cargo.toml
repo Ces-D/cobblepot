@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+  "cobblepot",
+  "cobblepot_journal"
+]
