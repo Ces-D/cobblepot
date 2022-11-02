@@ -1,25 +1,33 @@
-use cobblepot_journal::journal;
+use cobblepot_journal::account::{Account, AccountCategory};
 use std::io;
 
-struct Account {
-    branch: String,
+struct SessionAccount {
+    branch: Account,
 }
 
 fn main() {
     let mut input = String::new();
+    let acceptable_account = SessionAccount {
+        branch: Account::create(
+            String::from("Capital One Account"),
+            String::from("A bank account"),
+            AccountCategory::Asset,
+        ),
+    };
+
     println!("Temp: Type in your branch");
 
     let account = match io::stdin().read_line(&mut input) {
-        Ok(_) => Account { branch: input.trim().to_string() },
-        Err(_) => Account { branch: input.trim().to_string() },
+        Ok(_) => input.trim().to_string(),
+        Err(_) => input.trim().to_string(),
     };
 
-    if account.branch.is_empty() {
-        println!("You must initialize your sessions branch")
+    if acceptable_account.branch.name == account {
+        println!(
+            "You have selected {0} - {1}",
+            acceptable_account.branch.name, acceptable_account.branch.description
+        )
     } else {
-        println!("You have selected {0}", account.branch)
+        println!("This account is not acceptable {0}", input)
     }
 }
-
-// TODO: integrate create cobblepot_journal into this and test. Might need to rename local struct
-// Account

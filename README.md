@@ -86,3 +86,10 @@ There are many ways ot abuse the input format for details. This is the method th
     - **Cash Disbursement Journal** - https://www.investopedia.com/terms/c/cash-disbursement-journal.asp
   - **General Journal** - All other _transactions_ that are not contained in the specialty journals are in the General Journal. The following types of transaction: _Accounts Receivables_, _Accounts Payable_, _Equipment_, _Accumulated Depreciation_, _Expenses_, _Interest Income and Expenses_
     - **Transaction** - each transaction is an exchange between two accounts. Two equal and opposite accounts for all the transactions, namely _credit_ and _debit_. `credits` one _account_ and `debits` another account. The general format for transactions include: _date of transaction_, _memo_, _debit amount_, _credit amount_, _reference number_.
+
+## TODO
+- create an account and store the created account in a chart of accounts file
+- read this file for starting a session for the account
+- display the session in the console like python venv
+- create entrys for this account
+- store these entries in a journal file

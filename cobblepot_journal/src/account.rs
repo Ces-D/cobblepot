@@ -9,11 +9,11 @@ pub enum AccountCategory {
 }
 
 pub struct Account {
-    name: String,
-    description: String,
-    opened: DateTime<Local>,
-    closed: Option<DateTime<Local>>,
-    category: AccountCategory,
+    pub name: String,
+    pub description: String,
+    pub opened: DateTime<Local>,
+    pub closed: Option<DateTime<Local>>,
+    pub category: AccountCategory,
 }
 
 impl Account {
