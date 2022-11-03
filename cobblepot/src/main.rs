@@ -1,5 +1,8 @@
-use cobblepot_journal::account::{Account, AccountCategory};
+use account::{Account, AccountCategory};
 use std::io;
+
+pub mod account;
+pub mod files;
 
 struct SessionAccount {
     branch: Account,
