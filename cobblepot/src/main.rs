@@ -34,3 +34,6 @@ fn main() {
         println!("This account is not acceptable {0}", input)
     }
 }
+
+// TODO: test the write to chart_of_accounts file here
+// add better handling than just expect
