@@ -29,11 +29,16 @@ fn main() {
         println!(
             "You have selected {0} - {1}",
             acceptable_account.branch.name, acceptable_account.branch.description
-        )
+        );
+        let entry = acceptable_account.branch.name + ": " + &acceptable_account.branch.description;
+        let completed = files::write_to_chart_of_accounts(entry);
+        if completed {
+            println!("Success")
+        } else {
+            println!("Failure")
+        }
     } else {
         println!("This account is not acceptable {0}", input)
     }
 }
 
-// TODO: test the write to chart_of_accounts file here
-// add better handling than just expect
