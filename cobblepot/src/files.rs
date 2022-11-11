@@ -10,7 +10,7 @@ fn ensure_core_dir_exists() -> Result<()> {
 }
 
 fn ensure_chart_of_accounts_exists() -> Result<File> {
-    OpenOptions::new().write(true).create_new(true).open(Path::new(CHART_OF_ACCOUNTS))
+    OpenOptions::new().append(true).create(true).open(Path::new(CHART_OF_ACCOUNTS))
 }
 
 pub fn write_to_chart_of_accounts(line: String) -> bool {

@@ -34,8 +34,9 @@ impl fmt::Display for Account {
 
         write!(
             f,
-            "{}:{:>4}{:>8}{:>4}{:>6}",
+            "{}\n{:>10}{}\n{:<10}{}\n{:<10}{}\n{:<10}{}\n",
             self.name,
+
             self.description,
             self.opened.to_rfc2822(),
             closed_date,
@@ -46,3 +47,7 @@ impl fmt::Display for Account {
 
 //TODO: format this so that it print to new lines in the chart of accounts, this might require the
 //write_all functions
+// Consider switching the txt file to a csv file. This way you dont have to worry about reading and
+// writing. The writing for this app can be written in rust and the reports can be written in
+// python
+//
