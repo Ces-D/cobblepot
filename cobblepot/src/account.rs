@@ -1,5 +1,4 @@
 use chrono::{DateTime, Local};
-use std::fmt;
 use strum_macros::Display;
 
 #[derive(Display)]
@@ -23,31 +22,21 @@ impl Account {
     pub fn create(name: String, description: String, category: AccountCategory) -> Account {
         Account { name, description, category, opened: Local::now(), closed: None }
     }
-}
 
-impl fmt::Display for Account {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let closed_date = match self.closed.ok_or(Local::now()) {
-            Ok(date) => date.to_rfc2822(),
-            Err(_) => String::from("NA"),
+    pub fn to_csv_string(&self) -> String {
+        let mut csv_string = String::new();
+        csv_string.push_str(&self.name);
+        csv_string.push(',');
+        csv_string.push_str(&self.description);
+        csv_string.push(',');
+        csv_string.push_str(&self.opened.to_rfc3339());
+        csv_string.push(',');
+        if self.closed.is_some() {
+            csv_string.push_str(&self.closed.expect("The if statement did nothing").to_rfc3339());
         };
+        csv_string.push(',');
+        csv_string.push_str(&self.category.to_string());
 
-        write!(
-            f,
-            "{}\n{:>10}{}\n{:<10}{}\n{:<10}{}\n{:<10}{}\n",
-            self.name,
-
-            self.description,
-            self.opened.to_rfc2822(),
-            closed_date,
-            self.category
-        )
+        csv_string
     }
 }
-
-//TODO: format this so that it print to new lines in the chart of accounts, this might require the
-//write_all functions
-// Consider switching the txt file to a csv file. This way you dont have to worry about reading and
-// writing. The writing for this app can be written in rust and the reports can be written in
-// python
-//
