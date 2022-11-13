@@ -1,8 +1,7 @@
-use account::{Account, AccountCategory};
 use std::io;
 
-pub mod account;
-pub mod files;
+pub mod chart_of_accounts;
+pub mod core;
 
 struct SessionAccount {
     branch: Account,
@@ -41,3 +40,7 @@ fn main() {
         println!("This account is not acceptable {0}", input)
     }
 }
+
+// TODO: separate the main function into main and run functions
+// test the new chart of accounts by writing them to the chart of acconuts file. This test should
+// be written in the new run function 
