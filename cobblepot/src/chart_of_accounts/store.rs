@@ -39,3 +39,8 @@ pub fn add_account(entry: AccountEntry) -> Result<()> {
         Err(_) => writer.flush(),
     }
 }
+
+// TODO: switch out the structure of the current chart of accounts struct to be a hashmap. The
+// entire this is a hasmap.
+// benefit is that the keys would always be checked. This can force the name of the account to be
+// unique.
