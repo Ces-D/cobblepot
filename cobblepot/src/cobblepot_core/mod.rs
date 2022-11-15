@@ -27,8 +27,10 @@ fn ensure_chart_of_accounts_file_exists() -> Result<()> {
     }
 }
 
-pub fn chart_of_accounts_path() -> &'static str {
-    ensure_store_dir_exists();
-    ensure_chart_of_accounts_file_exists();
-    CHART_OF_ACCOUNTS
+pub fn chart_of_accounts_path() -> &'static Path {
+    let _ensured = match ensure_store_dir_exists() {
+        Ok(_) => ensure_chart_of_accounts_file_exists(),
+        Err(err) => Err(err),
+    };
+    Path::new(CHART_OF_ACCOUNTS)
 }

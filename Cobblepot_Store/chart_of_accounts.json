@@ -1,0 +1,24 @@
+{
+  "entries": [
+    {
+      "opened": "2022-11-15T22:33:19.580554Z",
+      "closed": null,
+      "account": {
+        "company": "Capital One",
+        "name": "Checking",
+        "description": "My primary bank account",
+        "category": "Asset"
+      }
+    },
+    {
+      "opened": "2022-11-15T22:33:19.580655Z",
+      "closed": null,
+      "account": {
+        "company": "Vanguard",
+        "name": "Roth IRA",
+        "description": "My retirement investment account",
+        "category": "Asset"
+      }
+    }
+  ]
+}
