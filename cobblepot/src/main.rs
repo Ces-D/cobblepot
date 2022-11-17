@@ -1,5 +1,4 @@
-use crate::chart_of_accounts::models::{Account, AccountCategory, AccountEntry};
-use crate::chart_of_accounts::store;
+use crate::chart_of_accounts::{Account, AccountCategory};
 use chrono;
 
 mod chart_of_accounts;
@@ -21,9 +20,6 @@ fn run() {
     };
     let another_account_entry =
         AccountEntry { opened: chrono::Utc::now(), closed: None, account: another_account };
-
-    store::add_account(account_entry);
-    store::add_account(another_account_entry);
 }
 
 fn main() {
@@ -60,3 +56,5 @@ fn main() {
     //     println!("This account is not acceptable {0}", input)
     // }
 }
+
+// TODO: test the new chart_of_accounts
