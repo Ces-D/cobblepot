@@ -88,7 +88,6 @@ There are many ways ot abuse the input format for details. This is the method th
     - **Transaction** - each transaction is an exchange between two accounts. Two equal and opposite accounts for all the transactions, namely _credit_ and _debit_. `credits` one _account_ and `debits` another account. The general format for transactions include: _date of transaction_, _memo_, _debit amount_, _credit amount_, _reference number_.
 
 ## TODO
-- create an account and store the created account in a chart of accounts file
 - read this file for starting a session for the account
 - display the session in the console like python venv
 - create entrys for this account

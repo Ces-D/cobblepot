@@ -1,5 +1,4 @@
-use crate::chart_of_accounts::{Account, AccountCategory};
-use chrono;
+use crate::chart_of_accounts::{Account, AccountCategory, ChartOfAccounts};
 
 mod chart_of_accounts;
 mod cobblepot_core;
@@ -11,50 +10,33 @@ fn run() {
         description: String::from("My primary bank account"),
         category: AccountCategory::Asset,
     };
-    let account_entry = AccountEntry { opened: chrono::Utc::now(), closed: None, account };
     let another_account = Account {
         company: Some(String::from("Vanguard")),
         name: String::from("Roth IRA"),
         description: String::from("My retirement investment account"),
         category: AccountCategory::Asset,
     };
-    let another_account_entry =
-        AccountEntry { opened: chrono::Utc::now(), closed: None, account: another_account };
+
+    let mut chart_of_accounts = ChartOfAccounts::new();
+
+    chart_of_accounts.open_account(account).expect("First Account opening failed");
+    chart_of_accounts.open_account(another_account).expect("Second Account opening failed");
+
+    for entry in chart_of_accounts.list_entries() {
+        println!("{} is an account", entry)
+    }
+
+    match chart_of_accounts.close_account("Checking".to_string()) {
+        Ok(_) => println!("Closed Checking"),
+        Err(_) => println!("Failed to Closed Checking"),
+    }
+
+    match chart_of_accounts.save() {
+        Ok(_) => println!("Save successful"),
+        Err(_) => println!("Unable to save"),
+    }
 }
 
 fn main() {
     run();
-    // let mut input = String::new();
-    // let acceptable_account = SessionAccount {
-    //     branch: Account::create(
-    //         String::from("Capital One Account"),
-    //         String::from("A bank account"),
-    //         AccountCategory::Asset,
-    //     ),
-    // };
-    //
-    // println!("Temp: Type in your branch");
-    //
-    // let account = match io::stdin().read_line(&mut input) {
-    //     Ok(_) => input.trim().to_string(),
-    //     Err(_) => input.trim().to_string(),
-    // };
-    //
-    // if acceptable_account.branch.name == account {
-    //     println!(
-    //         "You have selected {0} - {1}",
-    //         acceptable_account.branch.name, acceptable_account.branch.description
-    //     );
-    //     let completed =
-    //         files::write_to_chart_of_accounts(acceptable_account.branch.to_csv_string());
-    //     if completed {
-    //         println!("Success")
-    //     } else {
-    //         println!("Failure")
-    //     }
-    // } else {
-    //     println!("This account is not acceptable {0}", input)
-    // }
 }
-
-// TODO: test the new chart_of_accounts
