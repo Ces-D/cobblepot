@@ -1,5 +1,6 @@
 [workspace]
 
 members = [
-  "cobblepot",
+  "cobblepot_cli",
+  "cobblepot_core"
 ]

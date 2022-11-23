@@ -1,4 +1,4 @@
-use crate::cobblepot_core;
+use crate::config;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -41,7 +41,7 @@ impl ChartOfAccounts {
     }
 
     pub fn read_from_store_or_create() -> ChartOfAccounts {
-        let path = cobblepot_core::chart_of_accounts_path();
+        let path = config::chart_of_accounts_path();
         let f = OpenOptions::new().read(true).open(path).expect("WTF");
         let reader = BufReader::new(f);
         match serde_json::from_reader(reader) {
@@ -100,7 +100,7 @@ impl ChartOfAccounts {
     pub fn save(&self) -> Result<()> {
         let json_chart_of_accounts = serde_json::to_string_pretty(&self).expect("Failure to save");
 
-        let path = cobblepot_core::chart_of_accounts_path();
+        let path = config::chart_of_accounts_path();
         let f = OpenOptions::new().write(true).open(path).expect("WTF");
         let mut writer = BufWriter::new(f);
         match writer.write(json_chart_of_accounts.as_bytes()) {
