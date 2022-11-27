@@ -13,7 +13,7 @@ struct AccountEntry {
     account: Account,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum AccountCategory {
     Asset,
     Liability,

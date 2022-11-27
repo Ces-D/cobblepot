@@ -1,7 +1,7 @@
-use cobblepot_core::chart_of_accounts::{Account, AccountCategory, ChartOfAccounts};
+use clap::Command;
+use cobblepot_core::chart_of_accounts::ChartOfAccounts;
 use std::env;
-use std::io::{self, Write};
-use std::thread;
+use std::io::{Result, Write};
 use std::time::Duration;
 
 mod chart_of_accounts_commands;
@@ -45,8 +45,21 @@ fn is_valid_working_account() -> bool {
 //     }
 // }
 
-fn run() -> io::Result<()> {
-    // TODO: implement clap fuck console
+fn run() -> Result<()> {
+    let cli = Command::new("cobblepot")
+        .about("Personal finance management tool")
+        .subcommand_required(true)
+        .arg_required_else_help(true)
+        .args_conflicts_with_subcommands(true)
+        .subcommand(chart_of_accounts_commands::create_command())
+        .get_matches();
+
+    match cli.subcommand() {
+        Some(("chart_of_accounts", chart_of_accounts_matches)) => {
+            chart_of_accounts_commands::handle(chart_of_accounts_matches)
+        },
+        _ => Ok(()),
+    }
 }
 
 fn main() {
