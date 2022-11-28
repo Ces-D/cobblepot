@@ -4,8 +4,7 @@ use std::env;
 use std::io::{Result, Write};
 use std::time::Duration;
 
-mod chart_of_accounts_commands;
-
+mod commands_args;
 const WORKING_ACCOUNT_ENV_KEY: &'static str = "COBBLEPOT_ACCOUNT";
 
 fn set_working_account(account_name: &String) {
