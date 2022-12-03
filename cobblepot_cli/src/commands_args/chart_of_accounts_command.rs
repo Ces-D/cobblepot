@@ -102,8 +102,10 @@ pub fn handle(command: &ArgMatches) -> io::Result<()> {
 // This error should be caught and force the command or arg to display the error and the print
 // help
 //
-// TODO: start separating this file in sub modules
-//
 // TODO: There should be functions that handle the core functions of writing and reading from
 // store and these functions which should squarely handle the editing and checking of correct
 // values entered
+//
+// TODO: display `ERROR missing - {whatever}` then print help <- a proper error
+//
+// TOOD: integrate the file writing into this
