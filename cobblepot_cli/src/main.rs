@@ -1,8 +1,6 @@
-use clap::Command;
 use cobblepot_core::chart_of_accounts::ChartOfAccounts;
 use std::env;
-use std::io::{Result, Write};
-use std::time::Duration;
+use std::io::Result;
 
 mod chart_of_accounts_command;
 mod cobblepot_command;
@@ -47,12 +45,14 @@ fn is_valid_working_account() -> bool {
 //     }
 // }
 
+// TODO: go through the existing code and just make this work
 fn run() -> Result<()> {
-    let cli = commands_args::cobblepot_command::create_cobblepot_command_app().get_matches();
+    let cobblepot = cobblepot_command::CobblepotCommand::new();
+    let cli = cobblepot.command();
 
-    match cli.subcommand() {
+    match cli.subcommands() {
         Some(("chart_of_accounts", chart_of_accounts_matches)) => {
-            commands_args::chart_of_accounts_command::handle(chart_of_accounts_matches)
+            chart_of_accounts_command::handle(chart_of_accounts_matches)
         },
         _ => Ok(()),
     }

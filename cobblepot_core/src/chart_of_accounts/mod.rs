@@ -80,7 +80,7 @@ impl ChartOfAccounts {
         }
     }
 
-    /// Sets the clsoed status of an account. Officially closing it.
+    /// Sets the closed status of an account. Officially closing it.
     pub fn close_account(&mut self, entry_name: String) -> Result<()> {
         match self.entries.get_mut(&entry_name) {
             Some(mut entry) => {
@@ -109,7 +109,7 @@ impl ChartOfAccounts {
         }
     }
 
-    /// Returns a vecotr of the entry names
+    /// Returns a vector of the entry names
     pub fn list_entries(&self) -> Vec<String> {
         self.entries.keys().cloned().collect::<Vec<String>>()
     }

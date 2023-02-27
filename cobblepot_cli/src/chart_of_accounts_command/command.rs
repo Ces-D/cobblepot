@@ -1,13 +1,10 @@
 use crate::shared::args::{create_args, AcceptedArg};
-use crate::shared::traits;
 use clap::Command;
 
 pub struct ChartOfAccountsCommand {}
 
-impl ChartOfAccountsCommand {}
-
-impl traits::CobblepotCommandFactory for ChartOfAccountsCommand {
-    fn command(&self) -> Command {
+impl ChartOfAccountsCommand {
+    pub fn command(&self) -> Command {
         let main_cmd = Command::new("chart_of_accounts")
             .about("Directory for managing accounts")
             .arg_required_else_help(true)
