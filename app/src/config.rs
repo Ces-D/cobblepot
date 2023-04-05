@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, path::PathBuf};
 
 use directories::ProjectDirs;
 use serde::Deserialize;
@@ -11,7 +11,7 @@ enum Currency {
 #[derive(Deserialize, Debug)]
 pub struct Config {
     /// The path to the accounting store.
-    vault_path: String,
+    vault_path: PathBuf,
     ///  The default currency used for all transactions.
     currency: Currency,
     // The format in which dates are displayed and entered.
@@ -24,9 +24,9 @@ impl Config {
     pub fn load() -> Config {
         // TODO (Cesar) - set real default dev values for this config struct
         let base_config = Config {
-            vault_path: String::from(""),
+            vault_path: PathBuf::from("./tmp/cobblepot"),
             currency: Currency::USD,
-            date_format: String::from(""),
+            date_format: String::from("%Y-%m-%d %H:%M:%S"),
             backup: false,
         };
         match ProjectDirs::from("dev", "accounting", "cobblepot") {
