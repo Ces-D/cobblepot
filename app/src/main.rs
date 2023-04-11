@@ -1,7 +1,8 @@
 mod config;
 
 fn main() {
-    let app_config = config::Config::load();
+    let app_config = config::CobblepotConfig::load_config_file();
+    app_config.ensure_vault_created();
     // TODO (Cesar) - create the vault in the vault path and the chart of accounts in the vault
     // TODO (Cesar) - create the open_account, close_account, list_accounts, and update_account
     // methods.

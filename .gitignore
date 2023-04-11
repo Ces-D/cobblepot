@@ -14,5 +14,4 @@ Cargo.lock
 *.pdb
 
 # The base Cobblepot Storage Directory
-Cobblepot_Storage/
-Cobblepot_Store/
+tmp/
