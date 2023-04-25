@@ -1,66 +1,49 @@
+use std::collections::hash_map::Entry::{Occupied, Vacant};
+use std::collections::HashMap;
+
+mod account;
+mod code;
+mod enums;
+
 /// A chart of accounts is a listing of all the accounts used in an accounting system to classify and record financial transactions.
 /// It provides a standardized framework for organizing financial information that makes it easier to produce financial statements and reports.
 struct ChartOfAccounts {
-    accounts: Vec<Account>,
-    accounting_period: AccountingPeriod,
+    accounts: HashMap<code::AccountCode, account::Account>,
+    accounting_period: enums::AccountingPeriod,
 }
 
-struct Account {
-    //  The name or title of the account, which describes the nature and purpose of the account.
-    account_name: String,
-    // A brief description or explanation of the account and its purpose, which provides additional context for the account.
-    account_description: Option<String>,
-
-    /// A chart of accounts typically includes five main types of accounts: assets, liabilities, equity, revenues, and expenses.
-    account_type: AccountType,
-
-    /// Each account is assigned a unique account number or code that helps to identify and categorize the account.
-    account_code: AccountCode,
-    /// Accounts within each category are typically organized in a hierarchical structure, with sub-accounts nested under main accounts.
-    sub_account_codes: Vec<AccountCode>,
-    sub_accounts: Option<Vec<Account>>,
-
-    // The balance of an account at the beginning of a specific accounting period.
-    opening_balance: Option<Money>,
-    // The balance of the account at the end of the accounting period, which is calculated by adding the opening balance to the net balance for the period.
-    closing_balance: Option<Money>,
-}
-
-enum AccountingPeriod {
-    Yearly,
-    Quarterly,
-    Monthly,
-    Weekly,
-    Daily,
-}
-
-/// The numbering system used in a chart of accounts should be logical and consistent, making it easy to add new accounts as needed and to generate reports and financial statements.
-struct AccountCode {
-    // The first digit of an account number indicates the account type.
-    account_type: AccountType,
-    // The following digits indicate the sub-account types.
-    sub_account_types: Vec<AccountType>,
-    // The last digit is used to identify the specific index id of this account in its
-    // account-subaccounts section.
-    index: i32,
-}
-
-// The classification of the account as an asset, liability, equity, revenue, or expense account, which determines how the account is treated for financial reporting purposes
-enum AccountType {
-    Asset,
-    Liability,
-    Equity,
-    Revenue,
-    Expense,
-}
-
-// TODO: reorganize these elements into various files
-// TODO: read below and implement as struct methods
 // A chart of accounts is a fundamental tool used in accounting to organize and categorize financial transactions. Here are some actions that can be taken on a chart of accounts:
+impl ChartOfAccounts {
+    // Adding Accounts: New accounts can be added to the chart of accounts to reflect changes in the business or organization's operations or to provide more detailed information about specific transactions.
+    fn add_account(
+        &self,
+        account_code: code::AccountCode,
+        account: account::Account,
+    ) -> &account::Account {
+        self.accounts.entry(account_code).or_insert(account)
+    }
+
+    // Deleting Accounts: Accounts that are no longer relevant or necessary can be deleted from the chart of accounts to simplify the accounting process and improve the accuracy of financial reporting.
+    fn delete_account(&self, account_code: code::AccountCode) -> Option<account::Account> {
+        self.accounts.remove(&account_code)
+    }
+
+    fn modify_account(&self, account_code: code::AccountCode, updates: account::Account) {
+        // TODO: this should check the fields that are allowed to be updated
+        match self.accounts.entry(account_code) {
+            Occupied(mut entry) => {
+                entry.insert(updates);
+            },
+            Vacant(entry) => {
+                entry.insert(updates);
+            },
+        }
+    }
+}
+
+// TODO: read below and implement as struct methods
 //
-// Adding Accounts: New accounts can be added to the chart of accounts to reflect changes in the business or organization's operations or to provide more detailed information about specific transactions.
 //
-// Deleting Accounts: Accounts that are no longer relevant or necessary can be deleted from the chart of accounts to simplify the accounting process and improve the accuracy of financial reporting.
 //
 // Modifying Accounts: Accounts can be modified to reflect changes in the business or organization's operations or to correct errors in the account structure or information.
 //

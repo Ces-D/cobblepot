@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 directories = "5.0.0"
+rusty-money = "0.4.1"
 serde = { version = "1.0.159", features = ["derive"] }
 toml = "0.7.3"
