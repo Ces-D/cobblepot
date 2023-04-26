@@ -1,5 +1,6 @@
 mod chart_of_accounts;
 mod config;
+mod defaults;
 
 fn main() {
     let app_config = config::Config::new();

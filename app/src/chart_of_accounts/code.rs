@@ -1,8 +1,7 @@
 use crate::chart_of_accounts::enums::AccountType;
 
-/// Each account is assigned a unique account number or code that helps to identify and categorize the account.
 /// The numbering system used in a chart of accounts should be logical and consistent, making it easy to add new accounts as needed and to generate reports and financial statements.
-#[derive(PartialEq, Eq, Hash)]
+#[derive(PartialEq, Eq, Hash, Clone)]
 pub struct AccountCode {
     // The first digit of an account number indicates the account type.
     account_type: AccountType,
@@ -12,3 +11,5 @@ pub struct AccountCode {
     // account-subaccounts section.
     index: i32,
 }
+
+// TODO: Implement a way to generate account codes.
