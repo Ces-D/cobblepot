@@ -9,6 +9,9 @@ pub struct Account {
     // A brief description or explanation of the account and its purpose, which provides additional context for the account.
     pub account_description: Option<String>,
 
+    // Whether the account is closed or open. A closed account is one that is no longer in use, while an open account is one that is currently in use.
+    pub is_closed: bool,
+
     /// A chart of accounts typically includes five main types of accounts: assets, liabilities, equity, revenues, and expenses.
     account_type: enums::AccountType,
 
@@ -38,6 +41,7 @@ impl Account {
         Account {
             account_name,
             account_description,
+            is_closed: false,
             account_type,
             account_code,
             sub_account_codes,
@@ -73,5 +77,9 @@ impl Account {
             },
             None => None,
         }
+    }
+
+    pub fn close_account(&mut self) {
+        self.is_closed = true;
     }
 }

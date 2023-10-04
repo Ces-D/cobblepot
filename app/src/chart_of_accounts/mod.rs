@@ -40,11 +40,19 @@ impl ChartOfAccounts {
             },
         }
     }
+    /// Consolidating Accounts: Accounts in a chart of accounts can be consolidated by combining multiple accounts into a single account.
+    /// Consolidation is typically done to simplify the chart of accounts and to provide a more comprehensive and meaningful view of financial data.
+    fn consolidate_accounts(
+        &mut self,
+        consolidating: Vec<code::AccountCode>,
+        consolidated_name: String,
+    ) {
+        code::AccountCode::new(consolidated_name);
+        self.add_account(account)
+    }
 }
 
 // TODO: read below and implement as struct methods
-//
-//
 //
 //
 // Reorganizing Accounts: Accounts can be reorganized or rearranged within the chart of accounts to improve the clarity and accuracy of financial reporting or to align with changes in the business or organization's operations.
@@ -60,9 +68,7 @@ impl ChartOfAccounts {
 
 //
 // TODO: implement these notes on consolidating accounts
-// Accounts in a chart of accounts can be consolidated by combining multiple accounts into a single account.
-// Consolidation is typically done to simplify the chart of accounts and to provide a more comprehensive and meaningful view of financial data.
-
+//
 // To consolidate accounts, businesses can follow these steps:
 //
 // Identify the accounts that need to be consolidated. This may involve reviewing the chart of accounts and identifying accounts that have similar characteristics or functions.

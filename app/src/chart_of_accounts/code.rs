@@ -5,8 +5,9 @@ use crate::chart_of_accounts::enums::AccountType;
 pub struct AccountCode {
     // The first digit of an account number indicates the account type.
     account_type: AccountType,
-    // The following digits indicate the sub-account types.
-    sub_account_types: Vec<AccountType>,
+
+   // TODO (Cesar): think about how to include divisions in the account code. 
+
     // The last digit is used to identify the specific index id of this account in its
     // account-subaccounts section.
     index: i32,
