@@ -11,9 +11,7 @@ impl GAAP {
     }
 }
 
-// THIS takes care of reviewing accounts in a chart of accounts
-// TODO: implement function checks for each of these key principles, this requires deciding on the
-// methods  to check and ensure these standards are met
+// TODO: implement function checks for each of these key principles
 
 // Some of the key principles of GAAP include:
 //
