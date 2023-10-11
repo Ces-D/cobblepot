@@ -1,6 +1,7 @@
 use crate::account::transaction::entry::Entry;
 pub mod entry;
 
+#[derive(PartialEq, Debug)]
 pub enum Transaction {
     Credit(Entry),
     Debit(Entry),

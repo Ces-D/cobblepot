@@ -4,7 +4,6 @@ use chrono::{DateTime, Utc};
 use rusty_money::iso::Currency;
 use rusty_money::Money;
 
-use self::account_type::AccountType;
 use self::balance::Balance;
 use self::code::AccountCode;
 use self::transaction::Transaction;
@@ -49,12 +48,12 @@ impl Account {
         Account { name, description, code, opened, closed, balances, transactions }
     }
 
-    pub fn add_transaction(&mut self, transaction: Transaction, date: Option<DateTime<Utc>>) {
-        let date_key = date.or_else(|| Some(Utc::now())).unwrap();
-        if self.transactions.contains_key(&date_key) {
-            panic!("Transaction already exists for date {}", date_key);
+    pub fn add_transaction(&mut self, transaction: Transaction, date: DateTime<Utc>) {
+        if self.transactions.contains_key(&date) {
+            panic!("Transaction already exists for date {}", date);
+            // TODO: test that this does panic
         }
-        self.transactions.insert(date_key, transaction);
+        self.transactions.insert(date, transaction);
     }
 
     pub fn get_transaction(&self, date: DateTime<Utc>) -> Option<&Transaction> {
@@ -80,7 +79,7 @@ impl Account {
     /// then
     pub fn calculate_balance(&mut self, currency: &'static Currency) {
         let account_type = self.code.extract_account_type();
-        let mut balance = Balance::new(Money::from_major(0, currency), None);
+        let mut balance = Balance::new(Money::from_major(0, currency), Utc::now());
         let previous_balance = self.balances.last();
 
         match previous_balance {
@@ -89,9 +88,9 @@ impl Account {
                     previous_balance.calculated_on(),
                     chrono::offset::Utc::now(),
                 );
-                transactions_since.iter().for_each(|transaction| {
-                    balance.calculate_post_transaction(&account_type, transaction);
-                });
+                for ele in transactions_since {
+                    balance.calculate_post_transaction(&account_type, ele);
+                }
             },
             None => {
                 self.transactions.iter().for_each(|(_, transaction)| {
@@ -108,4 +107,98 @@ impl Account {
     }
 }
 
-// TODO: Add tests
+#[cfg(test)]
+mod tests {
+    use rusty_money::iso;
+
+    use super::{transaction::entry::Entry, *};
+
+    fn create_accounts() -> [Account; 2] {
+        let asset_account = Account::create_new_account(
+            String::from("Asset Account"),
+            String::from("Asset Account Description"),
+            AccountCode::new(account_type::AccountType::Asset, 0),
+        );
+        let revenue_account = Account::create_new_account(
+            String::from("Expense Account"),
+            String::from("Expense description"),
+            AccountCode::new(account_type::AccountType::Revenue, 0),
+        );
+
+        [asset_account, revenue_account]
+    }
+
+    fn create_transaction_dates() -> [DateTime<Utc>; 3] {
+        [
+            Utc::now().checked_sub_months(chrono::Months::new(2)).unwrap(),
+            Utc::now().checked_sub_days(chrono::Days::new(2)).unwrap(),
+            Utc::now().checked_sub_days(chrono::Days::new(1)).unwrap(),
+        ]
+    }
+
+    #[test]
+    fn test_account_transactions() {
+        let [mut assets, _] = create_accounts();
+        let transaction_dates = create_transaction_dates();
+
+        for date in transaction_dates {
+            assets.add_transaction(
+                Transaction::Credit(Entry::new(
+                    Money::from_major(10, iso::USD),
+                    String::from("test "),
+                )),
+                date,
+            );
+        }
+
+        assert_eq!(assets.transactions.len(), 3);
+        assert_ne!(assets.get_transaction(transaction_dates[0]), Option::None);
+        assert_eq!(
+            assets.get_transaction_range(transaction_dates[0], transaction_dates[1]).len(),
+            2
+        );
+    }
+
+    #[test]
+    fn test_account_balances() {
+        let [mut assets, mut revenue] = create_accounts();
+        let transaction_dates = create_transaction_dates();
+
+        for date in transaction_dates {
+            assets.add_transaction(
+                Transaction::Credit(Entry::new(
+                    Money::from_major(10, iso::USD),
+                    String::from("test today"),
+                )),
+                date,
+            );
+            revenue.add_transaction(
+                Transaction::Credit(Entry::new(
+                    Money::from_major(10, iso::USD),
+                    String::from("test today"),
+                )),
+                date,
+            )
+        }
+
+        assets.calculate_balance(iso::USD);
+        assert_eq!(assets.balances.last().unwrap().value(), Money::from_major(-30, iso::USD));
+        assets.push_balance(Balance::new(Money::from_major(25, iso::USD), Utc::now()));
+        assert_eq!(assets.balances.last().unwrap().value(), Money::from_major(25, iso::USD));
+
+        revenue.calculate_balance(iso::USD);
+        assert_eq!(revenue.balances.last().unwrap().value(), Money::from_major(30, iso::USD));
+        revenue.add_transaction(
+            Transaction::Debit(Entry::new(
+                Money::from_major(10, iso::USD),
+                String::from("removing"),
+            )),
+            Utc::now(),
+        );
+        assert_eq!(revenue.balances.len(), 1);
+        revenue.calculate_balance(iso::USD);
+        assert_eq!(revenue.balances.len(), 2);
+        assert_eq!(revenue.balances.first().unwrap().value(), Money::from_major(30, iso::USD));
+        assert_eq!(revenue.balances.last().unwrap().value(), Money::from_major(20, iso::USD));
+    }
+}

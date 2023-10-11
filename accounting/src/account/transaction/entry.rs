@@ -1,6 +1,7 @@
 use rusty_money::iso::Currency;
 use rusty_money::Money;
 
+#[derive(PartialEq, Debug)]
 pub struct Entry {
     amount: Money<'static, Currency>,
     memo: String,

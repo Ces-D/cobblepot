@@ -16,11 +16,8 @@ pub struct Balance {
 }
 
 impl Balance {
-    pub fn new(amount: Money<'static, Currency>, calculated_on: Option<DateTime<Utc>>) -> Balance {
-        Balance {
-            calculated_on: calculated_on.or_else(|| Some(Utc::now())).unwrap(),
-            value: amount,
-        }
+    pub fn new(amount: Money<'static, Currency>, calculated_on: DateTime<Utc>) -> Balance {
+        Balance { calculated_on, value: amount }
     }
 
     pub fn value(&self) -> Money<'static, Currency> {
@@ -82,7 +79,7 @@ mod tests {
     use crate::account::transaction::entry::Entry;
     use rusty_money::iso;
 
-    fn create_transactions() -> (Transaction, Transaction, Transaction, Transaction) {
+    fn create_transactions() -> (Transaction, Transaction, Transaction, Transaction, Transaction) {
         (
             Transaction::Credit(Entry::new(
                 Money::from_major(100, iso::USD),
@@ -100,6 +97,10 @@ mod tests {
                 Money::from_minor(100, iso::USD),
                 "1 USD debit".to_string(),
             )),
+            Transaction::Debit(Entry::new(
+                Money::from_major(100, iso::USD),
+                "1 USD debit".to_string(),
+            )),
         )
     }
 
@@ -112,9 +113,10 @@ mod tests {
             debit_transaction_major,
             credit_transaction_minor,
             debit_transaction_minor,
+            another_transaction,
         ) = create_transactions();
 
-        let mut balance = Balance::new(Money::from_major(0, iso::USD), None);
+        let mut balance = Balance::new(Money::from_major(0, iso::USD), Utc::now());
         assert_eq!(balance.value(), Money::from_major(0, iso::USD));
         balance.calculate_post_transaction(&account_type, &debit_transaction_major);
         assert_eq!(balance.value(), Money::from_major(100, iso::USD));
@@ -124,6 +126,8 @@ mod tests {
         assert_eq!(balance.value(), Money::from_major(1, iso::USD));
         balance.calculate_post_transaction(&account_type, &credit_transaction_minor);
         assert_eq!(balance.value(), Money::from_major(0, iso::USD));
+        balance.calculate_post_transaction(&account_type, &another_transaction);
+        assert_eq!(balance.value(), Money::from_major(100, iso::USD));
     }
 
     #[test]
@@ -135,9 +139,10 @@ mod tests {
             debit_transaction_major,
             credit_transaction_minor,
             debit_transaction_minor,
+            another_transaction,
         ) = create_transactions();
 
-        let mut balance = Balance::new(Money::from_major(0, iso::USD), None);
+        let mut balance = Balance::new(Money::from_major(0, iso::USD), Utc::now());
         assert_eq!(balance.value(), Money::from_major(0, iso::USD));
         balance.calculate_post_transaction(&account_type, &debit_transaction_major);
         assert_eq!(balance.value(), Money::from_major(-100, iso::USD));
@@ -147,5 +152,7 @@ mod tests {
         assert_eq!(balance.value(), Money::from_major(-1, iso::USD));
         balance.calculate_post_transaction(&account_type, &credit_transaction_minor);
         assert_eq!(balance.value(), Money::from_major(0, iso::USD));
+        balance.calculate_post_transaction(&account_type, &another_transaction);
+        assert_eq!(balance.value(), Money::from_major(-100, iso::USD));
     }
 }

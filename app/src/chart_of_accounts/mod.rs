@@ -47,8 +47,8 @@ impl ChartOfAccounts {
         consolidating: Vec<code::AccountCode>,
         consolidated_name: String,
     ) {
-        code::AccountCode::new(consolidated_name);
-        self.add_account(account)
+        // code::AccountCode::new(consolidated_name);
+        // self.add_account(account)
     }
 }
 
