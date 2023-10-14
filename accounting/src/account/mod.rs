@@ -48,10 +48,24 @@ impl Account {
         Account { name, description, code, opened, closed, balances, transactions }
     }
 
+    pub fn update_description(&mut self, description: String) {
+        self.description = description;
+    }
+
+    pub fn update_name(&mut self, name: String) {
+        self.name = name;
+    }
+
+    pub fn close(&mut self) {
+        if self.closed.is_some() {
+            panic!("Account is already closed");
+        }
+        self.closed = Some(chrono::offset::Utc::now());
+    }
+
     pub fn add_transaction(&mut self, transaction: Transaction, date: DateTime<Utc>) {
         if self.transactions.contains_key(&date) {
             panic!("Transaction already exists for date {}", date);
-            // TODO: test that this does panic
         }
         self.transactions.insert(date, transaction);
     }
@@ -60,7 +74,7 @@ impl Account {
         self.transactions.get(&date)
     }
 
-    pub fn get_transaction_range(
+    pub fn get_transactions_within(
         &self,
         start: DateTime<Utc>,
         end: DateTime<Utc>,
@@ -74,36 +88,38 @@ impl Account {
         transactions
     }
 
+    pub fn push_balance(&mut self, balance: Balance) {
+        self.balances.push(balance);
+    }
+
     /// Calculate the balance of the account for a given currency
     /// Checks the last balance and calculates the new balance based on the transactions since
     /// then
     pub fn calculate_balance(&mut self, currency: &'static Currency) {
         let account_type = self.code.extract_account_type();
-        let mut balance = Balance::new(Money::from_major(0, currency), Utc::now());
         let previous_balance = self.balances.last();
 
-        match previous_balance {
-            Some(previous_balance) => {
-                let transactions_since = self.get_transaction_range(
-                    previous_balance.calculated_on(),
+        self.push_balance(match previous_balance {
+            Some(recent_balance) => {
+                let transactions_since = self.get_transactions_within(
+                    recent_balance.calculated_on(),
                     chrono::offset::Utc::now(),
                 );
+                let mut balance = Balance::new(recent_balance.value(), Utc::now());
                 for ele in transactions_since {
                     balance.calculate_post_transaction(&account_type, ele);
                 }
+                balance
             },
+
             None => {
+                let mut balance = Balance::new(Money::from_major(0, currency), Utc::now());
                 self.transactions.iter().for_each(|(_, transaction)| {
                     balance.calculate_post_transaction(&account_type, transaction);
                 });
+                balance
             },
-        }
-
-        self.balances.push(balance);
-    }
-
-    pub fn push_balance(&mut self, balance: Balance) {
-        self.balances.push(balance);
+        })
     }
 }
 
@@ -154,7 +170,7 @@ mod tests {
         assert_eq!(assets.transactions.len(), 3);
         assert_ne!(assets.get_transaction(transaction_dates[0]), Option::None);
         assert_eq!(
-            assets.get_transaction_range(transaction_dates[0], transaction_dates[1]).len(),
+            assets.get_transactions_within(transaction_dates[0], transaction_dates[1]).len(),
             2
         );
     }
