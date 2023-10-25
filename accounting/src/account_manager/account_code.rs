@@ -1,10 +1,10 @@
 use super::account_type::AccountType;
 
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Clone, Eq, Hash)]
 pub struct AccountCode(String);
 
 impl AccountCode {
-    pub fn new(account_type: AccountType, index: i32) -> AccountCode {
+    pub fn new(account_type: AccountType, index: u32) -> AccountCode {
         AccountCode(format!("{}{}", account_type.to_string(), index))
     }
 
