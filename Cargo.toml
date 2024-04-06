@@ -1,5 +1,2 @@
 [workspace]
-
-members = [
-  "cobblepot",
-]
+members = ["cobblepot_accounting", "cobblepot_cli", "cobblepot_core"]
