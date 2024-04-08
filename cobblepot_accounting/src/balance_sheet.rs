@@ -9,7 +9,7 @@ pub struct Balance {
     entry: EntryId,
     account: AccountCode,
     balance: Money<'static, Currency>,
-    updated_on: chrono::NaiveDateTime,
+    updated_on: Option<chrono::NaiveDateTime>,
     created_on: chrono::NaiveDateTime,
 }
 
@@ -18,13 +18,12 @@ impl Balance {
         entry: EntryId,
         account: AccountCode,
         balance: Option<Money<'static, Currency>>,
-        updated_on: Option<chrono::NaiveDateTime>,
     ) -> Balance {
         Balance {
             entry,
             account,
             balance: balance.unwrap_or(Money::from_major(0, iso::USD)),
-            updated_on: updated_on.unwrap_or(chrono::Local::now().naive_local()),
+            updated_on: None,
             created_on: chrono::Local::now().naive_local(),
         }
     }
@@ -37,8 +36,13 @@ impl Balance {
         self.entry.clone()
     }
 
-    pub fn update_balance_sheet(&mut self, amount: Money<'static, Currency>) {
+    pub fn update_balance(&mut self, balance: Money<'static, Currency>) {
+        self.balance = balance;
+        self.updated_on = Some(chrono::Local::now().naive_local());
+    }
+
+    pub fn update_balance_by_amount(&mut self, amount: Money<'static, Currency>) {
         self.balance = self.balance.clone() + amount;
-        self.updated_on = chrono::Local::now().naive_local();
+        self.updated_on = Some(chrono::Local::now().naive_local());
     }
 }

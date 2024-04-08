@@ -29,21 +29,39 @@ impl FromStr for AccountCode {
 pub struct Account {
     code: AccountCode,
     name: String,
+    pub description: String,
     created_on: chrono::NaiveDateTime,
+    closed_on: Option<chrono::NaiveDateTime>,
     account_type: AccountType,
 }
 
 impl Account {
-    pub fn new(name: String, account_type: AccountType) -> Account {
+    pub fn new(name: String, description: String, account_type: AccountType) -> Account {
         Account {
             code: AccountCode(nanoid::nanoid!()),
             name,
+            description,
             created_on: chrono::Local::now().naive_local(),
+            closed_on: None,
             account_type,
         }
     }
 
-    pub fn account_code(self) -> AccountCode {
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+
+    pub fn account_code(&self) -> AccountCode {
         self.code.clone()
+    }
+
+    pub fn closed_on(&self) -> Option<chrono::NaiveDateTime> {
+        self.closed_on.clone()
+    }
+
+    pub fn close_account(&mut self) {
+        if self.closed_on.is_none() {
+            self.closed_on = Some(chrono::Local::now().naive_local())
+        }
     }
 }
