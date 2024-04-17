@@ -5,6 +5,8 @@ use cobblepot_accounting::account::AccountCode;
 use cobblepot_accounting::money::Money;
 use cobblepot_core::error::CobblepotError;
 
+use crate::utils::MoneyParser;
+
 pub fn memo() -> Arg {
     Arg::new("memo")
         .short('m')
@@ -23,7 +25,7 @@ pub fn amount() -> Arg {
     Arg::new("amount")
         .short('a')
         .help("Monetary amount of this transaction")
-        .value_parser(clap::builder::ValueParser::new(Money::from_str))
+        .value_parser(clap::builder::ValueParser::new(MoneyParser))
         .action(clap::ArgAction::Set)
 }
 pub fn parse_amount(matches: &ArgMatches) -> Result<Money, CobblepotError> {

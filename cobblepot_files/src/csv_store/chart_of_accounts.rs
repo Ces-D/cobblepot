@@ -49,7 +49,7 @@ impl ChartOfAccounts {
         let reader = BufReader::new(self.open_location(true, false));
         let mut reader = csv::Reader::from_reader(reader);
         let mut accounts = reader.deserialize::<account::Account>();
-        let acct = accounts.find(|acct| acct.as_ref().unwrap().account_code() == account_code);
+        let acct = accounts.find(|row| row.as_ref().unwrap().account_code() == account_code);
         if acct.is_some() {
             return Some(acct.unwrap().expect("Unable to deserialize account").clone());
         }

@@ -16,6 +16,7 @@ pub fn command_handler(matches: &ArgMatches) -> Result<(), CobblepotError> {
     let amount = parse_amount(matches)?;
     let account_code = parse_account_code(matches)?;
     // TODO: Determine that the account code exists else return an error and prompt user to create this account
+    // can do since we can now find an account and create an account
     // TODO: Add journal entry to the database
     // TODO: create a balance using the new entry
     let journal_entry = JournalEntry::new(memo.to_string(), amount, account_code);

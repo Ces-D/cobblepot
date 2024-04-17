@@ -21,8 +21,9 @@ impl FromStr for EntryId {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct JournalEntry {
-    id: EntryId,
+    entry_id: EntryId,
     entered_on: chrono::NaiveDateTime,
     pub memo: String,
     amount: Money,
@@ -32,7 +33,7 @@ pub struct JournalEntry {
 impl JournalEntry {
     pub fn new(memo: String, amount: Money, account: AccountCode) -> JournalEntry {
         JournalEntry {
-            id: EntryId(nanoid!()),
+            entry_id: EntryId(nanoid!()),
             entered_on: chrono::Local::now().naive_local(),
             memo,
             amount,
@@ -40,8 +41,8 @@ impl JournalEntry {
         }
     }
 
-    pub fn id(&self) -> EntryId {
-        self.id.clone()
+    pub fn entry_id(&self) -> EntryId {
+        self.entry_id.clone()
     }
 
     pub fn entered_on(&self) -> chrono::NaiveDateTime {
