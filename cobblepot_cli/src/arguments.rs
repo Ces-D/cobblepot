@@ -1,11 +1,9 @@
 use std::str::FromStr;
 
-use crate::utils::parse_money;
 use clap::{Arg, ArgMatches};
 use cobblepot_accounting::account::AccountCode;
+use cobblepot_accounting::money::Money;
 use cobblepot_core::error::CobblepotError;
-use rusty_money::iso::USD;
-use rusty_money::{iso::Currency, Money};
 
 pub fn memo() -> Arg {
     Arg::new("memo")
@@ -25,15 +23,16 @@ pub fn amount() -> Arg {
     Arg::new("amount")
         .short('a')
         .help("Monetary amount of this transaction")
-        .value_parser(clap::builder::ValueParser::new(parse_money))
+        .value_parser(clap::builder::ValueParser::new(Money::from_str))
         .action(clap::ArgAction::Set)
 }
-pub fn parse_amount(matches: &ArgMatches) -> Result<Money<'static, Currency>, CobblepotError> {
+pub fn parse_amount(matches: &ArgMatches) -> Result<Money, CobblepotError> {
     let amount: &String = matches
         .get_one("amount")
         .ok_or_else(|| CobblepotError::ParseValueError("Amount argument missing"))?;
-    Ok(Money::from_str(amount.as_str(), USD)
-        .map_err(|_| CobblepotError::ParseValueError("Amount argument parse into money error")))?
+    let money = Money::from_str(amount.as_str())
+        .map_err(|_| CobblepotError::ParseValueError("Amount argument parse into money error"))?;
+    Ok(money)
 }
 
 pub fn account_code() -> Arg {

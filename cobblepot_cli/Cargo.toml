@@ -9,4 +9,3 @@ edition = "2021"
 clap = "4.5.4"
 cobblepot_accounting = { version = "0.1.0", path = "../cobblepot_accounting" }
 cobblepot_core = { version = "0.1.0", path = "../cobblepot_core" }
-rusty-money = "0.4.1"

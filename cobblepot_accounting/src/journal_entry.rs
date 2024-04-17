@@ -2,11 +2,12 @@ use core::fmt;
 use std::str::FromStr;
 
 use crate::account::AccountCode;
+use crate::money::Money;
 use cobblepot_core::error::CobblepotError;
 use nanoid::nanoid;
-use rusty_money::{iso::Currency, Money};
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct EntryId(String);
 impl fmt::Display for EntryId {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -24,16 +25,12 @@ pub struct JournalEntry {
     id: EntryId,
     entered_on: chrono::NaiveDateTime,
     pub memo: String,
-    amount: Money<'static, Currency>,
+    amount: Money,
     account: AccountCode,
 }
 
 impl JournalEntry {
-    pub fn new(
-        memo: String,
-        amount: Money<'static, Currency>,
-        account: AccountCode,
-    ) -> JournalEntry {
+    pub fn new(memo: String, amount: Money, account: AccountCode) -> JournalEntry {
         JournalEntry {
             id: EntryId(nanoid!()),
             entered_on: chrono::Local::now().naive_local(),
@@ -55,7 +52,7 @@ impl JournalEntry {
         self.account.clone()
     }
 
-    pub fn amount(&self) -> Money<'static, Currency> {
+    pub fn amount(&self) -> Money {
         self.amount.clone()
     }
 }
