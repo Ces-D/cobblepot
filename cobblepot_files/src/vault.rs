@@ -1,8 +1,9 @@
 use cobblepot_core::error::CobblepotError;
+use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::{fs, path};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash)]
 pub struct VaultConfig {
     /// Optional absolute path to the vault store
     pub location: String,
@@ -29,13 +30,33 @@ impl VaultConfig {
     }
 
     pub fn location_as_pathbuf(&self) -> PathBuf {
-        path::Path::new(&self.location).to_path_buf()
+        let p = path::Path::new(&self.location).to_path_buf();
+        p
+    }
+
+    pub fn create_vault(&self) -> Result<(), CobblepotError> {
+        let p = self.location_as_pathbuf();
+        if !p.exists() {
+            fs::create_dir_all(p.clone())
+                .map_err(|_| CobblepotError::VaultCreationError("Error creating vault"))?;
+        }
+        Ok(())
     }
 }
 
-pub fn create_vault(config: Option<VaultConfig>) -> Result<(), CobblepotError> {
-    let path = config.unwrap_or_default().location_as_pathbuf();
-    fs::create_dir_all(path)
-        .map_err(|_| CobblepotError::VaultCreationError("Error creating vault dir"))?;
-    Ok(())
+pub fn read_vault_config() -> Result<VaultConfig, CobblepotError> {
+    let projects = directories::ProjectDirs::from("", "Cobblepot", "cobblepot").ok_or_else(|| {
+        CobblepotError::VaultCreationError("Unable to locate systems Project directories")
+    });
+    match projects {
+        Ok(projects) => {
+            let config_path = projects.config_dir().join("cobblepot.toml");
+            let config = fs::read_to_string(config_path)
+                .map_err(|_| CobblepotError::VaultCreationError("Error reading vault config"))?;
+            let config: VaultConfig = toml::from_str(&config)
+                .map_err(|_| CobblepotError::VaultCreationError("Error parsing vault config"))?;
+            Ok(config)
+        },
+        Err(e) => Err(e),
+    }
 }

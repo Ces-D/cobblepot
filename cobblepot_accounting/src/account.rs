@@ -14,8 +14,8 @@ pub enum AccountType {
     Expense,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 /// Should not be called directly, use `Account::new` instead.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AccountCode(String);
 impl fmt::Display for AccountCode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
