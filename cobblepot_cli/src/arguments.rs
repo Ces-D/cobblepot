@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use clap::{Arg, ArgMatches};
-use cobblepot_accounting::account::AccountCode;
+use cobblepot_accounting::account::{AccountCode, AccountType};
 use cobblepot_accounting::money::Money;
 use cobblepot_core::error::CobblepotError;
 
@@ -49,4 +49,45 @@ pub fn parse_account_code(matches: &ArgMatches) -> Result<AccountCode, Cobblepot
         .get_one("account_code")
         .ok_or_else(|| CobblepotError::ParseValueError("Account code argument missing"))?;
     Ok(AccountCode::from_str(account_code.as_str()))?
+}
+
+pub fn account_name() -> Arg {
+    Arg::new("account_name")
+        .short('n')
+        .help("Account name")
+        .value_parser(clap::builder::NonEmptyStringValueParser::new())
+        .action(clap::ArgAction::Set)
+}
+pub fn parse_account_name(matches: &ArgMatches) -> Result<&String, CobblepotError> {
+    let account_name: &String = matches
+        .get_one("account_name")
+        .ok_or_else(|| CobblepotError::ParseValueError("Account name missing"))?;
+    Ok(account_name)
+}
+
+pub fn account_description() -> Arg {
+    Arg::new("account_description")
+        .short('d')
+        .help("Description of the account")
+        .value_parser(clap::builder::NonEmptyStringValueParser::new())
+        .action(clap::ArgAction::Set)
+}
+pub fn parse_account_description(matches: &ArgMatches) -> Result<&String, CobblepotError> {
+    let account_description: &String = matches
+        .get_one("account_description")
+        .ok_or_else(|| CobblepotError::ParseValueError("Account description missing"))?;
+    Ok(account_description)
+}
+
+pub fn account_type() -> Arg {
+    Arg::new("account_type")
+        .short('t')
+        .help("Type of this account")
+        .value_parser(clap::builder::EnumValueParser::<AccountType>::new())
+}
+pub fn parse_account_type(matches: &ArgMatches) -> Result<&AccountType, CobblepotError> {
+    let account_type: &AccountType = matches
+        .get_one("account_type")
+        .ok_or_else(|| CobblepotError::ParseValueError("Account type missing"))?;
+    Ok(account_type)
 }
