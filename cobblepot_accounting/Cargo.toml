@@ -6,9 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chrono = { version = "0.4.37", features = ["serde"] }
+chrono = { version = "0.4.38", features = ["serde"] }
 cobblepot_core = { version = "0.1.0", path = "../cobblepot_core" }
 nanoid = "0.4.0"
-rust_decimal = { version = "1.35.0", features = ["serde", "serde-with-str"] }
-serde = { version = "1.0.197", features = ["derive"] }
-
+rust_decimal = "1.35.0"
+rusty-money = "0.4.1"
+serde = { version = "1.0.201", features = ["derive"] }

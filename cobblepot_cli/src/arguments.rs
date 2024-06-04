@@ -1,11 +1,11 @@
+use clap::{Arg, ArgMatches};
+use cobblepot_accounting::codes::AccountCode;
+use cobblepot_accounting::transaction::TransactionVariant;
+use cobblepot_core::error::CobblepotError;
+use rusty_money::{iso, FormattableCurrency, Money};
 use std::str::FromStr;
 
-use clap::{Arg, ArgMatches};
-use cobblepot_accounting::account::{AccountCode, AccountType};
-use cobblepot_accounting::money::Money;
-use cobblepot_core::error::CobblepotError;
-
-use crate::utils::MoneyParser;
+use crate::parsers::TransactionVariantParser;
 
 pub fn memo() -> Arg {
     Arg::new("memo")
@@ -21,18 +21,52 @@ pub fn parse_memo(matches: &ArgMatches) -> Result<&String, CobblepotError> {
     Ok(memo)
 }
 
+pub fn transaction_variant() -> Arg {
+    Arg::new("transaction_variant")
+        .short('t')
+        .help("Optional account variant this transaction targets")
+        .value_parser(TransactionVariantParser::new())
+        .default_value("asset")
+}
+pub fn parse_transaction_variant(
+    matches: &ArgMatches,
+) -> Result<TransactionVariant, CobblepotError> {
+    let account_type: &TransactionVariant = matches
+        .get_one("account_type")
+        .ok_or_else(|| CobblepotError::ParseValueError("Account type missing"))?;
+    Ok(account_type.clone())
+}
+
+pub fn currency() -> Arg {
+    Arg::new("currency")
+        .short('u')
+        .help("Currency of this transaction")
+        .value_parser(crate::parsers::CurrencyValueParser::new())
+        .default_value("USD")
+        .action(clap::ArgAction::Set)
+}
+pub fn parse_currency(matches: &ArgMatches) -> Result<&'static iso::Currency, CobblepotError> {
+    let currency_code: &String = matches
+        .get_one("currency")
+        .ok_or_else(|| CobblepotError::ParseValueError("Currency argument missing"))?;
+    Ok(iso::find_by_num_code(currency_code.as_str()).expect("Parser failed"))
+}
+
 pub fn amount() -> Arg {
     Arg::new("amount")
         .short('a')
         .help("Monetary amount of this transaction")
-        .value_parser(clap::builder::ValueParser::new(MoneyParser))
+        .value_parser(clap::builder::NonEmptyStringValueParser::new())
         .action(clap::ArgAction::Set)
 }
-pub fn parse_amount(matches: &ArgMatches) -> Result<Money, CobblepotError> {
+pub fn parse_amount<'a, T: FormattableCurrency>(
+    matches: &ArgMatches,
+    currency: &'static T,
+) -> Result<Money<'static, T>, CobblepotError> {
     let amount: &String = matches
         .get_one("amount")
         .ok_or_else(|| CobblepotError::ParseValueError("Amount argument missing"))?;
-    let money = Money::from_str(amount.as_str())
+    let money = Money::from_str(amount.as_str(), currency)
         .map_err(|_| CobblepotError::ParseValueError("Amount argument parse into money error"))?;
     Ok(money)
 }
@@ -77,17 +111,4 @@ pub fn parse_account_description(matches: &ArgMatches) -> Result<&String, Cobble
         .get_one("account_description")
         .ok_or_else(|| CobblepotError::ParseValueError("Account description missing"))?;
     Ok(account_description)
-}
-
-pub fn account_type() -> Arg {
-    Arg::new("account_type")
-        .short('t')
-        .help("Type of this account")
-        .value_parser(clap::builder::EnumValueParser::<AccountType>::new())
-}
-pub fn parse_account_type(matches: &ArgMatches) -> Result<&AccountType, CobblepotError> {
-    let account_type: &AccountType = matches
-        .get_one("account_type")
-        .ok_or_else(|| CobblepotError::ParseValueError("Account type missing"))?;
-    Ok(account_type)
 }

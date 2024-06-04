@@ -1,15 +1,15 @@
 use std::io::{BufReader, BufWriter};
 
 use crate::vault;
-use cobblepot_accounting::journal_entry;
 
-// create the functions that will create or append to the journal.csv
-pub struct Journal {
-    config: vault::VaultConfig,
+use super::utils::deserialize_csv;
+
+pub struct Journal<'a> {
+    config: &'a vault::VaultConfig,
 }
 
-impl Journal {
-    pub fn new(config: vault::VaultConfig) -> Self {
+impl<'a> Journal<'a> {
+    pub fn new(config: &vault::VaultConfig) -> Journal<'_> {
         Journal { config }
     }
 
@@ -25,9 +25,9 @@ impl Journal {
 
     pub fn create_entry(
         &self,
-        entry: &journal_entry::JournalEntry,
-    ) -> Option<journal_entry::JournalEntry> {
-        let exists = self.find_entry(entry.entry_id()).is_some();
+        entry: &cobblepot_accounting::journal::Entry,
+    ) -> Option<cobblepot_accounting::journal::Entry> {
+        let exists = self.find_entry(entry.entry_code()).is_some();
         if exists {
             return None;
         }
@@ -44,14 +44,14 @@ impl Journal {
 
     pub fn find_entry(
         &self,
-        entry_id: journal_entry::EntryId,
-    ) -> Option<journal_entry::JournalEntry> {
+        entry_code: cobblepot_accounting::codes::EntryCode,
+    ) -> Option<cobblepot_accounting::journal::Entry> {
         let reader = BufReader::new(self.open_location(true, false));
-        let mut reader = csv::Reader::from_reader(reader);
-        let mut journal = reader.deserialize::<journal_entry::JournalEntry>();
-        let entry = journal.find(|row| row.as_ref().unwrap().entry_id() == entry_id);
+        let mut journal =
+            deserialize_csv::<cobblepot_accounting::journal::Entry>(reader).into_iter();
+        let entry = journal.find(|row| row.entry_code() == entry_code);
         if entry.is_some() {
-            return Some(entry.unwrap().expect("Unable to deserialize entry").clone());
+            return Some(entry.clone())?;
         }
         return None;
     }

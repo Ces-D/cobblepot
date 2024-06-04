@@ -2,14 +2,15 @@ use std::fs;
 use std::io::{BufReader, BufWriter};
 
 use crate::vault;
-use cobblepot_accounting::account;
 
-pub struct ChartOfAccounts {
-    config: vault::VaultConfig,
+use super::utils::deserialize_csv;
+
+pub struct ChartOfAccounts<'a> {
+    config: &'a vault::VaultConfig,
 }
 
-impl ChartOfAccounts {
-    pub fn new(config: vault::VaultConfig) -> Self {
+impl<'a> ChartOfAccounts<'a> {
+    pub fn new(config: &vault::VaultConfig) -> ChartOfAccounts<'_> {
         ChartOfAccounts { config }
     }
 
@@ -23,7 +24,7 @@ impl ChartOfAccounts {
             .expect("Unable to open the file")
     }
 
-    pub fn create_account(&self, account: account::Account) -> Option<()> {
+    pub fn create_account(&self, account: cobblepot_accounting::account::Account) -> Option<()> {
         let exists = self.find_account(account.account_code()).is_some();
         if exists {
             return None;
@@ -45,15 +46,24 @@ impl ChartOfAccounts {
     //     todo!("Implement the find_similar_accounts function")
     // }
 
-    pub fn find_account(&self, account_code: account::AccountCode) -> Option<account::Account> {
+    pub fn find_account(
+        &self,
+        account_code: cobblepot_accounting::codes::AccountCode,
+    ) -> Option<cobblepot_accounting::account::Account> {
         let reader = BufReader::new(self.open_location(true, false));
-        let mut reader = csv::Reader::from_reader(reader);
-        let mut accounts = reader.deserialize::<account::Account>();
-        let acct = accounts.find(|row| row.as_ref().unwrap().account_code() == account_code);
+
+        let mut accounts =
+            deserialize_csv::<cobblepot_accounting::account::Account>(reader).into_iter();
+        let acct = accounts.find(|row| row.account_code() == account_code);
         if acct.is_some() {
-            return Some(acct.unwrap().expect("Unable to deserialize account").clone());
+            return Some(acct.clone())?;
         }
         return None;
+    }
+
+    pub fn list_accounts(&self) -> Vec<cobblepot_accounting::account::Account> {
+        let reader = BufReader::new(self.open_location(true, false));
+        deserialize_csv::<cobblepot_accounting::account::Account>(reader)
     }
 
     // pub fn update_account(account: &account::Account) {

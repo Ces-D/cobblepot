@@ -2,8 +2,9 @@ mod add_account_command;
 mod add_journal_entry_command;
 mod arguments;
 mod get_account_balances;
-mod utils;
+mod parsers;
 
+// TODO: consider if the entire cli should actually be a tui app
 fn main() {
     match cobblepot_files::vault::read_vault_config() {
         Ok(config) => {

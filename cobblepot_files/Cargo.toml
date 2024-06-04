@@ -10,5 +10,5 @@ cobblepot_accounting = { version = "0.1.0", path = "../cobblepot_accounting" }
 cobblepot_core = { version = "0.1.0", path = "../cobblepot_core" }
 csv = "1.3.0"
 directories = "5.0.1"
-serde = { version = "1.0.198", features = ["derive"] }
+serde = { version = "1.0.201", features = ["derive"] }
 toml = "0.8.12"

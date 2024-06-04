@@ -1,49 +1,53 @@
+use cobblepot_core::error::CobblepotError;
 use serde::{Deserialize, Serialize};
 
-use crate::account::AccountCode;
-use crate::journal_entry::EntryId;
-use crate::money::Money;
+use crate::codes::{AccountCode, EntryCode};
+use crate::transaction::Transaction;
 
+/// Balance sheet entries are records that summarize the state of an account type
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Balance {
-    /// PK is id of entry that calculated
-    entry: EntryId,
-    account: AccountCode,
-    balance: Money,
+pub struct Entry {
+    entry_code: EntryCode,
+    account_code: AccountCode,
+    balance: Transaction,
     updated_on: Option<chrono::NaiveDateTime>,
     created_on: chrono::NaiveDateTime,
 }
 
-impl Balance {
-    pub fn new(entry: EntryId, account: AccountCode, balance: Option<Money>) -> Balance {
-        Balance {
-            entry,
-            account,
-            balance: balance.unwrap_or(Money::from_major(0)),
+impl Entry {
+    pub fn new(entry_code: EntryCode, account_code: AccountCode, balance: Transaction) -> Self {
+        Self {
+            entry_code,
+            account_code,
+            balance,
             updated_on: None,
             created_on: chrono::Local::now().naive_local(),
         }
     }
 
     pub fn account_code(&self) -> AccountCode {
-        self.account.clone()
+        self.account_code.clone()
     }
 
-    pub fn entry_id(&self) -> EntryId {
-        self.entry.clone()
+    pub fn entry_code(&self) -> EntryCode {
+        self.entry_code.clone()
+    }
+
+    pub fn balance(&self) -> Transaction {
+        self.balance.clone()
     }
 
     pub fn created_on(&self) -> chrono::NaiveDateTime {
         self.created_on
     }
 
-    pub fn update_balance(&mut self, balance: Money) {
-        self.balance = balance;
+    pub fn update_balance_by(&mut self, transaction: Transaction) -> Result<(), CobblepotError> {
+        self.balance = self.balance.add(transaction)?;
         self.updated_on = Some(chrono::Local::now().naive_local());
+        Ok(())
     }
 
-    pub fn update_balance_by_amount(&mut self, amount: Money) {
-        self.balance = self.balance.clone() + amount;
-        self.updated_on = Some(chrono::Local::now().naive_local());
+    pub fn cmp_by_created_on(&self, other: &Entry) -> std::cmp::Ordering {
+        self.created_on().cmp(&other.created_on())
     }
 }
