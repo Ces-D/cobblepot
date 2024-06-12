@@ -1,16 +1,17 @@
-use cobblepot_core::error::CobblepotError;
+use crate::error::CobblepotError;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::{fs, path};
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash)]
 pub struct VaultConfig {
-    location: String,
+    /// location of the vault store
+    vault_store: String,
 }
 
 impl Default for VaultConfig {
     fn default() -> Self {
-        let location = directories::UserDirs::new()
+        let vault_store = directories::UserDirs::new()
             .expect("Unable to get user-facing standard directories")
             .document_dir()
             .expect("Unable to get user-facing document directory")
@@ -19,28 +20,22 @@ impl Default for VaultConfig {
             .expect("Unable to convert path to string")
             .to_string();
 
-        VaultConfig { location }
+        VaultConfig { vault_store }
     }
 }
 
 impl VaultConfig {
-    pub fn new(location: String) -> Self {
-        VaultConfig { location }
+    pub fn new(vault_store: String) -> Self {
+        VaultConfig { vault_store }
     }
 
-    /// Location of the vault
-    pub fn location_as_pathbuf(&self) -> PathBuf {
-        path::Path::new(&self.location).to_path_buf()
-    }
-
-    /// Should be called to ensure existence
-    pub fn create_vault(&self) -> Result<(), CobblepotError> {
-        let p = self.location_as_pathbuf();
-        if !p.exists() {
-            fs::create_dir_all(p.clone())
-                .map_err(|_| CobblepotError::VaultCreationError("Error creating vault"))?;
+    /// Location of the vault store
+    pub fn vault_store_as_pathbuf(&self) -> PathBuf {
+        let vault_store = path::Path::new(&self.vault_store).to_path_buf();
+        if !vault_store.exists() {
+            fs::create_dir_all(vault_store.clone()).unwrap();
         }
-        Ok(())
+        vault_store
     }
 }
 

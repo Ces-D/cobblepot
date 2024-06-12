@@ -16,12 +16,18 @@ impl<'a> ChartOfAccounts<'a> {
 
     fn open_location(&self, read: bool, write: bool) -> std::fs::File {
         let path = self.config.location_as_pathbuf().join("chart_of_accounts.csv");
-        fs::OpenOptions::new()
-            .read(read)
-            .append(write)
-            .create(true)
-            .open(path)
-            .expect("Unable to open the file")
+        if !path.exists() {
+            match fs::OpenOptions::new().write(true).create_new(true).open(path) {
+                Ok(_) => self.open_location(read, write),
+                Err(_) => panic!("Unable to create the file"),
+            }
+        } else {
+            fs::OpenOptions::new()
+                .read(read)
+                .append(write)
+                .open(path)
+                .expect("Unable to open the file")
+        }
     }
 
     pub fn create_account(&self, account: cobblepot_accounting::account::Account) -> Option<()> {

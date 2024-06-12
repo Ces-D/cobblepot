@@ -20,12 +20,18 @@ impl<'a> BalanceSheet<'a> {
 
     fn open_location(&self, read: bool, write: bool) -> std::fs::File {
         let path = self.config.location_as_pathbuf().join("balance_sheet.csv");
-        fs::OpenOptions::new()
-            .read(read)
-            .write(write)
-            .create(true)
-            .open(path)
-            .expect("Could not open balance sheet file")
+        if !path.exists() {
+            match fs::OpenOptions::new().write(true).create_new(true).open(path) {
+                Ok(_) => self.open_location(read, write),
+                Err(_) => panic!("Unable to create the file"),
+            }
+        } else {
+            fs::OpenOptions::new()
+                .read(read)
+                .append(write)
+                .open(path)
+                .expect("Unable to open the file")
+        }
     }
 
     pub fn create_account_balance(
