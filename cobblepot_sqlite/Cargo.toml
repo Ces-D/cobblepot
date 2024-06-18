@@ -1,8 +1,0 @@
-[package]
-name = "cobblepot_sqlite"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-cobblepot_accounting = { version = "0.1.0", path = "../cobblepot_accounting" }
-rusqlite = "0.31.0"

@@ -19,6 +19,7 @@ This is a great tool if you are not interested in all the bells and whistles of 
 - **Expenses**. (+) An expense account represents something you’ve received, perhaps by exchanging something else to purchase it. This type of account will seem pretty natural: food, drinks, clothing, rent, flights, hotels and most other categories of things you typically spend your disposable income on. However, taxes are also typically tracked by an expense account: when you receive some salary income, the amount of taxes withheld at the source is recorded immediately as an expense. Think of it as paying for government services you receive throughout the year.
 
 - **Income**. (-) An income account is used to count something you’ve given away in order to receive something else (typically assets or expenses). For most people with jobs, that is the value of their time (a salary income). Specifically, here we’re talking about the gross income. For example, if you’re earning a salary of $120,000/year, that number is $120,000, not whatever amount remains after paying for taxes. Other types of income includes dividends received from investments, or interest paid from bonds held. There are also a number of oddball things received you might record as income, such the value of rewards received, e.g., cash back from a credit card, or monetary gifts from someone.
+
 - **Equity**. ()And summing up all the Equity accounts clearly tells us what’s our stake in the entity, in other words, if you used the assets to pay off all the liabilities, how much is left in the business… how much it’s worth.
 
   - Previous Earnings or Retained Earnings. An account used to hold the sum total of Income & Expenses balances from the beginning of time until the beginning of a reporting period. This is the account we were referring to in the previous section.
@@ -33,7 +34,6 @@ This is a great tool if you are not interested in all the bells and whistles of 
 There are many ways ot abuse the input format for details. This is the method that I will be following.
 
 ## BookKeeping Terms
-
 
 ### Chart of Accounts
 
@@ -60,8 +60,11 @@ There are many ways ot abuse the input format for details. This is the method th
   - **General Ledger** - Contains all the ledger accounts other than sales and purchases accounts. Various sub ledgers\* can be provided with requisite details to prepare a single General Ledger.The General Ledger accounts provide information that helps prepare financial statements. The General Ledger Accounts include: _Assets_, _Liabilities_, _Shareholder's Equity_, _Revenue_, and _Expenses_.
 
 - **Account** - Contain all _Debit_ and _Credit_ transactions affecting them. Also include detailed information about each _transaction_, such as date, description, amount, and may include descriptive information on what the transaction was. At least two accounts are managed whenever a transaction takes place
+
 - **Transaction** - They are `closed out` or `summarized` to the general ledger. Each transaction affects at least two accounts, and each entry has at least one debit and one credit transaction
+
 - **Trial Balance** - Validates the ledgers accuracy. A report that lists every general ledger account and its balance, makes adjustments easier to check and errors easier to locate.
+
 - **General Ledger Reconciliation** - helps ensure accuracy of the information contained win your Accounts
 
 - **Financial Statement** -
@@ -86,9 +89,3 @@ There are many ways ot abuse the input format for details. This is the method th
     - **Cash Disbursement Journal** - https://www.investopedia.com/terms/c/cash-disbursement-journal.asp
   - **General Journal** - All other _transactions_ that are not contained in the specialty journals are in the General Journal. The following types of transaction: _Accounts Receivables_, _Accounts Payable_, _Equipment_, _Accumulated Depreciation_, _Expenses_, _Interest Income and Expenses_
     - **Transaction** - each transaction is an exchange between two accounts. Two equal and opposite accounts for all the transactions, namely _credit_ and _debit_. `credits` one _account_ and `debits` another account. The general format for transactions include: _date of transaction_, _memo_, _debit amount_, _credit amount_, _reference number_.
-
-## TODO
-- read this file for starting a session for the account
-- display the session in the console like python venv
-- create entrys for this account
-- store these entries in a journal file

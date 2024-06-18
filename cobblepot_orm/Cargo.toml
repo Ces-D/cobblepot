@@ -1,0 +1,10 @@
+[package]
+name = "cobblepot_orm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+chrono = "0.4.38"
+cobblepot_core = { version = "0.1.0", path = "../cobblepot_core" }
+diesel = { version = "2.2.0", features = ["sqlite"] }
+rusty-money = "0.4.1"
