@@ -2,8 +2,8 @@ CREATE TABLE IF NOT EXISTS account (
   account_code INTEGER PRIMARY KEY NOT NULL,
   account_variant TEXT NOT NULL,
   name TEXT NOT NULL,
-  description TEXT,
-  created_on TEXT NOT NULL,
-  closed_on TEXT
+  description TEXT DEFAULT NULL,
+  created_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  closed_on DATETIME DEFAULT NULL 
 );
 

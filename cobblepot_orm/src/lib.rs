@@ -2,6 +2,7 @@ use cobblepot_core::config;
 use diesel::sqlite::SqliteConnection;
 use diesel::Connection;
 
+pub mod crud;
 pub mod models;
 pub mod schema;
 

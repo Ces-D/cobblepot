@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS transaction_event (
   transaction_code INTEGER PRIMARY KEY NOT NULL,
-  amount TEXT NOT NULL,
+  amount INTEGER NOT NULL DEFAULT 0,
   currency TEXT NOT NULL,
-  created_on TEXT NOT NULL
+  created_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS journal (
