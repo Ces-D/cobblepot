@@ -1,3 +1,5 @@
+use std::ops::{Add, AddAssign};
+
 use rust_decimal::Decimal;
 
 use crate::account::{Account, AccountBalance};
@@ -6,6 +8,20 @@ use crate::code::AccountType;
 pub struct Summary {
     pub debits: Decimal,
     pub credits: Decimal,
+}
+
+impl Add for Summary {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Summary { debits: self.debits + rhs.debits, credits: self.credits + rhs.credits }
+    }
+}
+
+impl AddAssign for Summary {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = Self { debits: self.debits + rhs.debits, credits: self.credits + rhs.credits };
+    }
 }
 
 impl Default for Summary {
@@ -33,13 +49,16 @@ impl BalanceSummarizer {
     pub fn include_by_balance(&mut self, balance: AccountBalance, account_type: AccountType) {
         match self.summaries.get_mut(&account_type) {
             Some(prev_summary) => {
-                prev_summary.credits += balance.credit_balance.0;
-                prev_summary.debits += balance.debit_balance.0;
+                prev_summary.credits += balance.credit_balance.value_in_usd();
+                prev_summary.debits += balance.debit_balance.value_in_usd();
             },
             None => {
                 self.summaries.insert(
                     account_type,
-                    Summary { debits: balance.debit_balance.0, credits: balance.credit_balance.0 },
+                    Summary {
+                        debits: balance.debit_balance.value_in_usd(),
+                        credits: balance.credit_balance.value_in_usd(),
+                    },
                 );
             },
         }

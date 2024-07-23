@@ -25,7 +25,7 @@ impl Default for ExchangeRate {
 
 /// Always stored relative in USD
 #[derive(Debug, Clone, Copy)]
-pub struct Amount(pub Decimal);
+pub struct Amount(Decimal);
 
 impl Amount {
     pub fn new(exchange: ExchangeRate) -> Amount {
@@ -38,5 +38,9 @@ impl Amount {
             let value_in_usd = exchange.unit_amount / exchange.usd_exchange_rate;
             Amount(value_in_usd)
         }
+    }
+
+    pub fn value_in_usd(&self) -> Decimal {
+        self.0.clone()
     }
 }

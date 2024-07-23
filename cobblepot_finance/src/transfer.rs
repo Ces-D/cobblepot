@@ -3,6 +3,7 @@ use chrono::Utc;
 use crate::currency::iso::{Currency, USD};
 use crate::currency::Amount;
 
+// TODO: how to incorporate a transfer aka a journal entry
 pub struct Transfer {
     id: String,
     pub amount: Amount,
