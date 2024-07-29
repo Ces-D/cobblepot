@@ -1,3 +1,5 @@
+use std::ops::{Add, Div, Mul, Sub};
+
 use iso::{Currency, USD};
 use rust_decimal::Decimal;
 
@@ -42,5 +44,43 @@ impl Amount {
 
     pub fn value_in_usd(&self) -> Decimal {
         self.0.clone()
+    }
+}
+
+impl From<Decimal> for Amount {
+    fn from(value: Decimal) -> Self {
+        Amount::new(ExchangeRate { unit_amount: value, ..ExchangeRate::default() })
+    }
+}
+
+impl Add for Amount {
+    type Output = Amount;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Amount(self.value_in_usd() + rhs.value_in_usd())
+    }
+}
+
+impl Sub for Amount {
+    type Output = Amount;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Amount(self.value_in_usd() - rhs.value_in_usd())
+    }
+}
+
+impl Div for Amount {
+    type Output = Amount;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        Amount(self.value_in_usd() / rhs.value_in_usd())
+    }
+}
+
+impl Mul for Amount {
+    type Output = Amount;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        Amount(self.value_in_usd() * rhs.value_in_usd())
     }
 }

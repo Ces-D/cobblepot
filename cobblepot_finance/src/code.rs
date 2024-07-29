@@ -1,3 +1,90 @@
+#[derive(PartialEq, Eq)]
+pub enum VagueAccountType {
+    Asset,
+    Liability,
+    Equity,
+    Income,
+    Expense,
+}
+
+impl From<&AccountType> for VagueAccountType {
+    fn from(value: &AccountType) -> Self {
+        match value {
+            AccountType::AssetCash => VagueAccountType::Asset,
+            AccountType::AssetSavings => VagueAccountType::Asset,
+            AccountType::AssetChecking => VagueAccountType::Asset,
+            AccountType::AssetInvestments => VagueAccountType::Asset,
+            AccountType::AssetRetirementAccounts => VagueAccountType::Asset,
+            AccountType::AssetAccountsReceivable => VagueAccountType::Asset,
+            AccountType::AssetInventory => VagueAccountType::Asset,
+            AccountType::AssetEquipment => VagueAccountType::Asset,
+            AccountType::AssetRealEstate => VagueAccountType::Asset,
+            AccountType::AssetVehicles => VagueAccountType::Asset,
+            AccountType::AssetPrepaidExpenses => VagueAccountType::Asset,
+            AccountType::AssetIntangibleAssets => VagueAccountType::Asset,
+            AccountType::AssetOther => VagueAccountType::Asset,
+
+            AccountType::LiabilityCreditCardDebt => VagueAccountType::Liability,
+            AccountType::LiabilityPersonalLoans => VagueAccountType::Liability,
+            AccountType::LiabilityBusinessLoans => VagueAccountType::Liability,
+            AccountType::LiabilityAccountsPayable => VagueAccountType::Liability,
+            AccountType::LiabilityMortgages => VagueAccountType::Liability,
+            AccountType::LiabilityCarLoans => VagueAccountType::Liability,
+            AccountType::LiabilityStudentLoans => VagueAccountType::Liability,
+            AccountType::LiabilityTaxesPayable => VagueAccountType::Liability,
+            AccountType::LiabilityWagesPayable => VagueAccountType::Liability,
+            AccountType::LiabilityUtilitiesPayable => VagueAccountType::Liability,
+            AccountType::LiabilityRentPayable => VagueAccountType::Liability,
+            AccountType::LiabilityDeferredRevenue => VagueAccountType::Liability,
+            AccountType::LiabilityAccruedExpenses => VagueAccountType::Liability,
+            AccountType::LiabilityOther => VagueAccountType::Liability,
+
+            AccountType::EquityOwnersEquity => VagueAccountType::Equity,
+            AccountType::EquityRetainedEarnings => VagueAccountType::Equity,
+            AccountType::EquityCapitalContributions => VagueAccountType::Equity,
+            AccountType::EquityCommonStock => VagueAccountType::Equity,
+            AccountType::EquityPreferredStock => VagueAccountType::Equity,
+            AccountType::EquityAdditionalPaidInCapital => VagueAccountType::Equity,
+            AccountType::EquityTreasuryStock => VagueAccountType::Equity,
+            AccountType::EquityDividends => VagueAccountType::Equity,
+            AccountType::EquityAccumulatedOtherComprehensiveIncome => VagueAccountType::Equity,
+            AccountType::EquityOther => VagueAccountType::Equity,
+
+            AccountType::IncomeSalary => VagueAccountType::Income,
+            AccountType::IncomeBusinessRevenue => VagueAccountType::Income,
+            AccountType::IncomeFreelanceIncome => VagueAccountType::Income,
+            AccountType::IncomeInvestmentIncome => VagueAccountType::Income,
+            AccountType::IncomeRentalIncome => VagueAccountType::Income,
+            AccountType::IncomeInterestIncome => VagueAccountType::Income,
+            AccountType::IncomeDividendIncome => VagueAccountType::Income,
+            AccountType::IncomeCapitalGains => VagueAccountType::Income,
+            AccountType::IncomeRoyalties => VagueAccountType::Income,
+            AccountType::IncomeGrants => VagueAccountType::Income,
+            AccountType::IncomeOther => VagueAccountType::Income,
+
+            AccountType::ExpenseRent => VagueAccountType::Expense,
+            AccountType::ExpenseUtilities => VagueAccountType::Expense,
+            AccountType::ExpenseSalaries => VagueAccountType::Expense,
+            AccountType::ExpenseWages => VagueAccountType::Expense,
+            AccountType::ExpenseSupplies => VagueAccountType::Expense,
+            AccountType::ExpenseInsurance => VagueAccountType::Expense,
+            AccountType::ExpenseMarketing => VagueAccountType::Expense,
+            AccountType::ExpenseTravel => VagueAccountType::Expense,
+            AccountType::ExpenseMealsAndEntertainment => VagueAccountType::Expense,
+            AccountType::ExpenseOfficeExpenses => VagueAccountType::Expense,
+            AccountType::ExpenseLegalFees => VagueAccountType::Expense,
+            AccountType::ExpenseAccountingFees => VagueAccountType::Expense,
+            AccountType::ExpenseDepreciation => VagueAccountType::Expense,
+            AccountType::ExpenseTaxes => VagueAccountType::Expense,
+            AccountType::ExpenseInterestExpense => VagueAccountType::Expense,
+            AccountType::ExpenseCostOfGoodsSold => VagueAccountType::Expense,
+            AccountType::ExpenseMaintenanceAndRepairs => VagueAccountType::Expense,
+            AccountType::ExpenseSubscriptions => VagueAccountType::Expense,
+            AccountType::ExpenseOther => VagueAccountType::Expense,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum AccountType {
     AssetCash,
@@ -71,105 +158,6 @@ pub enum AccountType {
     ExpenseMaintenanceAndRepairs,
     ExpenseSubscriptions,
     ExpenseOther,
-}
-
-impl AccountType {
-    pub fn is_asset(t: AccountType) -> bool {
-        match t {
-            AccountType::AssetCash => true,
-            AccountType::AssetSavings => true,
-            AccountType::AssetChecking => true,
-            AccountType::AssetInvestments => true,
-            AccountType::AssetRetirementAccounts => true,
-            AccountType::AssetAccountsReceivable => true,
-            AccountType::AssetInventory => true,
-            AccountType::AssetEquipment => true,
-            AccountType::AssetRealEstate => true,
-            AccountType::AssetVehicles => true,
-            AccountType::AssetPrepaidExpenses => true,
-            AccountType::AssetIntangibleAssets => true,
-            AccountType::AssetOther => true,
-            _ => false,
-        }
-    }
-
-    pub fn is_liability(t: AccountType) -> bool {
-        match t {
-            AccountType::LiabilityCreditCardDebt => true,
-            AccountType::LiabilityPersonalLoans => true,
-            AccountType::LiabilityBusinessLoans => true,
-            AccountType::LiabilityAccountsPayable => true,
-            AccountType::LiabilityMortgages => true,
-            AccountType::LiabilityCarLoans => true,
-            AccountType::LiabilityStudentLoans => true,
-            AccountType::LiabilityTaxesPayable => true,
-            AccountType::LiabilityWagesPayable => true,
-            AccountType::LiabilityUtilitiesPayable => true,
-            AccountType::LiabilityRentPayable => true,
-            AccountType::LiabilityDeferredRevenue => true,
-            AccountType::LiabilityAccruedExpenses => true,
-            AccountType::LiabilityOther => true,
-            _ => false,
-        }
-    }
-
-    pub fn is_equity(t: AccountType) -> bool {
-        match t {
-            AccountType::EquityOwnersEquity => true,
-            AccountType::EquityRetainedEarnings => true,
-            AccountType::EquityCapitalContributions => true,
-            AccountType::EquityCommonStock => true,
-            AccountType::EquityPreferredStock => true,
-            AccountType::EquityAdditionalPaidInCapital => true,
-            AccountType::EquityTreasuryStock => true,
-            AccountType::EquityDividends => true,
-            AccountType::EquityAccumulatedOtherComprehensiveIncome => true,
-            AccountType::EquityOther => true,
-            _ => false,
-        }
-    }
-
-    pub fn is_income(t: AccountType) -> bool {
-        match t {
-            AccountType::IncomeSalary => true,
-            AccountType::IncomeBusinessRevenue => true,
-            AccountType::IncomeFreelanceIncome => true,
-            AccountType::IncomeInvestmentIncome => true,
-            AccountType::IncomeRentalIncome => true,
-            AccountType::IncomeInterestIncome => true,
-            AccountType::IncomeDividendIncome => true,
-            AccountType::IncomeCapitalGains => true,
-            AccountType::IncomeRoyalties => true,
-            AccountType::IncomeGrants => true,
-            AccountType::IncomeOther => true,
-            _ => false,
-        }
-    }
-
-    pub fn is_expense(t: AccountType) -> bool {
-        match t {
-            AccountType::ExpenseRent => true,
-            AccountType::ExpenseUtilities => true,
-            AccountType::ExpenseSalaries => true,
-            AccountType::ExpenseWages => true,
-            AccountType::ExpenseSupplies => true,
-            AccountType::ExpenseInsurance => true,
-            AccountType::ExpenseMarketing => true,
-            AccountType::ExpenseTravel => true,
-            AccountType::ExpenseMealsAndEntertainment => true,
-            AccountType::ExpenseOfficeExpenses => true,
-            AccountType::ExpenseLegalFees => true,
-            AccountType::ExpenseAccountingFees => true,
-            AccountType::ExpenseDepreciation => true,
-            AccountType::ExpenseTaxes => true,
-            AccountType::ExpenseInterestExpense => true,
-            AccountType::ExpenseCostOfGoodsSold => true,
-            AccountType::ExpenseMaintenanceAndRepairs => true,
-            AccountType::ExpenseSubscriptions => true,
-            AccountType::ExpenseOther => true,
-            _ => false,
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy)]
