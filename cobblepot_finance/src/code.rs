@@ -162,6 +162,6 @@ pub enum AccountType {
 
 #[derive(Debug, Clone, Copy)]
 pub struct AccountCode {
-    id: u16,
+    pub id: u16,
     pub account_type: AccountType,
 }
