@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - "v4"
+  pull_request:
 jobs:
   cargo-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - name: setup rust toolchain
