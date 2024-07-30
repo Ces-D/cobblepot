@@ -1,0 +1,19 @@
+name: Cobblepot Test
+run-name: ${{github.actor}} is testing Cobblepot
+on:
+  push:
+    branches:
+      - "v4"
+jobs:
+  cargo-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: run cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
