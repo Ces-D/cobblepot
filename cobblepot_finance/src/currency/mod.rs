@@ -77,10 +77,26 @@ impl Div for Amount {
     }
 }
 
+impl Div<Decimal> for Amount {
+    type Output = Amount;
+
+    fn div(self, rhs: Decimal) -> Self::Output {
+        Amount(self.value_in_usd() / rhs)
+    }
+}
+
 impl Mul for Amount {
     type Output = Amount;
 
     fn mul(self, rhs: Self) -> Self::Output {
         Amount(self.value_in_usd() * rhs.value_in_usd())
+    }
+}
+
+impl Mul<Decimal> for Amount {
+    type Output = Amount;
+
+    fn mul(self, rhs: Decimal) -> Self::Output {
+        Amount(self.value_in_usd() * rhs)
     }
 }

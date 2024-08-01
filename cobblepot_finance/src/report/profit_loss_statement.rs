@@ -1,11 +1,11 @@
 use chrono::{DateTime, TimeDelta, Utc};
 use rust_decimal::prelude::ToPrimitive;
 
-use crate::account::AccountBalance;
 use crate::code::{AccountType, VagueAccountType};
 
 use crate::currency::{Amount, ExchangeRate};
-use crate::summary::{BalanceSummarizer, Summary};
+use crate::historical_record::{Balance, Summary};
+use crate::summarizer::BalanceSummarizer;
 
 /// Reveals an entities's revenue, expenses, gains, and losses during a particular period
 pub struct ProfitLossStatement {
@@ -42,7 +42,7 @@ impl ProfitLossStatement {
         index.to_usize().unwrap()
     }
 
-    pub fn include_balance(&mut self, balance: AccountBalance, account_type: AccountType) {
+    pub fn include_balance(&mut self, balance: Balance, account_type: AccountType) {
         assert!(
             balance.timestamp < self.period_start + self.time_delta,
             "Account balance timestamp must not occur after the Statements end period",
@@ -55,7 +55,7 @@ impl ProfitLossStatement {
         let insert_index = self._retrieve_statement_index(balance.timestamp);
         match self.statements.get_mut::<usize>(insert_index) {
             Some(summarizer) => {
-                summarizer.include(balance, account_type);
+                summarizer.include(balance.summary, account_type);
             },
             None => panic!("Unable to access summarizer at index {}", insert_index),
         }

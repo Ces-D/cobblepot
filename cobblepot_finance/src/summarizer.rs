@@ -1,12 +1,6 @@
-use crate::account::AccountBalance;
 use crate::code::{AccountType, VagueAccountType};
 use crate::currency::{Amount, ExchangeRate};
-
-#[derive(Clone, Copy)]
-pub struct Summary {
-    pub debits: Amount,
-    pub credits: Amount,
-}
+use crate::historical_record::Summary;
 
 pub struct BalanceSummarizer {
     summaries: std::collections::HashMap<AccountType, Summary>,
@@ -19,16 +13,16 @@ impl Default for BalanceSummarizer {
 }
 
 impl BalanceSummarizer {
-    pub fn include(&mut self, balance: AccountBalance, account_type: AccountType) {
+    pub fn include(&mut self, balance: Summary, account_type: AccountType) {
         match self.summaries.get_mut(&account_type) {
             Some(prev_summary) => {
-                prev_summary.credits = prev_summary.credits + balance.credit_balance;
-                prev_summary.debits = prev_summary.debits + balance.debit_balance;
+                prev_summary.credits = prev_summary.credits + balance.credits;
+                prev_summary.debits = prev_summary.debits + balance.debits;
             },
             None => {
                 self.summaries.insert(
                     account_type,
-                    Summary { debits: balance.debit_balance, credits: balance.credit_balance },
+                    Summary { debits: balance.debits, credits: balance.credits },
                 );
             },
         }
