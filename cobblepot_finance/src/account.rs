@@ -10,17 +10,21 @@ pub enum Frequency {
 
 pub enum Metadata {
     Asset(AssetMetadata),
-    Equity(EquityMetadata),
-    Expense(ExpenseMetadata),
+    Liability(LiabilityMetadata),
     Income(IncomeMetadata),
-    // TODO: Liability -> these metadatas should contain all the data needed to make my scenarios
-    // and reports
+    Expense(ExpenseMetadata),
+    Equity(EquityMetadata),
 }
 
 pub struct AssetMetadata {
     pub name: String,
-    pub description: Option<String>,
+    pub description: String,
     pub acquisition_date: Option<DateTime<Utc>>,
+}
+
+pub struct LiabilityMetadata {
+    pub name: String,
+    pub description: String,
 }
 
 pub struct EquityMetadata {
@@ -32,14 +36,14 @@ pub struct EquityMetadata {
 
 pub struct ExpenseMetadata {
     pub name: String,
-    pub description: Option<String>,
+    pub description: String,
     pub frequency: Frequency,
     pub previous_transfer: DateTime<Utc>,
 }
 
 pub struct IncomeMetadata {
     pub name: String,
-    pub description: Option<String>,
+    pub description: String,
     pub frequency: Frequency,
     pub previous_transfer: DateTime<Utc>,
 }
