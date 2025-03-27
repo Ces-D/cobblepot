@@ -16,3 +16,6 @@ Cargo.lock
 # The base Cobblepot Storage Directory
 Cobblepot_Storage/
 Cobblepot_Store/
+**/cobblepot.db
+
+.env

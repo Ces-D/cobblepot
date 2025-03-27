@@ -1,0 +1,32 @@
+Commands
+open - create a new account
+checkout - set current working account
+branch - check the current working account
+new - create a new transaction for the working account
+balance - set the current balance for the account, compares to calculated balance from transactions
+close - destroy an account
+
+Global Required Arg
+name - name of an account, either new or working
+date - date associated
+
+Open Options + Global
+type - asset, liability, expense, income, equity
+country - defaults to native,
+institution - details about the holder Ex. Home, Bank of A, Chase, StockMarket
+account - detailed name of account Ex. Checking, StudentLoan, CreditCard
+
+Checkout Options = Global Options
+
+Branch Options = none
+
+New Options + Global(set by env)
+note - details of the transaction
+number - value of transaction, neg or pos
+currency - defaults to native
+
+Balance Options + Global(set by env)
+number - value of account
+currency - defaults to native
+
+Close = Global Options
