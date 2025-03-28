@@ -7,7 +7,8 @@ use diesel::{
 use tabled::derive::display;
 
 use super::shared::{
-    AccountType, ISO8601_DATE_LONG_HELP, default_iso8601_variant_date, parse_iso8601_variant_date,
+    cli::{ISO8601_DATE_LONG_HELP, default_iso8601_variant_date, parse_iso8601_variant_date},
+    sql::AccountType,
 };
 use crate::schema::account;
 

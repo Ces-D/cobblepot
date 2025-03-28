@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use client::balance_sheet;
 use dotenvy::dotenv;
 
 mod client;
@@ -23,10 +24,10 @@ enum Commands {
     #[command(about = "List balance entries of an account")]
     ListBalances,
     #[command(
-        about = "Calculate current BalanceSheet.",
-        long_about = "Calculates the current balance of account types based on the currently opened accounts."
+        about = "Calculate a BalanceSheet",
+        long_about = "Summarize the balance of accounts based on which are currently opened"
     )]
-    BalanceSheet,
+    BalanceSheet(client::balance_sheet::BalanceSheetCommand),
     #[command(
         about = "Calculate Deltas of account metrics",
         long_about = "Calculates the deltas of account metrics. Metrics could include growth over time or difference across accounts"
@@ -38,7 +39,6 @@ pub fn main() {
     dotenv().ok();
     let connection = client::establish_connection();
 
-    // TODO: test the account commands
     match Cli::parse().command {
         Commands::NewAccount(new_account) => {
             match client::account::query::insert_new_account(new_account, connection) {
@@ -90,7 +90,32 @@ pub fn main() {
             },
             Err(err) => println!("Error: {}", err),
         },
-        Commands::BalanceSheet => todo!(),
+        Commands::BalanceSheet(balance_sheet_command) => {
+            match balance_sheet::query::get_balances(balance_sheet_command, connection) {
+                Ok(balance_sheet) => {
+                    println!("Balance Sheet");
+                    println!("From: {}", balance_sheet.from);
+                    println!("To: {}", balance_sheet.to);
+
+                    println!("Current Assets");
+                    let current_assets_table = tabled::Table::new(balance_sheet.current_assets);
+                    println!("{}", current_assets_table);
+                    println!("Current Liabilities");
+                    let current_liabilities_table =
+                        tabled::Table::new(balance_sheet.current_liabilities);
+                    println!("{}", current_liabilities_table);
+                    println!("Non-Current Assets");
+                    let non_current_assets_table =
+                        tabled::Table::new(balance_sheet.non_current_assets);
+                    println!("{}", non_current_assets_table);
+                    println!("Non-Current Liabilities");
+                    let non_current_liabilities_table =
+                        tabled::Table::new(balance_sheet.non_current_liabilities);
+                    println!("{}", non_current_liabilities_table);
+                },
+                Err(err) => println!("Error: {}", err),
+            }
+        },
         Commands::Delta => todo!(),
     }
 }

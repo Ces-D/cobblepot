@@ -3,7 +3,7 @@ use std::env;
 
 pub mod account;
 pub mod balance;
-pub mod reporting;
+pub mod balance_sheet;
 pub mod shared;
 
 pub fn establish_connection() -> SqliteConnection {

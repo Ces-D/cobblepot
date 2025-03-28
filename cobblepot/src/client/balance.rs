@@ -1,18 +1,18 @@
 use clap::Parser;
 use diesel::{Insertable, Queryable, Selectable, prelude::AsChangeset, sqlite::Sqlite};
 
-use super::shared::{
+use super::shared::cli::{
     ISO8601_DATE_LONG_HELP, default_iso8601_variant_date, parse_iso8601_variant_date,
 };
 use crate::schema::balance;
 
 #[derive(Debug, Insertable, Parser)]
 #[diesel(table_name=balance)]
-#[command(about = "Add a new balance entry")]
+#[command(about = "Add an updated balance entry to an account")]
 pub struct NewBalance {
     #[arg(short, help = "ID of the account", required = true)]
     pub account_id: i32,
-    #[arg(short, help = "Memo of the balance", required = true)]
+    #[arg(short, help = "Memo for this balance", required = true)]
     pub memo: String,
     #[arg(short, help = "Amount of the balance", required = true)]
     pub amount: f32,
