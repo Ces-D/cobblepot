@@ -1,5 +1,9 @@
 use clap::Parser;
-use diesel::{Insertable, Queryable, Selectable, prelude::AsChangeset, sqlite::Sqlite};
+use diesel::{
+    Insertable, Queryable, Selectable,
+    prelude::{AsChangeset, QueryableByName},
+    sqlite::Sqlite,
+};
 
 use super::shared::cli::{
     ISO8601_DATE_LONG_HELP, default_iso8601_variant_date, parse_iso8601_variant_date,
@@ -30,7 +34,9 @@ pub struct EditBalance {
     pub memo: Option<String>,
 }
 
-#[derive(Debug, Clone, Queryable, Selectable, serde::Serialize, tabled::Tabled)]
+#[derive(
+    Debug, Clone, Queryable, QueryableByName, Selectable, serde::Serialize, tabled::Tabled,
+)]
 #[diesel(table_name=balance)]
 #[diesel(check_for_backend(Sqlite))]
 #[tabled(display(Option, "display::option", "Unknown"))]

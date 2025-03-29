@@ -29,10 +29,12 @@ enum Commands {
     )]
     BalanceSheet(client::balance_sheet::BalanceSheetCommand),
     #[command(
-        about = "Calculate Deltas of account metrics",
-        long_about = "Calculates the deltas of account metrics. Metrics could include growth over time or difference across accounts"
+        about = "Dive deep into account analytics",
+        long_about = "Creative and insightful analytics on an account and its balance history"
     )]
-    Delta,
+    DeepDive {
+        account_id: i32,
+    },
 }
 
 pub fn main() {
@@ -116,6 +118,6 @@ pub fn main() {
                 Err(err) => println!("Error: {}", err),
             }
         },
-        Commands::Delta => todo!(),
+        Commands::DeepDive { account_id } => todo!(),
     }
 }

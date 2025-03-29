@@ -14,15 +14,16 @@ pub struct BalanceSheetCommand {
 }
 
 pub mod query {
-    use diesel::{
-        BoolExpressionMethods, Connection, ExpressionMethods, JoinOnDsl, QueryDsl, QueryResult,
-        RunQueryDsl,
-    };
+    use diesel::{Connection, QueryResult, RunQueryDsl};
 
-    use crate::client::shared::{
-        cli::parse_iso8601_variant_datetime,
-        report::{BalanceSheet, ReportItem},
-        sql::AccountType,
+    use crate::client::{
+        account::AccountDetailed,
+        balance::BalanceDetailed,
+        shared::{
+            cli::parse_iso8601_variant_datetime,
+            report::{BalanceSheet, ReportItem},
+            sql::AccountType,
+        },
     };
 
     use super::BalanceSheetCommand;
@@ -31,26 +32,28 @@ pub mod query {
         params: BalanceSheetCommand,
         mut connection: diesel::SqliteConnection,
     ) -> QueryResult<BalanceSheet> {
-        use crate::schema::account::dsl::{account, id as account_table_id};
-        use crate::schema::balance::dsl::{
-            account_id as balance_table_account_id, balance, entered_on,
-        };
-
         connection.transaction(|conn| {
-            let period_balances = balance
-                .filter(entered_on.ge(params.from.clone()).and(entered_on.le(params.to.clone())))
-                .inner_join(account.on(account_table_id.eq(balance_table_account_id)))
-                .load::<(
-                    crate::client::balance::BalanceDetailed,
-                    crate::client::account::AccountDetailed,
-                )>(conn)?;
+            let recent_act_balance_wthn_period = diesel::sql_query(
+            "SELECT a.id, a.name, a.description, a.owner, a.account_type, a.opened_on, a.closed_on,
+                    b.id, b.memo, b.amount, b.entered_on, b.account_id
+             FROM account a
+             JOIN balance b ON a.id = b.account_id
+             JOIN (
+                 SELECT account_id, MAX(entered_on) AS max_date
+                 FROM balance
+                 WHERE entered_on BETWEEN ? AND ?
+                 GROUP BY account_id
+             ) AS lb ON lb.account_id = b.account_id AND lb.max_date = b.entered_on"
+        )            .bind::<diesel::sql_types::Text, _>(&params.from)
+            .bind::<diesel::sql_types::Text, _>(&params.to)
+            .load::<(BalanceDetailed, AccountDetailed)>(conn)?;
 
             let mut current_assets: Vec<ReportItem> = vec![];
             let mut current_liabilities: Vec<ReportItem> = vec![];
             let mut non_current_assets: Vec<ReportItem> = vec![];
             let mut non_current_liabilities: Vec<ReportItem> = vec![];
 
-            for (balance_detailed, account_detailed) in period_balances {
+            for (balance_detailed, account_detailed) in recent_act_balance_wthn_period {
                 let from_dt = parse_iso8601_variant_datetime(&params.from)
                     .expect("Unable to parse balance_detailed entered_on");
                 let account_opened_on = parse_iso8601_variant_datetime(&account_detailed.opened_on)

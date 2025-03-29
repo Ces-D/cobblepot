@@ -1,7 +1,7 @@
 use clap::Parser;
 use diesel::{
     Insertable, Queryable, Selectable,
-    prelude::{AsChangeset, Identifiable},
+    prelude::{AsChangeset, Identifiable, QueryableByName},
     sqlite::Sqlite,
 };
 use tabled::derive::display;
@@ -46,7 +46,9 @@ pub struct EditAccount {
     pub closed_on: Option<String>,
 }
 
-#[derive(Debug, Clone, Queryable, Selectable, serde::Serialize, tabled::Tabled)]
+#[derive(
+    Debug, Clone, Queryable, QueryableByName, Selectable, serde::Serialize, tabled::Tabled,
+)]
 #[diesel(table_name=account)]
 #[diesel(check_for_backend(Sqlite))]
 #[tabled(display(Option, "display::option", "Unknown"))]

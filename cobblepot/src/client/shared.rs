@@ -107,4 +107,35 @@ pub mod report {
         pub non_current_assets: Vec<ReportItem>,
         pub non_current_liabilities: Vec<ReportItem>,
     }
+
+    // TODO: These analytics
+    pub struct AccountLevelAnalytics {
+        age_in_days: i32,
+        days_since_last_transaction: i32,
+    }
+
+    pub struct FinancialAnalytics {
+        current_balance: f32,
+        average_balance: f32,
+        total_balance_updates: i32,
+        historical_max_balance: f32,
+        historical_min_balance: f32,
+        /// The balance changes for the last 12 months
+        past_year_deltas: [f32; 12],
+    }
+
+    pub struct BehavioralAnalytics {
+        keywords: Vec<String>,
+        /// The average number of days between balance updates
+        average_update_regularity: i32,
+        /// 500, 1_000, 5_000, 10_000, 50_000, 100_000, 150_000, 200_000, 250_000, 500_000, 1_000_000, 5_000_000, 10_000_000, 100_000_000  balance milestones
+        milestones: [(Option<chrono::NaiveDateTime>, f32); 14],
+    }
+
+    pub struct DeepDiveAnalysis {
+        pub account: crate::client::account::AccountDetailed,
+        pub account_level: AccountLevelAnalytics,
+        pub financial: FinancialAnalytics,
+        pub behavioral: BehavioralAnalytics,
+    }
 }
