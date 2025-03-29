@@ -27,11 +27,11 @@ Commands:
   new-account    Add a new account
   edit-account   Edit an existing account
   list-accounts  List Accounts
-  new-balance    Add a new balance entry
+  new-balance    Add an updated balance entry to an account
   edit-balance   Edit an existing balance entry
   list-balances  List balance entries of an account
-  balance-sheet  Calculate current BalanceSheet.
-  delta          Calculate Deltas of account metrics
+  balance-sheet  Calculate a BalanceSheet
+  deep-dive      Dive deep into account analytics
   help           Print this message or the help of the given subcommand(s)
 
 Options:
