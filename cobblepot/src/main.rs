@@ -1,5 +1,4 @@
 use clap::{Parser, Subcommand};
-use client::balance_sheet;
 use dotenvy::dotenv;
 
 mod client;
@@ -93,7 +92,7 @@ pub fn main() {
             Err(err) => println!("Error: {}", err),
         },
         Commands::BalanceSheet(balance_sheet_command) => {
-            match balance_sheet::query::get_balances(balance_sheet_command, connection) {
+            match client::balance_sheet::query::get_balances(balance_sheet_command, connection) {
                 Ok(balance_sheet) => {
                     println!("Balance Sheet");
                     println!("From: {}", balance_sheet.from);
@@ -118,6 +117,14 @@ pub fn main() {
                 Err(err) => println!("Error: {}", err),
             }
         },
-        Commands::DeepDive { account_id } => todo!(),
+        Commands::DeepDive { account_id } => {
+            match client::deep_dive::query::get_analytics(account_id, connection) {
+                Ok(analysis) => {
+                    let writer = std::io::stdout();
+                    serde_json::to_writer(writer, &analysis).expect("Failed to write JSON");
+                },
+                Err(err) => println!("Error: {}", err),
+            }
+        },
     }
 }
