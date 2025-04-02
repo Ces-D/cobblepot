@@ -108,30 +108,48 @@ pub mod report {
         pub non_current_liabilities: Vec<ReportItem>,
     }
 
-    // TODO: These analytics
+    #[derive(Debug, Clone, serde::Serialize)]
     pub struct AccountLevelAnalytics {
-        age_in_days: i32,
-        days_since_last_transaction: i32,
+        pub age_in_days: i32,
     }
 
+    /// The balance milestones to track
+    pub const MILESTONE_VALUES: [f32; 14] = [
+        100_000_000.0,
+        10_000_000.0,
+        5_000_000.0,
+        1_000_000.0,
+        500_000.0,
+        250_000.0,
+        200_000.0,
+        150_000.0,
+        100_000.0,
+        50_000.0,
+        10_000.0,
+        5_000.0,
+        1_000.0,
+        500.0,
+    ];
+
+    #[derive(Debug, Clone, serde::Serialize)]
     pub struct FinancialAnalytics {
-        current_balance: f32,
-        average_balance: f32,
-        total_balance_updates: i32,
-        historical_max_balance: f32,
-        historical_min_balance: f32,
+        pub current_balance: f32,
+        pub average_balance: f32,
+        pub total_balance_updates: i32,
+        pub historical_max_balance: f32,
+        pub historical_min_balance: f32,
         /// The balance changes for the last 12 months
-        past_year_deltas: [f32; 12],
-    }
-
-    pub struct BehavioralAnalytics {
-        keywords: Vec<String>,
-        /// The average number of days between balance updates
-        average_update_regularity: i32,
+        pub past_year_deltas: [Option<f32>; 12],
         /// 500, 1_000, 5_000, 10_000, 50_000, 100_000, 150_000, 200_000, 250_000, 500_000, 1_000_000, 5_000_000, 10_000_000, 100_000_000  balance milestones
-        milestones: [(Option<chrono::NaiveDateTime>, f32); 14],
+        pub balance_milestone_dates: [Option<chrono::NaiveDateTime>; 14],
     }
 
+    #[derive(Debug, Clone, serde::Serialize)]
+    pub struct BehavioralAnalytics {
+        pub days_since_last_transaction: i32,
+    }
+
+    #[derive(Debug, Clone, serde::Serialize)]
     pub struct DeepDiveAnalysis {
         pub account: crate::client::account::AccountDetailed,
         pub account_level: AccountLevelAnalytics,
