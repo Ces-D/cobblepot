@@ -58,7 +58,7 @@ pub mod cli {
                 let d = NaiveDate::parse_from_str(s, "%Y-%m-%d")?;
                 let dt = d.and_hms_opt(0, 0, 0).expect("Midnight is a valid time");
                 Ok(dt)
-            },
+            }
         }
     }
 
@@ -70,7 +70,7 @@ pub mod cli {
                 let d = NaiveDate::parse_from_str(s, "%Y-%m-%d")?;
                 let dt = d.and_hms_opt(0, 0, 0).expect("Midnight is a valid time");
                 Ok(dt.to_string())
-            },
+            }
         }
     }
 
@@ -140,7 +140,8 @@ pub mod report {
         pub historical_min_balance: f32,
         /// The balance changes for the last 12 months
         pub past_year_deltas: [Option<f32>; 12],
-        /// 500, 1_000, 5_000, 10_000, 50_000, 100_000, 150_000, 200_000, 250_000, 500_000, 1_000_000, 5_000_000, 10_000_000, 100_000_000  balance milestones
+        /// 500, 1_000, 5_000, 10_000, 50_000, 100_000, 150_000, 200_000, 250_000, 500_000,
+        /// 1_000_000, 5_000_000, 10_000_000, 100_000_000  balance milestones
         pub balance_milestone_dates: [Option<chrono::NaiveDateTime>; 14],
     }
 
