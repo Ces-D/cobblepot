@@ -18,7 +18,7 @@ pub struct NewBalance {
     pub account_id: i32,
     #[arg(short, help = "Memo for this balance", required = true)]
     pub memo: String,
-    #[arg(short, help = "Amount of the balance", required = true)]
+    #[arg(short = 'n', help = "Amount of the balance", required = true)]
     pub amount: f32,
     #[arg(short, help = "Date the balance is entered", long_help=ISO8601_DATE_LONG_HELP, required = true, default_value_t = default_iso8601_variant_date(), value_parser = parse_iso8601_variant_date)]
     pub entered_on: String,
