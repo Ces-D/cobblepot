@@ -37,8 +37,8 @@ enum Commands {
 }
 
 pub fn main() {
-    let config = config::Config::read();
-    let connection = client::establish_connection(config.connection_url);
+    let config = config::Config::setup();
+    let connection = config.establish_connection();
 
     match Cli::parse().command {
         Commands::NewAccount(new_account) => {

@@ -1,3 +1,8 @@
+use diesel::{Connection, sqlite::SqliteConnection};
+use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
+
+const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Config {
     /// The path to the SQLite database file.
@@ -18,7 +23,19 @@ impl Default for Config {
 }
 
 impl Config {
-    pub fn read() -> Config {
+    pub fn setup() -> Config {
+        let config = Config::read();
+        if config.database_exists() {
+            config
+        } else {
+            println!("Creating database at {}", config.connection_url);
+            config.create_database_with_migrations();
+            println!("Database migrations successful.");
+            config
+        }
+    }
+
+    fn read() -> Config {
         let config_path = dirs::config_dir()
             .expect("Failed to get config directory")
             .join("cobblepot.json");
@@ -29,5 +46,23 @@ impl Config {
         } else {
             Config::default()
         }
+    }
+
+    fn database_exists(&self) -> bool {
+        let path = std::path::Path::new(&self.connection_url);
+        path.exists()
+    }
+
+    pub fn establish_connection(&self) -> SqliteConnection {
+        let connection = SqliteConnection::establish(&self.connection_url)
+            .unwrap_or_else(|e| panic!("Failed to connect, error: {}", e));
+        connection
+    }
+
+    fn create_database_with_migrations(&self) {
+        let mut connection = self.establish_connection();
+        connection
+            .run_pending_migrations(MIGRATIONS)
+            .expect("Failed to run migrations");
     }
 }
