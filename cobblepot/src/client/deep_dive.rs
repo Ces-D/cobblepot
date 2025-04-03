@@ -22,7 +22,9 @@ pub mod query {
         let opened_on =
             parse_iso8601_variant_datetime(&account.opened_on).expect("Failed to parse date");
         let age_in_days = chrono::Utc::now().naive_utc() - opened_on;
-        AccountLevelAnalytics { age_in_days: age_in_days.num_days() as i32 }
+        AccountLevelAnalytics {
+            age_in_days: age_in_days.num_days() as i32,
+        }
     }
 
     fn calculate_financial_analytics(entries: &Vec<BalanceDetailed>) -> FinancialAnalytics {
@@ -93,11 +95,11 @@ pub mod query {
                         Some(previous_b) => {
                             let delta = *b - previous_b;
                             past_year_deltas[*m as usize] = Some(delta);
-                        },
+                        }
                         None => {
                             // If there is no previous balance, we can't calculate a delta.
                             past_year_deltas[*m as usize] = None;
-                        },
+                        }
                     }
                 }
             }
@@ -118,7 +120,9 @@ pub mod query {
 
     fn calculate_behavioral_analytics(entries: &Vec<BalanceDetailed>) -> BehavioralAnalytics {
         if entries.is_empty() {
-            BehavioralAnalytics { days_since_last_transaction: 0 }
+            BehavioralAnalytics {
+                days_since_last_transaction: 0,
+            }
         } else {
             let mut sorted_entries = entries.clone();
             sorted_entries.sort_by_key(|entry| {
@@ -139,14 +143,18 @@ pub mod query {
         account_id: i32,
         mut connection: diesel::SqliteConnection,
     ) -> QueryResult<DeepDiveAnalysis> {
-        use crate::schema::account::dsl::{account, id as account_table_id};
-        use crate::schema::balance::dsl::{account_id as balance_account_id, balance};
+        use crate::schema::{
+            account::dsl::{account, id as account_table_id},
+            balance::dsl::{account_id as balance_account_id, balance},
+        };
 
         connection.transaction(|conn| {
-            let account_detailed =
-                account.filter(account_table_id.eq(account_id)).first::<AccountDetailed>(conn)?;
-            let account_balances_detailed =
-                balance.filter(balance_account_id.eq(account_id)).load::<BalanceDetailed>(conn)?;
+            let account_detailed = account
+                .filter(account_table_id.eq(account_id))
+                .first::<AccountDetailed>(conn)?;
+            let account_balances_detailed = balance
+                .filter(balance_account_id.eq(account_id))
+                .load::<BalanceDetailed>(conn)?;
 
             Ok(DeepDiveAnalysis {
                 account: account_detailed.clone(),

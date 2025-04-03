@@ -38,3 +38,7 @@ Options:
   -h, --help     Print help
   -V, --version  Print version
 ```
+
+## Config
+
+There is one single config parameter: `connection_url`. This is the path to the SQLite database file. If the parameter is not provided then the default path of `~/.local/share/cobblepot.db` will be used. The path may be a little different depending on your operating system.
