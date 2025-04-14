@@ -152,7 +152,7 @@ pub mod report {
 
     #[derive(Debug, Clone, serde::Serialize)]
     pub struct DeepDiveAnalysis {
-        pub account: crate::client::account::AccountDetailed,
+        pub account: crate::client::model::AccountDetailed,
         pub account_level: AccountLevelAnalytics,
         pub financial: FinancialAnalytics,
         pub behavioral: BehavioralAnalytics,
