@@ -44,7 +44,10 @@ impl Config {
             let reader = std::io::BufReader::new(file);
             serde_json::de::from_reader(reader).expect("Failed to parse config file")
         } else {
-            Config::default()
+            let buffer = std::fs::File::create(config_path).expect("Unable to create config file");
+            let config = Config::default();
+            serde_json::to_writer_pretty(buffer, &config).expect("Failed to write to config file");
+            config
         }
     }
 

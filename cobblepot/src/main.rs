@@ -1,4 +1,6 @@
 use clap::{Parser, Subcommand};
+use tabled::settings::style::BorderColor;
+use tabled::settings::{Color, Style};
 
 mod client;
 mod config;
@@ -14,12 +16,12 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    NewAccount(client::account::NewAccount),
-    EditAccount(client::account::EditAccount),
+    NewAccount(client::model::NewAccount),
+    EditAccount(client::model::EditAccount),
     #[command(about = "List Accounts")]
     ListAccounts,
-    NewBalance(client::balance::NewBalance),
-    EditBalance(client::balance::EditBalance),
+    NewBalance(client::model::NewBalance),
+    EditBalance(client::model::EditBalance),
     #[command(about = "List balance entries of an account")]
     ListBalances,
     #[command(
@@ -44,8 +46,8 @@ pub fn main() {
         Commands::NewAccount(new_account) => {
             match client::account::query::insert_new_account(new_account, connection) {
                 Ok(account) => {
-                    let table = tabled::Table::new(vec![account]);
-                    println!("{}", table);
+                    let table = create_table(vec![account]);
+                    print_table(table);
                 }
                 Err(err) => println!("Error: {}", err),
             }
@@ -53,24 +55,24 @@ pub fn main() {
         Commands::EditAccount(edit_account) => {
             match client::account::query::update_account(edit_account, connection) {
                 Ok(account) => {
-                    let table = tabled::Table::new(vec![account]);
-                    println!("{}", table);
+                    let table = create_table(vec![account]);
+                    print_table(table);
                 }
                 Err(err) => println!("Error: {}", err),
             }
         }
         Commands::ListAccounts => match client::account::query::list_accounts(connection) {
             Ok(accounts) => {
-                let table = tabled::Table::new(accounts);
-                println!("{}", table);
+                let table = create_table(accounts);
+                print_table(table);
             }
             Err(err) => println!("Error: {}", err),
         },
         Commands::NewBalance(new_balance) => {
             match client::balance::query::insert_new_balance(new_balance, connection) {
                 Ok(balance) => {
-                    let table = tabled::Table::new(vec![balance]);
-                    println!("{}", table);
+                    let table = create_table(vec![balance]);
+                    print_table(table);
                 }
                 Err(err) => println!("Error: {}", err),
             }
@@ -78,16 +80,16 @@ pub fn main() {
         Commands::EditBalance(edit_balance) => {
             match client::balance::query::update_balance(edit_balance, connection) {
                 Ok(balance) => {
-                    let table = tabled::Table::new(vec![balance]);
-                    println!("{}", table);
+                    let table = create_table(vec![balance]);
+                    print_table(table);
                 }
                 Err(err) => println!("Error: {}", err),
             }
         }
         Commands::ListBalances => match client::balance::query::list_balances(connection) {
             Ok(balances) => {
-                let table = tabled::Table::new(balances);
-                println!("{}", table);
+                let table = create_table(balances);
+                print_table(table);
             }
             Err(err) => println!("Error: {}", err),
         },
@@ -99,20 +101,18 @@ pub fn main() {
                     println!("To: {}", balance_sheet.to);
 
                     println!("Current Assets");
-                    let current_assets_table = tabled::Table::new(balance_sheet.current_assets);
-                    println!("{}", current_assets_table);
+                    let current_assets_table = create_table(balance_sheet.current_assets);
+                    print_table(current_assets_table);
                     println!("Current Liabilities");
-                    let current_liabilities_table =
-                        tabled::Table::new(balance_sheet.current_liabilities);
-                    println!("{}", current_liabilities_table);
+                    let current_liabilities_table = create_table(balance_sheet.current_liabilities);
+                    print_table(current_liabilities_table);
                     println!("Non-Current Assets");
-                    let non_current_assets_table =
-                        tabled::Table::new(balance_sheet.non_current_assets);
-                    println!("{}", non_current_assets_table);
+                    let non_current_assets_table = create_table(balance_sheet.non_current_assets);
+                    print_table(non_current_assets_table);
                     println!("Non-Current Liabilities");
                     let non_current_liabilities_table =
-                        tabled::Table::new(balance_sheet.non_current_liabilities);
-                    println!("{}", non_current_liabilities_table);
+                        create_table(balance_sheet.non_current_liabilities);
+                    print_table(non_current_liabilities_table);
                 }
                 Err(err) => println!("Error: {}", err),
             }
@@ -120,11 +120,29 @@ pub fn main() {
         Commands::DeepDive { account_id } => {
             match client::deep_dive::query::get_analytics(account_id, connection) {
                 Ok(analysis) => {
+                    println!("");
                     let writer = std::io::stdout();
-                    serde_json::to_writer(writer, &analysis).expect("Failed to write JSON");
+                    serde_json::to_writer_pretty(writer, &analysis).expect("Failed to write JSON");
                 }
                 Err(err) => println!("Error: {}", err),
             }
         }
     }
+}
+
+fn create_table<I, T>(iter: I) -> tabled::Table
+where
+    I: IntoIterator<Item = T>,
+    T: tabled::Tabled,
+{
+    let mut t = tabled::Table::new(iter);
+    t.with(Style::rounded());
+    t.with(BorderColor::filled(Color::BG_WHITE));
+    t
+}
+
+fn print_table(t: tabled::Table) {
+    println!("");
+    println!("{}", t);
+    println!("")
 }

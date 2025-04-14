@@ -8,8 +8,7 @@ pub mod query {
     };
 
     use crate::client::{
-        account::AccountDetailed,
-        balance::BalanceDetailed,
+        model::{AccountDetailed, BalanceDetailed},
         shared::{
             cli::parse_iso8601_variant_datetime,
             report::{

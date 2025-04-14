@@ -17,8 +17,7 @@ pub mod query {
     use diesel::{Connection, QueryResult, RunQueryDsl};
 
     use crate::client::{
-        account::AccountDetailed,
-        balance::BalanceDetailed,
+        model::{AccountDetailed, BalanceDetailed},
         shared::{
             cli::parse_iso8601_variant_datetime,
             report::{BalanceSheet, ReportItem},
