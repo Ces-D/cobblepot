@@ -46,5 +46,5 @@ There is one single config parameter: `connection_url`. This is the path to the 
 #### TODO
 
 - `deep-dive` `historical-min-balance` is 0.0 when only one entry is entered. This could be an error in logi since min should be the latest balance
-- `list-balances` command should list only the most recent balances and the output should also contain the account name
+- `list-balances` command should have the option to filter by account id
 - Add a recurring section. That takes in the interval of charge or income, the start date. Then calculates the monthly required balance to cover charges and total monthly income.

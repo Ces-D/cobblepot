@@ -25,7 +25,7 @@ pub struct NewAccount {
     pub owner: String,
     #[arg(short, help = "Type of the account", default_value = "asset")]
     pub account_type: Option<AccountType>,
-    #[arg(short, help = "Date the account was opened", long_help=ISO8601_DATE_LONG_HELP, default_value_t = default_iso8601_variant_date(), value_parser = parse_iso8601_variant_date)]
+    #[arg(short, help = "Date the account was opened", long_help=ISO8601_DATE_LONG_HELP, default_value_t = default_iso8601_variant_date(0), value_parser = parse_iso8601_variant_date)]
     pub opened_on: String,
 }
 
@@ -72,7 +72,7 @@ pub struct NewBalance {
     pub memo: String,
     #[arg(short = 'a', help = "Amount of the balance", required = true)]
     pub amount: f32,
-    #[arg(short, help = "Date the balance is entered", long_help=ISO8601_DATE_LONG_HELP, default_value_t = default_iso8601_variant_date(), value_parser = parse_iso8601_variant_date)]
+    #[arg(short, help = "Date the balance is entered", long_help=ISO8601_DATE_LONG_HELP, default_value_t = default_iso8601_variant_date(0), value_parser = parse_iso8601_variant_date)]
     pub entered_on: String,
 }
 

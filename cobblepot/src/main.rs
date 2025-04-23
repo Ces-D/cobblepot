@@ -113,6 +113,9 @@ pub fn main() {
                     let non_current_liabilities_table =
                         create_table(balance_sheet.non_current_liabilities);
                     print_table(non_current_liabilities_table);
+
+                    println!("Net Assets: {}", balance_sheet.net_assets);
+                    println!("Net Liabilities: {}", balance_sheet.net_liabilities);
                 }
                 Err(err) => println!("Error: {}", err),
             }

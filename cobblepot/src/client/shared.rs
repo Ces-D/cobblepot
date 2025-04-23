@@ -75,10 +75,18 @@ pub mod cli {
     }
 
     /// Get the current date as a Unix timestamp
-    pub fn default_iso8601_variant_date() -> String {
+    pub fn default_iso8601_variant_date(months_ago: i8) -> String {
         // Return it as a DateTime<Utc> at midnight
-        let now = Utc::now();
+        let mut now = Utc::now();
+        if months_ago != 0 {
+            let months_ago = chrono::Duration::days(30 * months_ago as i64);
+            now -= months_ago;
+        }
         now.format("%Y-%m-%d %H:%M:%S%.f").to_string()
+    }
+
+    pub fn format_as_locale_date_string(s: NaiveDateTime) -> String {
+        s.format("%A, %B %e, %Y %r").to_string()
     }
 
     /// A standard help message for ISO8601 dates
@@ -106,6 +114,8 @@ pub mod report {
         pub current_liabilities: Vec<ReportItem>,
         pub non_current_assets: Vec<ReportItem>,
         pub non_current_liabilities: Vec<ReportItem>,
+        pub net_assets: f32,
+        pub net_liabilities: f32,
     }
 
     #[derive(Debug, Clone, serde::Serialize)]
