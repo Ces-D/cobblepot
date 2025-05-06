@@ -23,7 +23,10 @@ enum Commands {
     NewBalance(client::model::NewBalance),
     EditBalance(client::model::EditBalance),
     #[command(about = "List balance entries of an account")]
-    ListBalances,
+    ListBalances {
+        #[arg(long, help = "Account ID to filter by")]
+        account_id: Option<i32>,
+    },
     #[command(
         about = "Calculate a BalanceSheet",
         long_about = "Summarize the balance of accounts based on which are currently opened"
@@ -86,13 +89,15 @@ pub fn main() {
                 Err(err) => println!("Error: {}", err),
             }
         }
-        Commands::ListBalances => match client::balance::query::list_balances(connection) {
-            Ok(balances) => {
-                let table = create_table(balances);
-                print_table(table);
+        Commands::ListBalances { account_id } => {
+            match client::balance::query::list_balances(connection, account_id) {
+                Ok(balances) => {
+                    let table = create_table(balances);
+                    print_table(table);
+                }
+                Err(err) => println!("Error: {}", err),
             }
-            Err(err) => println!("Error: {}", err),
-        },
+        }
         Commands::BalanceSheet(balance_sheet_command) => {
             match client::balance_sheet::query::get_balances(balance_sheet_command, connection) {
                 Ok(balance_sheet) => {

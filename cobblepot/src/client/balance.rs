@@ -55,23 +55,37 @@ pub mod query {
 
     pub fn list_balances(
         mut connection: diesel::SqliteConnection,
+        target_account_id: Option<i32>,
     ) -> QueryResult<Vec<DisplayBalanceDetailed>> {
         use crate::schema::account::dsl::{account, id as account_table_id, name as account_name};
         use crate::schema::balance::dsl::{
             account_id, amount, balance, entered_on, id as balance_table_id, memo,
         };
         connection.transaction(|conn| {
-            let res = balance
-                .inner_join(account.on(account_table_id.eq(account_id)))
-                .select((
-                    balance_table_id,
-                    memo,
-                    amount,
-                    entered_on,
-                    account_name,
-                    account_table_id,
-                ))
-                .load::<(i32, String, f32, String, String, i32)>(conn)?;
+            let res = match target_account_id {
+                Some(id) => FilterDsl::filter(balance, account_id.eq(id))
+                    .inner_join(account.on(account_table_id.eq(id)))
+                    .select((
+                        balance_table_id,
+                        memo,
+                        amount,
+                        entered_on,
+                        account_name,
+                        account_table_id,
+                    ))
+                    .load::<(i32, String, f32, String, String, i32)>(conn)?,
+                None => balance
+                    .inner_join(account.on(account_table_id.eq(account_id)))
+                    .select((
+                        balance_table_id,
+                        memo,
+                        amount,
+                        entered_on,
+                        account_name,
+                        account_table_id,
+                    ))
+                    .load::<(i32, String, f32, String, String, i32)>(conn)?,
+            };
             Ok(res
                 .iter()
                 .map(|val| DisplayBalanceDetailed {
