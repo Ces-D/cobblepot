@@ -1,7 +1,19 @@
 use diesel::{Connection, sqlite::SqliteConnection};
 use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
+use std::path::{Path, PathBuf};
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+
+/// The path to the config file for Cobblepot.
+fn config_path() -> PathBuf {
+    let home = std::env::var("HOME").expect("Failed to get home directory");
+    let config_dir = Path::new(&home).join(".config/cobblepot");
+    if !config_dir.exists() {
+        println!("Creating config directory at {}", config_dir.display());
+        std::fs::create_dir_all(&config_dir).expect("Failed to create config directory");
+    }
+    config_dir.join("cobblepot.json")
+}
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Config {
@@ -11,7 +23,12 @@ pub struct Config {
 
 impl Default for Config {
     fn default() -> Self {
-        let data_dir = dirs::data_local_dir().expect("Failed to get data local directory");
+        let home_dir = std::env::var("HOME").expect("Failed to get home directory");
+        let data_dir = Path::new(&home_dir).join(".local/share/cobblepot");
+        if !data_dir.exists() {
+            println!("Creating data local directory at {}", data_dir.display());
+            std::fs::create_dir_all(&data_dir).expect("Failed to create data local directory");
+        }
         let connection_url = data_dir.join("cobblepot.db");
         Config {
             connection_url: connection_url
@@ -35,10 +52,9 @@ impl Config {
         }
     }
 
+    /// Either reads or creates a default config file
     fn read() -> Config {
-        let config_path = dirs::config_dir()
-            .expect("Failed to get config directory")
-            .join("cobblepot.json");
+        let config_path = config_path();
         if config_path.exists() {
             let file = std::fs::File::open(config_path).expect("Failed to open config file");
             let reader = std::io::BufReader::new(file);
@@ -52,7 +68,7 @@ impl Config {
     }
 
     fn database_exists(&self) -> bool {
-        let path = std::path::Path::new(&self.connection_url);
+        let path = Path::new(&self.connection_url);
         path.exists()
     }
 
