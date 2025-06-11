@@ -45,6 +45,8 @@ There is one single config parameter: `connection_url`. This is the path to the 
 
 #### TODO
 
-- Improve the display of dates and amounts 
 - `deep-dive` `historical-min-balance` is 0.0 when only one entry is entered. This could be an error in logi since min should be the latest balance
 - Add a recurring section. That takes in the interval of charge or income, the start date. Then calculates the monthly required balance to cover charges and total monthly income.
+- Add a command to generate a recurrence rule since its difficult to do manually
+- connect to google calendar for updates
+- create system to add, update, and delte the created events also make these update the local db
