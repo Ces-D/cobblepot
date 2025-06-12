@@ -146,7 +146,18 @@ pub fn handle(
             CobblepotCommand::Report => {
                 let open_report =
                     serde_json::from_str::<crate::report::model::CliOpenReport>(&data)?;
-                todo!()
+                match open_report.report_tye {
+                    crate::shared::ReportType::BalanceSheet => {
+                        let balance_sheet = crate::report::service::create_balance_sheet_report(
+                            open_report,
+                            connection,
+                        )?;
+                        let res = serde_json::to_string_pretty(&balance_sheet)?;
+                        Ok(res)
+                    }
+                    crate::shared::ReportType::DeepDiveAccount => todo!(),
+                    crate::shared::ReportType::DeepDiveRecurring => todo!(),
+                }
             }
             _ => Err(CobblepotError::CliCommandError(
                 "Unsupported `open` command. Use --help for more instruction",

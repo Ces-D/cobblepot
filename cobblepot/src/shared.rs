@@ -1,15 +1,24 @@
-use diesel::FromSqlRow;
 use serde::{Deserialize, Serialize};
 
 #[repr(i32)]
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, FromSqlRow)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum AccountType {
     Asset,
     Liability,
 }
 
+impl From<i32> for AccountType {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => AccountType::Asset,
+            1 => AccountType::Liability,
+            _ => panic!("Invalid AccountType value"),
+        }
+    }
+}
+
 #[repr(i32)]
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, FromSqlRow)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum RecurringStatus {
     Ongoing,
     Completed,
@@ -20,8 +29,10 @@ pub enum RecurringStatus {
 pub enum ReportType {
     BalanceSheet,
     DeepDiveAccount,
+    DeepDiveRecurring,
 }
 
+/// Previous versions of the cli stored dates in text fields. Current versions store them as timestamps.
 pub const DATETIME_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 
 pub type CobblepotResult<T> = Result<T, CobblepotError>;
@@ -30,6 +41,7 @@ pub enum CobblepotError {
     DieselError(diesel::result::Error),
     JSONSerializationError(serde_json::Error),
     CliCommandError(&'static str),
+    LogicError(String),
     RruleError(rrule::RRuleError),
 }
 

@@ -39,6 +39,7 @@ pub fn main() {
                 eprintln!("{}", error.to_string())
             }
             shared::CobblepotError::CliCommandError(error) => eprintln!("{}", error.to_string()),
+            shared::CobblepotError::LogicError(error) => eprintln!("{}", error),
             shared::CobblepotError::RruleError(error) => eprintln!("{}", error.to_string()),
         },
     }
