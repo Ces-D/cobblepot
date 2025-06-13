@@ -18,25 +18,73 @@ Inspired by its namesake—the cunning Batman villain—Cobblepot embodies strat
 
 ## Commands
 
+### `cobblepot --help`
+
 ```bash
-A personal finance journal
+Cobblepot is a command-line personal finance tool designed to empower users with a streamlined, efficient way to manage their financial data
 
 Usage: cobblepot <COMMAND>
 
 Commands:
-  new-account    Add a new account
-  edit-account   Edit an existing account
-  list-accounts  List Accounts
-  new-balance    Add an updated balance entry to an account
-  edit-balance   Edit an existing balance entry
-  list-balances  List balance entries of an account
-  balance-sheet  Calculate a BalanceSheet
-  deep-dive      Dive deep into account analytics
-  help           Print this message or the help of the given subcommand(s)
+  open    Open a new entity
+  update  Update an existing entity
+  close   Close an existing entity
+  apply   Apply an effect to balances
+  help    Print this message or the help of the given subcommand(s)
 
 Options:
   -h, --help     Print help
   -V, --version  Print version
+```
+
+### `cobblepot open --help`
+
+```bash
+Open a new entity
+
+Usage: cobblepot open <COMMAND>
+
+Commands:
+  account    Open a new account
+  balance    Open a new balance
+  recurring  Open a new recurring entity
+  report     Generate a report
+  help       Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help  Print help
+```
+
+### `cobblepot update --help`
+
+```bash
+Update an existing entity
+
+Usage: cobblepot update <COMMAND>
+
+Commands:
+  account  Update an existing account
+  balance  Update an existing balance
+  help     Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help  Print help
+```
+
+### `cobblepot close --help`
+
+```bash
+Close an existing entity
+
+Usage: cobblepot close <COMMAND>
+
+Commands:
+  account    Close an existing account
+  recurring  Close an existing recurring entity
+  help       Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help  Print help
 ```
 
 ## Config

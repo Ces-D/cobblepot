@@ -101,11 +101,11 @@ pub fn command() -> Command {
         .subcommand(
             Command::new(CobblepotCommand::Close.as_ref())
                 .about("Close an existing entity")
-                .after_help(CliCloseAccount::example())
                 .subcommand_required(true)
                 .subcommands([
                     Command::new(CobblepotCommand::Account.as_ref())
                         .about("Close an existing account")
+                        .after_help(CliCloseAccount::example())
                         .arg(
                             Arg::new("data")
                                 .help("JSON object containing close account data")
