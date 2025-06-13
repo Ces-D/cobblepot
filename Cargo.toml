@@ -1,2 +1,9 @@
 [workspace]
-members = ["cobblepot"]
+members = ["cli_docs_macro", "cobblepot"]
+
+[workspace.package]
+name = "cobblepot"
+version = "0.2.0"
+description = "Cobblepot is a command-line personal finance tool designed to empower users with a streamlined, efficient way to manage their financial data"
+edition = "2024"
+authors = ["Cesar Diaz"]

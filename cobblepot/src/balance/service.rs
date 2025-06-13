@@ -1,7 +1,9 @@
-use crate::balance::model::{
-    Balance, CliOpenBalance, CliUpdateBalance, InsertableBalance, UpdatableBalance,
+use crate::{
+    balance::model::{
+        Balance, CliOpenBalance, CliUpdateBalance, InsertableBalance, UpdatableBalance,
+    },
+    schema::balance::dsl::balance,
 };
-use crate::schema::balance::dsl::balance;
 use diesel::{Connection, QueryResult, RunQueryDsl, insert_into, update};
 
 pub fn insert_new_balance(

@@ -1,11 +1,18 @@
 use std::collections::HashMap;
 
 use crate::{
-    report::model::{AccountBalance, BalanceSheet, CliOpenReport, LoadAccountBalance},
-    schema::{account::dsl as account_dsl, balance::dsl as balance_dsl},
-    shared::{AccountType, CobblepotError, CobblepotResult},
+    recurring_transation::recurrance::recurrance_status,
+    report::model::{
+        AccountBalance, AccountDeepDive, BalanceSheet, ChangeSnapShot, ChangeTimeline,
+        CliOpenReport, LoadAccountBalance, SimpleRecurringTransaction,
+    },
+    schema::{
+        account::dsl as account_dsl, balance::dsl as balance_dsl,
+        recurring_transactions::dsl as recurring_dsl,
+    },
+    shared::{AccountType, CobblepotError, CobblepotResult, RecurringStatus},
 };
-use chrono::{DateTime, Months, Utc};
+use chrono::{DateTime, Datelike, Months, NaiveDate, Utc};
 use diesel::SqliteConnection;
 
 fn get_balance_sheet_data(
@@ -55,7 +62,7 @@ pub fn create_balance_sheet_report(
     let to = args.to.unwrap_or(Utc::now());
 
     if from > to {
-        return Err(CobblepotError::LogicError("from date must be before to date".to_string()));
+        return Err(CobblepotError::LogicError("from date must be before to date"));
     }
 
     let data = get_balance_sheet_data(connection, from, to)?;
@@ -99,9 +106,130 @@ pub fn create_balance_sheet_report(
     })
 }
 
+fn get_deep_dive_account_data(
+    mut connection: SqliteConnection,
+    id: i32,
+) -> CobblepotResult<(
+    crate::account::model::Account,
+    Vec<crate::balance::model::Balance>,
+    Vec<crate::recurring_transation::model::RecurringTransaction>,
+)> {
+    use crate::{
+        account::model::Account, balance::model::Balance,
+        recurring_transation::model::RecurringTransaction,
+    };
+    use diesel::{Connection, ExpressionMethods, QueryDsl, RunQueryDsl};
+    connection.transaction(|conn| {
+        let acct = account_dsl::account.filter(account_dsl::id.eq(id)).first::<Account>(conn)?;
+        let balances = balance_dsl::balance
+            .filter(balance_dsl::account_id.eq(id))
+            .order(balance_dsl::entered_on.desc())
+            .load::<Balance>(conn)?;
+        // TODO: Change the status to be a calulated field. Add a new column called `was_closed` to signify manual closing prior to completion.
+        // Currently, to update the status, we have to calculate them anyway, and then determine which ones need to be updated. Since we are still calculating in a loop. Lets just calculate them always.
+        let transactions = recurring_dsl::recurring_transactions
+            .filter(recurring_dsl::account_id.eq(id))
+            .load::<RecurringTransaction>(conn)?;
+        Ok((acct, balances, transactions))
+    })
+}
+
 pub fn create_deep_dive_account_report(
     args: CliOpenReport,
-    mut connection: diesel::SqliteConnection,
-) {
-    // TODO: Implement deep dive account report creation
+    connection: SqliteConnection,
+) -> CobblepotResult<AccountDeepDive> {
+    let from = args.from.unwrap_or(
+        Utc::now().checked_sub_months(Months::new(6)).expect("Failed to calculate date"),
+    );
+    let to = args.to.unwrap_or(Utc::now());
+
+    if from > to {
+        return Err(CobblepotError::LogicError("from date must be before to date"));
+    }
+
+    if args.id.is_none() {
+        return Err(CobblepotError::LogicError("Account ID is required"));
+    }
+    let id = args.id.unwrap();
+
+    let (account, balances, recurrings) = get_deep_dive_account_data(connection, id)?;
+    let mut recent: Option<AccountBalance> = None;
+    let total_balance_entry_count = balances.len();
+
+    if let Some(balance) = balances.first() {
+        recent = Some(AccountBalance {
+            account_id: account.id,
+            balance_id: balance.id,
+            name: account.name.clone(),
+            entered_on: balance.entered_on.and_utc(),
+            amount: balance.amount,
+        });
+    }
+
+    // Determining like this because `balances` contains all entries since account creation
+    let mut timeline_entry_count = 0; // total number of entries in timeframe
+    let mut timeline_snaps: Vec<ChangeSnapShot> = Vec::new();
+    let mut current_m: u32 = 0; // current loop's month
+    let mut current_y: i32 = 0; // current loop's year
+    let mut current_m_entry_count = 0; // current balance entries in month
+    let mut current_m_total: f32 = 0.0; // sum of balance amounts in month
+
+    for b in balances.into_iter() {
+        if b.entered_on < to.naive_utc() && b.entered_on > from.naive_utc() {
+            timeline_entry_count += 1;
+            if b.entered_on.month() != current_m || b.entered_on.year() != current_y {
+                if current_m != 0 {
+                    // We calculate the snapshot for this month since we have iterated through its balances
+                    timeline_snaps.push(ChangeSnapShot {
+                        timeframe: NaiveDate::from_ymd_opt(current_y, current_m, 1)
+                            .expect("Invalid date. Possible error in loop tracking")
+                            .and_hms_opt(0, 0, 0)
+                            .expect("Invalid time")
+                            .and_utc(),
+                        average: current_m_total / current_m_entry_count as f32,
+                    });
+                }
+
+                // starting new month track; resetting
+                current_m_entry_count = 0;
+                current_m = b.entered_on.month();
+                current_y = b.entered_on.year();
+                current_m_total = 0.0;
+            }
+            // adding balance to current month's total
+            current_m_total += b.amount;
+            current_m_entry_count += 1;
+        }
+    }
+
+    Ok(AccountDeepDive {
+        id: account.id,
+        name: account.name,
+        description: account.description,
+        owner: account.owner,
+        account_type: account.account_type.into(),
+        opened_on: account.opened_on.and_utc(),
+        closed_on: account.closed_on.map(|v| v.and_utc()),
+
+        total_entries: total_balance_entry_count,
+        recent,
+
+        timeline: ChangeTimeline {
+            from,
+            to,
+            entry_count: timeline_entry_count,
+            snapshots: timeline_snaps,
+        },
+        recurring: recurrings
+            .into_iter()
+            .map(|v| SimpleRecurringTransaction {
+                id: v.id,
+                name: v.name,
+                amount: v.amount,
+                account_type: v.account_type.into(),
+                status: recurrance_status(v.rrule, v.start_date, v.closed)
+                    .unwrap_or(RecurringStatus::Ongoing),
+            })
+            .collect(),
+    })
 }

@@ -41,7 +41,7 @@ pub enum CobblepotError {
     DieselError(diesel::result::Error),
     JSONSerializationError(serde_json::Error),
     CliCommandError(&'static str),
-    LogicError(String),
+    LogicError(&'static str),
     RruleError(rrule::RRuleError),
 }
 

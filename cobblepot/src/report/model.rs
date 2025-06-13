@@ -20,6 +20,18 @@ pub struct AccountBalance {
     pub amount: f32,
 }
 
+impl Hash for AccountBalance {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.account_id.hash(state);
+    }
+}
+impl PartialEq for AccountBalance {
+    fn eq(&self, other: &Self) -> bool {
+        self.account_id == other.account_id
+    }
+}
+impl Eq for AccountBalance {}
+
 /// A data unit returned from the database
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LoadAccountBalance {
@@ -44,18 +56,6 @@ impl From<&LoadAccountBalance> for AccountBalance {
     }
 }
 
-impl Hash for AccountBalance {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.account_id.hash(state);
-    }
-}
-impl PartialEq for AccountBalance {
-    fn eq(&self, other: &Self) -> bool {
-        self.account_id == other.account_id
-    }
-}
-impl Eq for AccountBalance {}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BalanceSheet {
     pub from: DateTime<Utc>,
@@ -79,7 +79,7 @@ pub struct SimpleRecurringTransaction {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChangeSnapShot {
     pub timeframe: DateTime<Utc>,
-    pub average: Option<f32>,
+    pub average: f32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -101,9 +101,8 @@ pub struct AccountDeepDive {
     pub closed_on: Option<DateTime<Utc>>,
 
     pub recent: Option<AccountBalance>,
-    pub total_entries: i32,
-    pub percent_delta: f32,
-    pub timeline: ChangeTimeline,
+    pub total_entries: usize,
 
+    pub timeline: ChangeTimeline,
     pub recurring: Vec<SimpleRecurringTransaction>,
 }

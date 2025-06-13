@@ -1,12 +1,14 @@
-use chrono::{DateTime, Month, TimeZone, Utc};
+use std::str::FromStr;
+
+use chrono::{DateTime, Month, NaiveDateTime, TimeZone, Utc};
 use rrule::{Frequency, NWeekday, RRule, RRuleError, RRuleSet, Tz, Validated, Weekday};
 use serde::{Deserialize, Serialize};
 
 use crate::shared::RecurringStatus;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Reccurance {
-    dt_start: DateTime<Utc>,
+pub struct Recurrance {
+    pub dt_start: DateTime<Utc>,
     freq: Frequency,
     interval: u16,
     count: u8,
@@ -23,7 +25,7 @@ pub struct Reccurance {
     by_second: Option<Vec<u8>>,
 }
 
-impl Reccurance {
+impl Recurrance {
     pub fn rrule(&self) -> Result<RRule<Validated>, RRuleError> {
         // Convert DateTime<Utc> to DateTime<Tz>
         let tz_dt_start = Tz::UTC.from_utc_datetime(&self.dt_start.naive_utc());
@@ -85,22 +87,31 @@ impl Reccurance {
 
         unvalidated.validate(tz_dt_start)
     }
+}
 
-    pub fn status(&self) -> Result<RecurringStatus, RRuleError> {
-        let validated = self.rrule()?;
-        let tz_dt_start = Tz::UTC.from_utc_datetime(&self.dt_start.naive_utc());
-        let rrule_iter = RRuleSet::new(tz_dt_start).rrule(validated);
-        let recurrance_result = rrule_iter.all(u8::MAX.into());
-        if recurrance_result.limited {
-            println!("Possibly false positive since entire set not included")
-        }
-
-        let today = Utc::now();
-        for date in recurrance_result.dates {
-            if date > today {
-                return Ok(RecurringStatus::Ongoing);
-            }
-        }
-        Ok(RecurringStatus::Completed)
+pub fn recurrance_status(
+    rrule: String,
+    dt_start: NaiveDateTime,
+    closed: bool,
+) -> Result<RecurringStatus, RRuleError> {
+    if closed {
+        return Ok(RecurringStatus::Closed);
     }
+
+    let unvalidated = RRule::from_str(rrule.as_str())?;
+    let tz_dt_start = Tz::UTC.from_utc_datetime(&dt_start);
+    let validated = unvalidated.validate(tz_dt_start)?;
+    let rrule_iter = RRuleSet::new(tz_dt_start).rrule(validated);
+    let recurrance_result = rrule_iter.all(u8::MAX.into());
+    if recurrance_result.limited {
+        println!("Possibly false positive since entire set not included")
+    }
+
+    let today = Utc::now();
+    for date in recurrance_result.dates {
+        if date > today {
+            return Ok(RecurringStatus::Ongoing);
+        }
+    }
+    Ok(RecurringStatus::Completed)
 }

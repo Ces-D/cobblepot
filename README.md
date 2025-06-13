@@ -45,11 +45,7 @@ There is one single config parameter: `connection_url`. This is the path to the 
 
 #### TODO
 
-- Add a way to track the last time a recurring transaction was applied
 - Add a recurring apply command. To apply any recurring transactions that affected an account balance since the last time it was applied
-- Add a recurring section. That takes in the interval of charge or income, the start date. Then calculates the monthly required balance to cover charges and total monthly income.
 - connect to google calendar for updates
-- create system to add, update, and delte the created events also make these update the local db
-- Once complete, bump major version of app
-- Create detailed documentation for the project
+- create system to add, update, and delete the created events also make these update the local db
 - Improve the display of the json dates

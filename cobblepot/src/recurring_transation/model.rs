@@ -1,21 +1,31 @@
-use super::recurrance::Reccurance;
-use crate::schema::recurring_transactions;
-use crate::shared::AccountType;
+use super::recurrance::Recurrance;
+use crate::{schema::recurring_transactions, shared::AccountType};
+use chrono::NaiveDateTime;
+use cli_docs_macro::CliDocs;
 use diesel::prelude::{Identifiable, Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, CliDocs)]
 pub struct CliOpenRecurringTransaction {
+    #[cli_docs(description = "Name of the recurring transaction")]
     pub name: String,
+    #[cli_docs(description = "Description of the recurring transaction")]
     pub description: Option<String>,
+    #[cli_docs(description = "Amount of the recurring transaction")]
     pub amount: f32,
+    #[cli_docs(
+        default = "0",
+        description = "Impact of the recurring transaction on the account. Asset=0, Liability=1"
+    )]
     pub account_type: Option<AccountType>,
-    pub recurrance: Reccurance,
+    pub recurrance: Recurrance,
+    #[cli_docs(description = "ID of the account associated with the recurring transaction")]
     pub account_id: i32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, CliDocs)]
 pub struct CliCloseRecurringTransaction {
+    #[cli_docs(description = "ID of the recurring transaction to close")]
     pub id: i32,
 }
 
@@ -28,7 +38,8 @@ pub struct InsertableRecurringTransaction {
     pub account_type: i32,
     pub amount: f32,
     pub rrule: String,
-    pub status: i32,
+    pub start_date: NaiveDateTime,
+    pub closed: bool,
     pub account_id: i32,
 }
 
@@ -42,7 +53,8 @@ impl TryFrom<CliOpenRecurringTransaction> for InsertableRecurringTransaction {
             account_type: value.account_type.unwrap_or(AccountType::Asset) as i32,
             amount: value.amount,
             rrule: value.recurrance.rrule()?.to_string(),
-            status: value.recurrance.status()? as i32,
+            start_date: value.recurrance.dt_start.naive_utc(),
+            closed: false,
             account_id: value.account_id,
         })
     }
@@ -58,6 +70,7 @@ pub struct RecurringTransaction {
     pub account_type: i32,
     pub amount: f32,
     pub rrule: String,
-    pub status: i32,
+    pub start_date: NaiveDateTime,
+    pub closed: bool,
     pub account_id: i32,
 }

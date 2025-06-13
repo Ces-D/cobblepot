@@ -1,9 +1,11 @@
-use crate::recurring_transation::model::{
-    CliCloseRecurringTransaction, CliOpenRecurringTransaction, InsertableRecurringTransaction,
-    RecurringTransaction,
+use crate::{
+    recurring_transation::model::{
+        CliCloseRecurringTransaction, CliOpenRecurringTransaction, InsertableRecurringTransaction,
+        RecurringTransaction,
+    },
+    schema::recurring_transactions::dsl::{closed, id, recurring_transactions},
+    shared::CobblepotError,
 };
-use crate::schema::recurring_transactions::dsl::{id, recurring_transactions, status};
-use crate::shared::{CobblepotError, RecurringStatus};
 use diesel::{
     Connection, ExpressionMethods, QueryDsl, QueryResult, RunQueryDsl, insert_into, update,
 };
@@ -27,7 +29,7 @@ pub fn close_recurring_transaction(
 ) -> QueryResult<usize> {
     connection.transaction(|conn| {
         let res = update(recurring_transactions.filter(id.eq(args.id)))
-            .set(status.eq(RecurringStatus::Closed as i32))
+            .set(closed.eq(true))
             .execute(conn)?;
         Ok(res)
     })

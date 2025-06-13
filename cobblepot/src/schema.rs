@@ -30,7 +30,8 @@ diesel::table! {
         account_type -> Integer,
         amount -> Float,
         rrule -> Text,
-        status -> Integer,
+        start_date -> Timestamp,
+        closed -> Bool,
         account_id -> Integer,
     }
 }
@@ -38,8 +39,4 @@ diesel::table! {
 diesel::joinable!(balance -> account (account_id));
 diesel::joinable!(recurring_transactions -> account (account_id));
 
-diesel::allow_tables_to_appear_in_same_query!(
-    account,
-    balance,
-    recurring_transactions,
-);
+diesel::allow_tables_to_appear_in_same_query!(account, balance, recurring_transactions,);

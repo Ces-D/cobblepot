@@ -2,7 +2,12 @@ use clap::{Arg, Command, crate_description, crate_name, crate_version};
 use diesel::SqliteConnection;
 use strum::{AsRefStr, EnumString};
 
-use crate::shared::{CobblepotError, CobblepotResult};
+use crate::{
+    account::model::{CliCloseAccount, CliOpenAccount, CliUpdateAccount},
+    balance::model::{CliOpenBalance, CliUpdateBalance},
+    recurring_transation::model::CliOpenRecurringTransaction,
+    shared::{CobblepotError, CobblepotResult},
+};
 
 #[derive(AsRefStr, EnumString, PartialEq)]
 #[strum(serialize_all = "lowercase")]
@@ -10,6 +15,7 @@ pub enum CobblepotCommand {
     Open,
     Update,
     Close,
+    Apply,
     Account,
     Balance,
     Recurring,
@@ -29,25 +35,31 @@ pub fn command() -> Command {
                 .subcommands([
                     Command::new(CobblepotCommand::Account.as_ref())
                         .about("Open a new account")
+                        .after_help(CliOpenAccount::example())
                         .arg(
                             Arg::new("data")
                                 .help("JSON object containing open account data")
+                                .long_help(CliOpenAccount::help())
                                 .value_parser(clap::builder::NonEmptyStringValueParser::new())
                                 .required(true),
                         ),
                     Command::new(CobblepotCommand::Balance.as_ref())
                         .about("Open a new balance")
+                        .after_help(CliOpenBalance::example())
                         .arg(
                             Arg::new("data")
                                 .help("JSON object containing open balance data")
+                                .long_help(CliOpenBalance::help())
                                 .value_parser(clap::builder::NonEmptyStringValueParser::new())
                                 .required(true),
                         ),
                     Command::new(CobblepotCommand::Recurring.as_ref())
                         .about("Open a new recurring entity")
+                        .after_help(CliOpenRecurringTransaction::example())
                         .arg(
                             Arg::new("data")
                                 .help("JSON object containing open recurring transaction data")
+                                .long(CliOpenRecurringTransaction::help())
                                 .value_parser(clap::builder::NonEmptyStringValueParser::new())
                                 .required(true),
                         ),
@@ -66,17 +78,21 @@ pub fn command() -> Command {
                 .subcommands([
                     Command::new(CobblepotCommand::Account.as_ref())
                         .about("Update an existing account")
+                        .after_help(CliUpdateAccount::example())
                         .arg(
                             Arg::new("data")
                                 .help("JSON object containing update account data")
+                                .long_help(CliUpdateAccount::help())
                                 .value_parser(clap::builder::NonEmptyStringValueParser::new())
                                 .required(true),
                         ),
                     Command::new(CobblepotCommand::Balance.as_ref())
                         .about("Update an existing balance")
+                        .after_help(CliUpdateBalance::example())
                         .arg(
                             Arg::new("data")
                                 .help("JSON object containing update balance data")
+                                .long_help(CliUpdateBalance::help())
                                 .value_parser(clap::builder::NonEmptyStringValueParser::new())
                                 .required(true),
                         ),
@@ -85,6 +101,7 @@ pub fn command() -> Command {
         .subcommand(
             Command::new(CobblepotCommand::Close.as_ref())
                 .about("Close an existing entity")
+                .after_help(CliCloseAccount::example())
                 .subcommand_required(true)
                 .subcommands([
                     Command::new(CobblepotCommand::Account.as_ref())
@@ -92,6 +109,7 @@ pub fn command() -> Command {
                         .arg(
                             Arg::new("data")
                                 .help("JSON object containing close account data")
+                                .long_help(CliCloseAccount::help())
                                 .value_parser(clap::builder::NonEmptyStringValueParser::new())
                                 .required(true),
                         ),
@@ -104,6 +122,19 @@ pub fn command() -> Command {
                                 .required(true),
                         ),
                 ]),
+        )
+        .subcommand(
+            Command::new(CobblepotCommand::Apply.as_ref())
+                .about("Apply an effect to balances")
+                .subcommand_required(true)
+                .subcommands([Command::new(CobblepotCommand::Recurring.as_ref())
+                    .about("Apply the effect of a recurring transaction to its account")
+                    .arg(
+                        Arg::new("data")
+                            .help("JSON object containing close recurring transaction data")
+                            .value_parser(clap::builder::NonEmptyStringValueParser::new())
+                            .required(true),
+                    )]),
         )
 }
 
@@ -155,7 +186,14 @@ pub fn handle(
                         let res = serde_json::to_string_pretty(&balance_sheet)?;
                         Ok(res)
                     }
-                    crate::shared::ReportType::DeepDiveAccount => todo!(),
+                    crate::shared::ReportType::DeepDiveAccount => {
+                        let deep_dive = crate::report::service::create_deep_dive_account_report(
+                            open_report,
+                            connection,
+                        )?;
+                        let res = serde_json::to_string_pretty(&deep_dive)?;
+                        Ok(res)
+                    }
                     crate::shared::ReportType::DeepDiveRecurring => todo!(),
                 }
             }

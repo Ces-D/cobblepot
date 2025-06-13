@@ -1,10 +1,11 @@
-use crate::schema::account;
-use crate::shared::AccountType;
-use chrono::NaiveDateTime;
-use chrono::{DateTime, Utc};
-use diesel::Selectable;
-use diesel::prelude::{AsChangeset, Identifiable, Insertable, Queryable};
-use diesel::sqlite::Sqlite;
+use crate::{schema::account, shared::AccountType};
+use chrono::{DateTime, NaiveDateTime, Utc};
+use cli_docs_macro::CliDocs;
+use diesel::{
+    Selectable,
+    prelude::{AsChangeset, Identifiable, Insertable, Queryable},
+    sqlite::Sqlite,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -12,30 +13,45 @@ pub struct CliGetAccount {
     pub id: i32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, CliDocs)]
 pub struct CliOpenAccount {
+    #[cli_docs(description = "The name of the account")]
     pub name: String,
+    #[cli_docs(description = "The description of the account")]
     pub description: Option<String>,
+    #[cli_docs(description = "The owner of the account")]
     pub owner: Option<String>,
+    #[cli_docs(default = "0", description = "The type of the account. Asset=0, Liability=1")]
     pub account_type: Option<AccountType>,
+    #[cli_docs(default = "Utc::now()", description = "The date and time the account was opened")]
     pub opened_on: Option<DateTime<Utc>>,
+    #[cli_docs(description = "The date and time the account was closed")]
     pub closed_on: Option<DateTime<Utc>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, CliDocs)]
 pub struct CliUpdateAccount {
+    #[cli_docs(description = "The ID of the account")]
     pub id: i32,
+    #[cli_docs(description = "The new name of the account")]
     pub name: Option<String>,
+    #[cli_docs(description = "The new description of the account")]
     pub description: Option<String>,
+    #[cli_docs(description = "The new owner of the account")]
     pub owner: Option<String>,
+    #[cli_docs(description = "The new type of the account. Asset=0, Liability=1")]
     pub account_type: Option<AccountType>,
+    #[cli_docs(description = "The new date and time the account was opened")]
     pub opened_on: Option<DateTime<Utc>>,
+    #[cli_docs(description = "The new date and time the account was closed")]
     pub closed_on: Option<DateTime<Utc>>,
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, CliDocs)]
 pub struct CliCloseAccount {
+    #[cli_docs(description = "The ID of the account")]
     pub id: i32,
+    #[cli_docs(default = "Utc::now()", description = "The date and time the account was closed")]
     pub closed_on: Option<DateTime<Utc>>,
 }
 

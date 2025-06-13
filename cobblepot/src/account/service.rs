@@ -1,9 +1,9 @@
-use crate::schema::account::dsl::{account, closed_on, id};
 use crate::{
     account::model::{
         Account, CliCloseAccount, CliOpenAccount, CliUpdateAccount, InsertableAccount,
         UpdatableAccount,
     },
+    schema::account::dsl::{account, closed_on, id},
     shared::DATETIME_FORMAT,
 };
 use chrono::Utc;
