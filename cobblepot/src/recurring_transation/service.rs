@@ -1,7 +1,7 @@
 use crate::{
     recurring_transation::model::{
-        CliCloseRecurringTransaction, CliOpenRecurringTransaction, InsertableRecurringTransaction,
-        RecurringTransaction,
+        InsertableRecurringTransaction, JSONCloseRecurringTransaction,
+        JSONOpenRecurringTransaction, RecurringTransaction,
     },
     schema::recurring_transactions::dsl::{closed, id, recurring_transactions},
     shared::CobblepotError,
@@ -11,7 +11,7 @@ use diesel::{
 };
 
 pub fn insert_new_recurring_transaction(
-    args: CliOpenRecurringTransaction,
+    args: JSONOpenRecurringTransaction,
     mut connection: diesel::SqliteConnection,
 ) -> Result<RecurringTransaction, CobblepotError> {
     connection.transaction(|conn| {
@@ -24,7 +24,7 @@ pub fn insert_new_recurring_transaction(
 }
 
 pub fn close_recurring_transaction(
-    args: CliCloseRecurringTransaction,
+    args: JSONCloseRecurringTransaction,
     mut connection: diesel::SqliteConnection,
 ) -> QueryResult<usize> {
     connection.transaction(|conn| {

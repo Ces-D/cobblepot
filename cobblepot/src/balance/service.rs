@@ -1,13 +1,13 @@
 use crate::{
     balance::model::{
-        Balance, CliOpenBalance, CliUpdateBalance, InsertableBalance, UpdatableBalance,
+        Balance, InsertableBalance, JSONOpenBalance, JSONUpdateBalance, UpdatableBalance,
     },
     schema::balance::dsl::balance,
 };
 use diesel::{Connection, QueryResult, RunQueryDsl, insert_into, update};
 
 pub fn insert_new_balance(
-    args: CliOpenBalance,
+    args: JSONOpenBalance,
     mut connection: diesel::SqliteConnection,
 ) -> QueryResult<Balance> {
     connection.transaction(|conn| {
@@ -18,7 +18,7 @@ pub fn insert_new_balance(
 }
 
 pub fn update_balance(
-    args: CliUpdateBalance,
+    args: JSONUpdateBalance,
     mut connection: diesel::SqliteConnection,
 ) -> QueryResult<Balance> {
     connection.transaction(|conn| {

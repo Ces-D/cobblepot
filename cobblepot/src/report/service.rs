@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
 use crate::{
-    recurring_transation::recurrance::recurrance_status,
+    recurring_transation::recurrance::{recurrance_dates, recurrance_status},
     report::model::{
         AccountBalance, AccountDeepDive, BalanceSheet, ChangeSnapShot, ChangeTimeline,
-        CliOpenReport, LoadAccountBalance, SimpleRecurringTransaction,
+        JSONOpenReport, LoadAccountBalance, SimpleRecurringTransaction,
     },
     schema::{
         account::dsl as account_dsl, balance::dsl as balance_dsl,
@@ -53,7 +53,7 @@ fn get_balance_sheet_data(
 }
 
 pub fn create_balance_sheet_report(
-    args: CliOpenReport,
+    args: JSONOpenReport,
     connection: SqliteConnection,
 ) -> CobblepotResult<BalanceSheet> {
     let from = args.from.unwrap_or(
@@ -135,7 +135,7 @@ fn get_deep_dive_account_data(
 }
 
 pub fn create_deep_dive_account_report(
-    args: CliOpenReport,
+    args: JSONOpenReport,
     connection: SqliteConnection,
 ) -> CobblepotResult<AccountDeepDive> {
     let from = args.from.unwrap_or(
@@ -227,8 +227,9 @@ pub fn create_deep_dive_account_report(
                 name: v.name,
                 amount: v.amount,
                 account_type: v.account_type.into(),
-                status: recurrance_status(v.rrule, v.start_date, v.closed)
+                status: recurrance_status(v.rrule.clone(), v.start_date, v.closed)
                     .unwrap_or(RecurringStatus::Ongoing),
+                apply_dates: recurrance_dates(v.rrule, v.start_date).unwrap_or(vec![]),
             })
             .collect(),
     })

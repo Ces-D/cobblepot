@@ -29,7 +29,6 @@ pub enum RecurringStatus {
 pub enum ReportType {
     BalanceSheet,
     DeepDiveAccount,
-    DeepDiveRecurring,
 }
 
 /// Previous versions of the cli stored dates in text fields. Current versions store them as timestamps.

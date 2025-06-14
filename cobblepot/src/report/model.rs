@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, hash::Hash};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CliOpenReport {
+pub struct JSONOpenReport {
     pub report_tye: ReportType,
     pub id: Option<i32>,
     pub from: Option<DateTime<Utc>>,
@@ -73,6 +73,7 @@ pub struct SimpleRecurringTransaction {
     pub name: String,
     pub amount: f32,
     pub account_type: AccountType,
+    pub apply_dates: Vec<DateTime<Utc>>,
     pub status: RecurringStatus,
 }
 

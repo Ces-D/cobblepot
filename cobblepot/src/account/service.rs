@@ -1,6 +1,6 @@
 use crate::{
     account::model::{
-        Account, CliCloseAccount, CliOpenAccount, CliUpdateAccount, InsertableAccount,
+        Account, InsertableAccount, JSONCloseAccount, JSONOpenAccount, JSONUpdateAccount,
         UpdatableAccount,
     },
     schema::account::dsl::{account, closed_on, id},
@@ -13,7 +13,7 @@ use diesel::{
 };
 
 pub fn insert_new_account(
-    args: CliOpenAccount,
+    args: JSONOpenAccount,
     mut connection: diesel::SqliteConnection,
 ) -> QueryResult<Account> {
     connection.transaction(|conn| {
@@ -24,7 +24,7 @@ pub fn insert_new_account(
 }
 
 pub fn update_account(
-    args: CliUpdateAccount,
+    args: JSONUpdateAccount,
     mut connection: diesel::SqliteConnection,
 ) -> QueryResult<Account> {
     connection.transaction(|conn| {
@@ -35,7 +35,7 @@ pub fn update_account(
 }
 
 pub fn close_account(
-    args: CliCloseAccount,
+    args: JSONCloseAccount,
     mut connection: diesel::SqliteConnection,
 ) -> QueryResult<usize> {
     connection.transaction(|conn| {

@@ -9,7 +9,7 @@ use diesel::{
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, CliDocs)]
-pub struct CliOpenBalance {
+pub struct JSONOpenBalance {
     #[cli_docs(description = "Memo for the balance entry")]
     pub memo: Option<String>,
     #[cli_docs(description = "Amount of the balance entry")]
@@ -24,7 +24,7 @@ pub struct CliOpenBalance {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, CliDocs)]
-pub struct CliUpdateBalance {
+pub struct JSONUpdateBalance {
     #[cli_docs(description = "ID of the balance entry to update")]
     pub id: i32,
     #[cli_docs(description = "The new memo for the balance entry")]
@@ -47,8 +47,8 @@ pub struct InsertableBalance {
     pub account_id: i32,
 }
 
-impl From<CliOpenBalance> for InsertableBalance {
-    fn from(value: CliOpenBalance) -> Self {
+impl From<JSONOpenBalance> for InsertableBalance {
+    fn from(value: JSONOpenBalance) -> Self {
         Self {
             memo: value
                 .memo
@@ -71,8 +71,8 @@ pub struct UpdatableBalance {
     pub account_id: Option<i32>,
 }
 
-impl From<CliUpdateBalance> for UpdatableBalance {
-    fn from(value: CliUpdateBalance) -> Self {
+impl From<JSONUpdateBalance> for UpdatableBalance {
+    fn from(value: JSONUpdateBalance) -> Self {
         Self {
             id: value.id,
             memo: value.memo,

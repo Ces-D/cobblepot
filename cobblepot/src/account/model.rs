@@ -9,12 +9,12 @@ use diesel::{
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct CliGetAccount {
+pub struct JSONGetAccount {
     pub id: i32,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, CliDocs)]
-pub struct CliOpenAccount {
+pub struct JSONOpenAccount {
     #[cli_docs(description = "The name of the account")]
     pub name: String,
     #[cli_docs(description = "The description of the account")]
@@ -30,7 +30,7 @@ pub struct CliOpenAccount {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, CliDocs)]
-pub struct CliUpdateAccount {
+pub struct JSONUpdateAccount {
     #[cli_docs(description = "The ID of the account")]
     pub id: i32,
     #[cli_docs(description = "The new name of the account")]
@@ -48,7 +48,7 @@ pub struct CliUpdateAccount {
 }
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, CliDocs)]
-pub struct CliCloseAccount {
+pub struct JSONCloseAccount {
     #[cli_docs(description = "The ID of the account")]
     pub id: i32,
     #[cli_docs(default = "Utc::now()", description = "The date and time the account was closed")]
@@ -67,8 +67,8 @@ pub struct InsertableAccount {
     pub closed_on: Option<NaiveDateTime>,
 }
 
-impl From<CliOpenAccount> for InsertableAccount {
-    fn from(value: CliOpenAccount) -> Self {
+impl From<JSONOpenAccount> for InsertableAccount {
+    fn from(value: JSONOpenAccount) -> Self {
         Self {
             name: value.name,
             description: value.description,
@@ -93,8 +93,8 @@ pub struct UpdatableAccount {
     pub closed_on: Option<NaiveDateTime>,
 }
 
-impl From<CliUpdateAccount> for UpdatableAccount {
-    fn from(value: CliUpdateAccount) -> Self {
+impl From<JSONUpdateAccount> for UpdatableAccount {
+    fn from(value: JSONUpdateAccount) -> Self {
         Self {
             id: value.id,
             name: value.name,

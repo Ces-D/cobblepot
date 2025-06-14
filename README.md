@@ -36,8 +36,7 @@ Options:
   -h, --help     Print help
   -V, --version  Print version
 ```
-
-### `cobblepot open --help`
+ ### `cobblepot open --help`
 
 ```bash
 Open a new entity

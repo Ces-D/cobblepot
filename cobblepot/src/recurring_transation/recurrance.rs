@@ -89,8 +89,16 @@ impl Recurrance {
     }
 }
 
+fn validated_rrule(
+    unvalidated: String,
+    dt_start: DateTime<Tz>,
+) -> Result<RRule<Validated>, RRuleError> {
+    let unvalidated = RRule::from_str(unvalidated.as_str())?;
+    unvalidated.validate(dt_start)
+}
+
 pub fn recurrance_status(
-    rrule: String,
+    unvalidated: String,
     dt_start: NaiveDateTime,
     closed: bool,
 ) -> Result<RecurringStatus, RRuleError> {
@@ -98,10 +106,9 @@ pub fn recurrance_status(
         return Ok(RecurringStatus::Closed);
     }
 
-    let unvalidated = RRule::from_str(rrule.as_str())?;
     let tz_dt_start = Tz::UTC.from_utc_datetime(&dt_start);
-    let validated = unvalidated.validate(tz_dt_start)?;
-    let rrule_iter = RRuleSet::new(tz_dt_start).rrule(validated);
+    let rrule = validated_rrule(unvalidated, tz_dt_start)?;
+    let rrule_iter = RRuleSet::new(tz_dt_start).rrule(rrule);
     let recurrance_result = rrule_iter.all(u8::MAX.into());
     if recurrance_result.limited {
         println!("Possibly false positive since entire set not included")
@@ -114,4 +121,20 @@ pub fn recurrance_status(
         }
     }
     Ok(RecurringStatus::Completed)
+}
+
+pub fn recurrance_dates(
+    unvalidated: String,
+    dt_start: NaiveDateTime,
+) -> Result<Vec<DateTime<Utc>>, RRuleError> {
+    let tz_dt_start = Tz::UTC.from_utc_datetime(&dt_start);
+    let rrule = validated_rrule(unvalidated, tz_dt_start)?;
+    let rrule_iter = RRuleSet::new(tz_dt_start).rrule(rrule);
+    let recurrance_result = rrule_iter.all(u8::MAX.into());
+    if recurrance_result.limited {
+        println!("Possibly false positive since entire set not included");
+    }
+    let dates_utc: Vec<DateTime<Utc>> =
+        recurrance_result.dates.into_iter().map(|dt| dt.with_timezone(&Utc)).collect();
+    Ok(dates_utc)
 }

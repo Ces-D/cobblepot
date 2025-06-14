@@ -6,7 +6,7 @@ use diesel::prelude::{Identifiable, Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, CliDocs)]
-pub struct CliOpenRecurringTransaction {
+pub struct JSONOpenRecurringTransaction {
     #[cli_docs(description = "Name of the recurring transaction")]
     pub name: String,
     #[cli_docs(description = "Description of the recurring transaction")]
@@ -24,7 +24,7 @@ pub struct CliOpenRecurringTransaction {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, CliDocs)]
-pub struct CliCloseRecurringTransaction {
+pub struct JSONCloseRecurringTransaction {
     #[cli_docs(description = "ID of the recurring transaction to close")]
     pub id: i32,
 }
@@ -43,10 +43,10 @@ pub struct InsertableRecurringTransaction {
     pub account_id: i32,
 }
 
-impl TryFrom<CliOpenRecurringTransaction> for InsertableRecurringTransaction {
+impl TryFrom<JSONOpenRecurringTransaction> for InsertableRecurringTransaction {
     type Error = rrule::RRuleError;
 
-    fn try_from(value: CliOpenRecurringTransaction) -> Result<Self, Self::Error> {
+    fn try_from(value: JSONOpenRecurringTransaction) -> Result<Self, Self::Error> {
         Ok(Self {
             name: value.name,
             description: value.description,

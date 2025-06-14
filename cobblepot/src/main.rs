@@ -1,4 +1,5 @@
 mod account;
+mod apply;
 mod balance;
 mod cli;
 mod infrastructure;
