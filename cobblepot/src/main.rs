@@ -61,10 +61,10 @@ async fn main() -> std::io::Result<()> {
                             .to(recurring_transaction::service::close_recurring_transaction),
                     ),
             )
-        // .service(web::scope("/apply").route(
-        //     "/recurring_transaction",
-        //     web::post().to(apply::service::insert_applied_recurring_transaction),
-        // ))
+            .service(web::scope("/apply").route(
+                "/recurring_transaction",
+                web::post().to(apply::service::insert_applied_recurring_transaction),
+            ))
     })
     .bind(("127.0.0.1", 8080))
     .expect("Failed to bind to address");

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    infrastructure::database::DbPool,
+    infrastructure::database::{DbPool, PoolConnection},
     recurring_transaction::recurrance::{recurrance_dates, recurrance_status},
     report::model::{
         AccountBalance, AccountDeepDive, BalanceSheet, ChangeSnapShot, ChangeTimeline,
@@ -15,13 +15,9 @@ use crate::{
 };
 use actix_web::web;
 use chrono::{DateTime, Datelike, Months, NaiveDate, Utc};
-use diesel::{
-    SqliteConnection,
-    r2d2::{ConnectionManager, PooledConnection},
-};
 
 fn get_balance_sheet_data(
-    mut connection: PooledConnection<ConnectionManager<SqliteConnection>>,
+    mut connection: PoolConnection,
     from: DateTime<Utc>,
     to: DateTime<Utc>,
 ) -> CobblepotResult<Vec<LoadAccountBalance>> {
@@ -118,7 +114,7 @@ pub async fn create_balance_sheet_report(
 }
 
 fn get_deep_dive_account_data(
-    mut connection: PooledConnection<ConnectionManager<SqliteConnection>>,
+    mut connection: PoolConnection,
     id: i32,
 ) -> CobblepotResult<(
     crate::account::model::Account,
