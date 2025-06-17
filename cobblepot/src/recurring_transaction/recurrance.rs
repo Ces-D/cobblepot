@@ -1,12 +1,14 @@
 use std::str::FromStr;
 
+use crate::shared::{Frequency, Weekday};
 use chrono::{DateTime, Month, NaiveDateTime, TimeZone, Utc};
-use rrule::{Frequency, NWeekday, RRule, RRuleError, RRuleSet, Tz, Validated, Weekday};
+use rrule::{RRule, RRuleError, RRuleSet, Tz, Validated};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 use crate::shared::RecurringStatus;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct Recurrance {
     pub dt_start: DateTime<Utc>,
     freq: Frequency,
@@ -19,7 +21,6 @@ pub struct Recurrance {
     by_month_day: Option<Vec<i8>>,
     by_year_day: Option<Vec<i16>>,
     by_week_no: Option<Vec<i8>>,
-    by_weekday: Option<Vec<NWeekday>>,
     by_hour: Option<Vec<u8>>,
     by_minute: Option<Vec<u8>>,
     by_second: Option<Vec<u8>>,
@@ -31,7 +32,7 @@ impl Recurrance {
         let tz_dt_start = Tz::UTC.from_utc_datetime(&self.dt_start.naive_utc());
 
         let mut unvalidated =
-            RRule::new(self.freq).interval(self.interval).count(self.count.into());
+            RRule::new(self.freq.into()).interval(self.interval).count(self.count.into());
 
         if let Some(until) = self.until {
             // Convert DateTime<Utc> to DateTime<Tz>
@@ -40,7 +41,7 @@ impl Recurrance {
         }
 
         if let Some(week_start) = self.week_start {
-            unvalidated = unvalidated.week_start(week_start);
+            unvalidated = unvalidated.week_start(week_start.into());
         }
 
         if let Some(by_set_pos) = &self.by_set_pos {
@@ -67,10 +68,6 @@ impl Recurrance {
 
         if let Some(by_week_no) = &self.by_week_no {
             unvalidated = unvalidated.by_week_no(by_week_no.clone());
-        }
-
-        if let Some(by_weekday) = &self.by_weekday {
-            unvalidated = unvalidated.by_weekday(by_weekday.clone());
         }
 
         if let Some(by_hour) = &self.by_hour {

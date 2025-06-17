@@ -1,8 +1,9 @@
 [package]
 name = "cli_docs_macro"
-version = "0.2.0"
-edition = "2024"
-authors = ["Cesar Diaz"]
+description.workspace = true
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
 
 [lib]
 proc-macro = true

@@ -1,17 +1,19 @@
 use crate::shared::{AccountType, RecurringStatus, ReportType};
+use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentType};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, hash::Hash};
+use utoipa::ToSchema;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct JSONOpenReport {
-    pub report_tye: ReportType,
+    pub report_type: ReportType,
     pub id: Option<i32>,
     pub from: Option<DateTime<Utc>>,
     pub to: Option<DateTime<Utc>>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct AccountBalance {
     pub account_id: i32,
     pub balance_id: i32,
@@ -56,7 +58,7 @@ impl From<&LoadAccountBalance> for AccountBalance {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct BalanceSheet {
     pub from: DateTime<Utc>,
     pub to: DateTime<Utc>,
@@ -67,7 +69,18 @@ pub struct BalanceSheet {
     pub net_position: f32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+impl Responder for BalanceSheet {
+    type Body = BoxBody;
+
+    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
+        let body = serde_json::to_string(&self).unwrap();
+
+        // Create response and set content type
+        HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct SimpleRecurringTransaction {
     pub id: i32,
     pub name: String,
@@ -77,13 +90,13 @@ pub struct SimpleRecurringTransaction {
     pub status: RecurringStatus,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct ChangeSnapShot {
     pub timeframe: DateTime<Utc>,
     pub average: f32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct ChangeTimeline {
     pub from: DateTime<Utc>,
     pub to: DateTime<Utc>,
@@ -91,7 +104,7 @@ pub struct ChangeTimeline {
     pub snapshots: Vec<ChangeSnapShot>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct AccountDeepDive {
     pub id: i32,
     pub name: String,
@@ -106,4 +119,15 @@ pub struct AccountDeepDive {
 
     pub timeline: ChangeTimeline,
     pub recurring: Vec<SimpleRecurringTransaction>,
+}
+
+impl Responder for AccountDeepDive {
+    type Body = BoxBody;
+
+    fn respond_to(self, _: &actix_web::HttpRequest) -> HttpResponse<Self::Body> {
+        let body = serde_json::to_string(&self).unwrap();
+
+        // Create response and set content type
+        HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
 }

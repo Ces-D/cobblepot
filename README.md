@@ -86,13 +86,4 @@ Options:
   -h, --help  Print help
 ```
 
-## Config
 
-There is one single config parameter: `connection_url`. This is the path to the SQLite database file. If the parameter is not provided then the default path of `~/.local/share/cobblepot.db` will be used. The path may be a little different depending on your operating system.
-
-#### TODO
-
-- Add a recurring apply command. To apply any recurring transactions that affected an account balance since the last time it was applied
-- connect to google calendar for updates
-- create system to add, update, and delete the created events also make these update the local db
-- Improve the display of the json dates

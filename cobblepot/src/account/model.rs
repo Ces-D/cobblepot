@@ -1,57 +1,39 @@
 use crate::{schema::account, shared::AccountType};
+use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentType};
 use chrono::{DateTime, NaiveDateTime, Utc};
-use cli_docs_macro::CliDocs;
 use diesel::{
     Selectable,
     prelude::{AsChangeset, Identifiable, Insertable, Queryable},
     sqlite::Sqlite,
 };
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct JSONGetAccount {
-    pub id: i32,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, CliDocs)]
+#[derive(Clone, Debug, Serialize, Deserialize, ToSchema)]
 pub struct JSONOpenAccount {
-    #[cli_docs(description = "The name of the account")]
     pub name: String,
-    #[cli_docs(description = "The description of the account")]
     pub description: Option<String>,
-    #[cli_docs(description = "The owner of the account")]
     pub owner: Option<String>,
-    #[cli_docs(default = "0", description = "The type of the account. Asset=0, Liability=1")]
     pub account_type: Option<AccountType>,
-    #[cli_docs(default = "Utc::now()", description = "The date and time the account was opened")]
     pub opened_on: Option<DateTime<Utc>>,
-    #[cli_docs(description = "The date and time the account was closed")]
     pub closed_on: Option<DateTime<Utc>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, CliDocs)]
+#[derive(Clone, Debug, Serialize, Deserialize, ToSchema)]
 pub struct JSONUpdateAccount {
-    #[cli_docs(description = "The ID of the account")]
     pub id: i32,
-    #[cli_docs(description = "The new name of the account")]
     pub name: Option<String>,
-    #[cli_docs(description = "The new description of the account")]
     pub description: Option<String>,
-    #[cli_docs(description = "The new owner of the account")]
     pub owner: Option<String>,
-    #[cli_docs(description = "The new type of the account. Asset=0, Liability=1")]
     pub account_type: Option<AccountType>,
-    #[cli_docs(description = "The new date and time the account was opened")]
     pub opened_on: Option<DateTime<Utc>>,
-    #[cli_docs(description = "The new date and time the account was closed")]
     pub closed_on: Option<DateTime<Utc>>,
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, CliDocs)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, ToSchema)]
 pub struct JSONCloseAccount {
-    #[cli_docs(description = "The ID of the account")]
     pub id: i32,
-    #[cli_docs(default = "Utc::now()", description = "The date and time the account was closed")]
+    #[schema(example = json!({"closed_on":Utc::now()}))]
     pub closed_on: Option<DateTime<Utc>>,
 }
 
@@ -115,7 +97,16 @@ pub struct ClosableAccount {
     pub closed_on: Option<NaiveDateTime>,
 }
 
-#[derive(Debug, Queryable, Identifiable, Selectable, Serialize)]
+impl From<JSONCloseAccount> for ClosableAccount {
+    fn from(value: JSONCloseAccount) -> Self {
+        Self {
+            id: value.id,
+            closed_on: value.closed_on.map(|v| v.naive_utc()),
+        }
+    }
+}
+
+#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, ToSchema)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=account)]
 pub struct Account {
@@ -126,4 +117,15 @@ pub struct Account {
     pub account_type: i32,
     pub opened_on: NaiveDateTime,
     pub closed_on: Option<NaiveDateTime>,
+}
+
+impl Responder for Account {
+    type Body = BoxBody;
+
+    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
+        let body = serde_json::to_string(&self).unwrap();
+
+        // Create response and set content type
+        HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
 }

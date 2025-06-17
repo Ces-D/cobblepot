@@ -1,31 +1,23 @@
 use super::recurrance::Recurrance;
 use crate::{schema::recurring_transactions, shared::AccountType};
+use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentType};
 use chrono::NaiveDateTime;
-use cli_docs_macro::CliDocs;
 use diesel::prelude::{Identifiable, Insertable, Queryable};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
-#[derive(Debug, Clone, Serialize, Deserialize, CliDocs)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct JSONOpenRecurringTransaction {
-    #[cli_docs(description = "Name of the recurring transaction")]
     pub name: String,
-    #[cli_docs(description = "Description of the recurring transaction")]
     pub description: Option<String>,
-    #[cli_docs(description = "Amount of the recurring transaction")]
     pub amount: f32,
-    #[cli_docs(
-        default = "0",
-        description = "Impact of the recurring transaction on the account. Asset=0, Liability=1"
-    )]
     pub account_type: Option<AccountType>,
     pub recurrance: Recurrance,
-    #[cli_docs(description = "ID of the account associated with the recurring transaction")]
     pub account_id: i32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, CliDocs)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct JSONCloseRecurringTransaction {
-    #[cli_docs(description = "ID of the recurring transaction to close")]
     pub id: i32,
 }
 
@@ -60,7 +52,7 @@ impl TryFrom<JSONOpenRecurringTransaction> for InsertableRecurringTransaction {
     }
 }
 
-#[derive(Debug, Queryable, Identifiable, Serialize)]
+#[derive(Debug, Queryable, Identifiable, Serialize, ToSchema)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=recurring_transactions)]
 pub struct RecurringTransaction {
@@ -73,4 +65,15 @@ pub struct RecurringTransaction {
     pub start_date: NaiveDateTime,
     pub closed: bool,
     pub account_id: i32,
+}
+
+impl Responder for RecurringTransaction {
+    type Body = BoxBody;
+
+    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
+        let body = serde_json::to_string(&self).unwrap();
+
+        // Create response and set content type
+        HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
 }

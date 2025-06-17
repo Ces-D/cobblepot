@@ -1,13 +1,28 @@
 use chrono::{DateTime, Utc};
-use cli_docs_macro::CliDocs;
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
-#[derive(Debug, Clone, Serialize, Deserialize, CliDocs)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+#[schema(example=json!(JSONApplyRecurringTransaction{id:0, from:Utc::now(), to:None}))]
 pub struct JSONApplyRecurringTransaction {
-    #[cli_docs(description = "ID of the recurring transaction to apply")]
     pub id: i32,
-    #[cli_docs(description = "Start date of the application")]
     pub from: DateTime<Utc>,
-    #[cli_docs(description = "End date of the application")]
     pub to: Option<DateTime<Utc>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+pub struct AppliedRecurringTransaction {
+    pub id: i32,
+    pub account_id: i32,
+    pub name: String,
+    pub description: Option<String>,
+    pub account_type: i32,
+
+    pub applied_from: DateTime<Utc>,
+    pub applied_to: Option<DateTime<Utc>>,
+    pub applied_count: i32,
+    pub amount: f32,
+    pub total_applied_amount: f32,
+
+    pub applied_on: Vec<DateTime<Utc>>,
 }

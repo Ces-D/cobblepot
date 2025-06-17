@@ -1,39 +1,28 @@
 use crate::schema::balance;
+use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentType};
 use chrono::{DateTime, NaiveDateTime, Utc};
-use cli_docs_macro::CliDocs;
 use diesel::{
     Selectable,
     prelude::{AsChangeset, Identifiable, Insertable, Queryable},
     sqlite::Sqlite,
 };
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
-#[derive(Debug, Clone, Serialize, Deserialize, CliDocs)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct JSONOpenBalance {
-    #[cli_docs(description = "Memo for the balance entry")]
     pub memo: Option<String>,
-    #[cli_docs(description = "Amount of the balance entry")]
     pub amount: f32,
-    #[cli_docs(
-        default = "UTC::now()",
-        description = "Date and time the balance entry was created"
-    )]
     pub entered_on: Option<DateTime<Utc>>,
-    #[cli_docs(description = "ID of the account associated with the balance entry")]
     pub account_id: i32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, CliDocs)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct JSONUpdateBalance {
-    #[cli_docs(description = "ID of the balance entry to update")]
     pub id: i32,
-    #[cli_docs(description = "The new memo for the balance entry")]
     pub memo: Option<String>,
-    #[cli_docs(description = "The new amount for the balance entry")]
     pub amount: Option<f32>,
-    #[cli_docs(description = "The new date and time the balance entry was entered on")]
     pub entered_on: Option<DateTime<Utc>>,
-    #[cli_docs(description = "The new ID of the account associated with the balance entry")]
     pub account_id: Option<i32>,
 }
 
@@ -83,7 +72,7 @@ impl From<JSONUpdateBalance> for UpdatableBalance {
     }
 }
 
-#[derive(Debug, Queryable, Identifiable, Selectable, Serialize)]
+#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, ToSchema)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=balance)]
 pub struct Balance {
@@ -92,4 +81,15 @@ pub struct Balance {
     pub amount: f32,
     pub entered_on: NaiveDateTime,
     pub account_id: i32,
+}
+
+impl Responder for Balance {
+    type Body = BoxBody;
+
+    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
+        let body = serde_json::to_string(&self).unwrap();
+
+        // Create response and set content type
+        HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
 }
