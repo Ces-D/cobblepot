@@ -135,3 +135,38 @@ pub fn recurrance_dates(
         recurrance_result.dates.into_iter().map(|dt| dt.with_timezone(&Utc)).collect();
     Ok(dates_utc)
 }
+
+#[cfg(test)]
+pub mod test_utils {
+    use chrono::Utc;
+
+    use crate::{recurring_transaction::recurrance::Recurrance, shared::Frequency};
+
+    pub fn create_dummy_reccurance() -> Recurrance {
+        Recurrance {
+            dt_start: Utc::now(),
+            freq: fastrand::choice([
+                Frequency::Yearly,
+                Frequency::Monthly,
+                Frequency::Weekly,
+                Frequency::Daily,
+                Frequency::Hourly,
+                Frequency::Minutely,
+                Frequency::Secondly,
+            ])
+            .unwrap(),
+            interval: fastrand::u16(1..=10),
+            count: fastrand::u8(1..=10),
+            until: None,
+            week_start: None,
+            by_set_pos: None,
+            by_month: None,
+            by_month_day: None,
+            by_year_day: None,
+            by_week_no: None,
+            by_hour: None,
+            by_minute: None,
+            by_second: None,
+        }
+    }
+}

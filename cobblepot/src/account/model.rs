@@ -62,7 +62,7 @@ impl From<JSONOpenAccount> for InsertableAccount {
     }
 }
 
-#[derive(Debug, Queryable, Identifiable, AsChangeset)]
+#[derive(Debug, AsChangeset, Identifiable)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=account)]
 pub struct UpdatableAccount {
@@ -94,19 +94,19 @@ impl From<JSONUpdateAccount> for UpdatableAccount {
 #[diesel(table_name=account)]
 pub struct ClosableAccount {
     pub id: i32,
-    pub closed_on: Option<NaiveDateTime>,
+    pub closed_on: NaiveDateTime,
 }
 
 impl From<JSONCloseAccount> for ClosableAccount {
     fn from(value: JSONCloseAccount) -> Self {
         Self {
             id: value.id,
-            closed_on: value.closed_on.map(|v| v.naive_utc()),
+            closed_on: value.closed_on.unwrap_or(Utc::now()).naive_utc(),
         }
     }
 }
 
-#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, ToSchema)]
+#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize, ToSchema)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=account)]
 pub struct Account {
@@ -127,5 +127,41 @@ impl Responder for Account {
 
         // Create response and set content type
         HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
+}
+
+#[cfg(test)]
+pub mod test_utils {
+    use chrono::{Months, Utc};
+
+    use crate::account::model::{Account, JSONOpenAccount, JSONUpdateAccount};
+    use crate::shared::AccountType;
+    use std::iter::repeat_with;
+
+    pub fn create_dummy_open_account() -> JSONOpenAccount {
+        JSONOpenAccount {
+            name: repeat_with(fastrand::alphanumeric).take(10).collect(),
+            description: None,
+            owner: None,
+            account_type: None,
+            opened_on: None,
+            closed_on: None,
+        }
+    }
+
+    /// Changes all but the `id`, `name`, and `closed_on` fields of the original account
+    pub fn create_dummy_update_account(account: &Account) -> JSONUpdateAccount {
+        JSONUpdateAccount {
+            id: account.id,
+            name: None,
+            description: Some(repeat_with(fastrand::alphanumeric).take(10).collect()),
+            owner: Some(repeat_with(fastrand::alphanumeric).take(10).collect()),
+            account_type: match AccountType::from(account.account_type) {
+                AccountType::Asset => Some(AccountType::Liability),
+                AccountType::Liability => Some(AccountType::Asset),
+            },
+            opened_on: Some(Utc::now().checked_sub_months(Months::new(6)).unwrap()),
+            closed_on: None,
+        }
     }
 }

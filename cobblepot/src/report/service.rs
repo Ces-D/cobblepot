@@ -13,7 +13,7 @@ use crate::{
     },
     shared::{AccountType, CobblepotError, CobblepotResult, RecurringStatus},
 };
-use actix_web::web;
+use actix_web::{Scope, web};
 use chrono::{DateTime, Datelike, Months, NaiveDate, Utc};
 
 fn get_balance_sheet_data(
@@ -53,7 +53,7 @@ fn get_balance_sheet_data(
     })
 }
 
-pub async fn create_balance_sheet_report(
+async fn create_balance_sheet_report(
     pool: web::Data<DbPool>,
     payload: web::Json<JSONOpenReport>,
 ) -> CobblepotResult<BalanceSheet> {
@@ -141,7 +141,7 @@ fn get_deep_dive_account_data(
     })
 }
 
-pub async fn create_deep_dive_account_report(
+async fn create_deep_dive_account_report(
     pool: web::Data<DbPool>,
     payload: web::Json<JSONOpenReport>,
 ) -> CobblepotResult<AccountDeepDive> {
@@ -246,4 +246,10 @@ pub async fn create_deep_dive_account_report(
     })
     .await?;
     deep_dive
+}
+
+pub fn report_scope() -> Scope {
+    web::scope("/report")
+        .route("/balance_sheet", web::post().to(create_balance_sheet_report))
+        .route("/account_deep_dive", web::post().to(create_deep_dive_account_report))
 }

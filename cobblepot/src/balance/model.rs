@@ -72,7 +72,7 @@ impl From<JSONUpdateBalance> for UpdatableBalance {
     }
 }
 
-#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, ToSchema)]
+#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize, ToSchema)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=balance)]
 pub struct Balance {
@@ -91,5 +91,34 @@ impl Responder for Balance {
 
         // Create response and set content type
         HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
+}
+
+#[cfg(test)]
+pub mod test_utils {
+    use std::iter::repeat_with;
+
+    use chrono::{Months, Utc};
+
+    use crate::balance::model::{Balance, JSONOpenBalance, JSONUpdateBalance};
+
+    pub fn create_dummy_open_balance(account_id: i32) -> JSONOpenBalance {
+        JSONOpenBalance {
+            memo: Some(repeat_with(fastrand::alphanumeric).take(10).collect()),
+            amount: 100.0,
+            entered_on: None,
+            account_id,
+        }
+    }
+
+    /// Changes all but the `id` and `account_id` fields of the original balance
+    pub fn create_dummy_update_balance(balance: &Balance) -> JSONUpdateBalance {
+        JSONUpdateBalance {
+            id: balance.id,
+            account_id: None,
+            memo: Some(repeat_with(fastrand::alphanumeric).take(10).collect()),
+            amount: Some(balance.amount + balance.amount),
+            entered_on: Some(Utc::now().checked_sub_months(Months::new(6)).unwrap()),
+        }
     }
 }

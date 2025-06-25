@@ -1,4 +1,4 @@
-use actix_web::web;
+use actix_web::{Scope, web};
 use chrono::{DateTime, Months, Utc};
 use diesel::{
     Connection, ExpressionMethods, RunQueryDsl,
@@ -54,7 +54,7 @@ fn apply_recurring_balance(
     })
 }
 
-pub async fn insert_applied_recurring_transaction(
+async fn insert_applied_recurring_transaction(
     pool: web::Data<DbPool>,
     payload: web::Json<JSONApplyRecurringTransaction>,
 ) -> CobblepotResult<AppliedRecurringTransaction> {
@@ -127,4 +127,9 @@ pub async fn insert_applied_recurring_transaction(
         }
         Err(e) => Err(e),
     }
+}
+
+pub fn apply_scope() -> Scope {
+    web::scope("/apply")
+        .route("/recurring_transaction", web::post().to(insert_applied_recurring_transaction))
 }

@@ -7,10 +7,10 @@ use crate::{
     schema::recurring_transactions::dsl::{closed, id, recurring_transactions},
     shared::CobblepotResult,
 };
-use actix_web::{HttpResponse, web};
+use actix_web::{HttpResponse, Scope, web};
 use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, insert_into, update};
 
-pub async fn insert_new_recurring_transaction(
+async fn insert_new_recurring_transaction(
     pool: web::Data<DbPool>,
     payload: web::Json<JSONOpenRecurringTransaction>,
 ) -> CobblepotResult<RecurringTransaction> {
@@ -27,7 +27,7 @@ pub async fn insert_new_recurring_transaction(
     transaction
 }
 
-pub async fn close_recurring_transaction(
+async fn close_recurring_transaction(
     pool: web::Data<DbPool>,
     payload: web::Json<JSONCloseRecurringTransaction>,
 ) -> CobblepotResult<HttpResponse> {
@@ -43,5 +43,62 @@ pub async fn close_recurring_transaction(
         Ok(HttpResponse::Ok().finish())
     } else {
         Ok(HttpResponse::InternalServerError().finish())
+    }
+}
+
+pub fn recurring_transaction_scope() -> Scope {
+    web::scope("/recurring_transaction")
+        .route("/open", web::post().to(insert_new_recurring_transaction))
+        .route("/close", web::delete().to(close_recurring_transaction))
+}
+
+#[cfg(test)]
+mod test {
+    use actix_web::{App, test, web};
+
+    use crate::{
+        account::model::{Account, test_utils::create_dummy_open_account},
+        recurring_transaction::model::{
+            JSONCloseRecurringTransaction, RecurringTransaction,
+            test_utils::create_dummy_open_recurring_transaction,
+        },
+    };
+
+    #[actix_web::test]
+    async fn recurring_transaction_lifecycle_successful() {
+        let database_pool = crate::infrastructure::database::database_memory_pool().unwrap();
+        let app = test::init_service(
+            App::new()
+                .app_data(web::Data::new(database_pool))
+                .service(super::recurring_transaction_scope())
+                .service(crate::account::service::account_scope()),
+        )
+        .await;
+
+        let create_asset_req = test::TestRequest::with_uri("/account/open")
+            .method(actix_web::http::Method::POST)
+            .set_json(create_dummy_open_account())
+            .to_request();
+        let asset_res = test::call_service(&app, create_asset_req).await;
+        assert!(asset_res.status().is_success());
+        let created_account: Account = test::read_body_json(asset_res).await;
+
+        let create_recurring_req = test::TestRequest::with_uri("/recurring_transaction/open")
+            .method(actix_web::http::Method::POST)
+            .set_json(create_dummy_open_recurring_transaction(created_account.id))
+            .to_request();
+        let recurring_res = test::call_service(&app, create_recurring_req).await;
+        assert!(recurring_res.status().is_success());
+        let created_recurring_transaction: RecurringTransaction =
+            test::read_body_json(recurring_res).await;
+
+        let close_recurring_req = test::TestRequest::with_uri("/recurring_transaction/close")
+            .method(actix_web::http::Method::DELETE)
+            .set_json(JSONCloseRecurringTransaction {
+                id: created_recurring_transaction.id,
+            })
+            .to_request();
+        let close_res = test::call_service(&app, close_recurring_req).await;
+        assert!(close_res.status().is_success());
     }
 }

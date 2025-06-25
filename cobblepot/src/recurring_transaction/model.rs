@@ -52,7 +52,7 @@ impl TryFrom<JSONOpenRecurringTransaction> for InsertableRecurringTransaction {
     }
 }
 
-#[derive(Debug, Queryable, Identifiable, Serialize, ToSchema)]
+#[derive(Debug, Queryable, Identifiable, Serialize, Deserialize, ToSchema)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=recurring_transactions)]
 pub struct RecurringTransaction {
@@ -75,5 +75,27 @@ impl Responder for RecurringTransaction {
 
         // Create response and set content type
         HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
+}
+
+#[cfg(test)]
+pub mod test_utils {
+    use std::iter::repeat_with;
+
+    use crate::recurring_transaction::{
+        model::JSONOpenRecurringTransaction, recurrance::test_utils::create_dummy_reccurance,
+    };
+
+    pub fn create_dummy_open_recurring_transaction(
+        account_id: i32,
+    ) -> JSONOpenRecurringTransaction {
+        JSONOpenRecurringTransaction {
+            name: repeat_with(fastrand::alphanumeric).take(10).collect(),
+            description: None,
+            amount: 100.0,
+            account_type: None,
+            recurrance: create_dummy_reccurance(),
+            account_id,
+        }
     }
 }
