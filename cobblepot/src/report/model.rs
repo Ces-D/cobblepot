@@ -45,7 +45,7 @@ pub struct LoadAccountBalance {
     pub amount: f32,
 }
 
-/// Assumption is that the account type has already been validated, and we can convert it to an AccountBalance
+/// Assumption is that the balances have been organized by account type, and we can convert it to an AccountBalance
 impl From<&LoadAccountBalance> for AccountBalance {
     fn from(load_balance: &LoadAccountBalance) -> Self {
         AccountBalance {
@@ -129,5 +129,51 @@ impl Responder for AccountDeepDive {
 
         // Create response and set content type
         HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
+}
+
+#[cfg(test)]
+pub mod test_utils {
+    use chrono::{Days, Months, Utc};
+
+    use crate::{
+        account::model::{JSONOpenAccount, test_utils::create_dummy_open_account},
+        balance::model::{JSONOpenBalance, test_utils::create_dummy_open_balance},
+    };
+
+    pub fn create_dummy_open_accounts() -> Vec<JSONOpenAccount> {
+        let mut accounts: Vec<JSONOpenAccount> = vec![];
+
+        for i in 0..13 {
+            let mut acc = create_dummy_open_account();
+            // Every account is at least 12 months old
+            acc.opened_on = Utc::now().checked_sub_months(Months::new(i + 12));
+
+            accounts.push(acc);
+        }
+
+        accounts
+    }
+
+    pub fn create_dummy_account_balances(
+        account_id: i32,
+        entered_on: chrono::DateTime<Utc>,
+        is_monthly: bool,
+    ) -> Vec<JSONOpenBalance> {
+        let mut balances = vec![];
+
+        for i in 0..10 {
+            let mut balance = create_dummy_open_balance(account_id);
+            match is_monthly {
+                true => balance.entered_on = entered_on.checked_add_months(Months::new(i)),
+                false => balance.entered_on = entered_on.checked_add_days(Days::new(i as u64)),
+            }
+            let random = fastrand::u32(1..=10) * i * 100;
+            balance.amount = random as f32;
+
+            balances.push(balance);
+        }
+
+        balances
     }
 }

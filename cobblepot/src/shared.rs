@@ -150,8 +150,18 @@ impl ResponseError for CobblepotError {
     }
 
     fn error_response(&self) -> HttpResponse<actix_web::body::BoxBody> {
-        HttpResponse::build(self.status_code())
-            .insert_header(ContentType::json())
-            .body(self.to_string())
+        let build_response = |error: &dyn std::fmt::Display| {
+            HttpResponse::build(self.status_code())
+                .insert_header(ContentType::json())
+                .body(error.to_string())
+        };
+
+        match self {
+            CobblepotError::DieselError(e) => build_response(e),
+            CobblepotError::EnvError(e) => build_response(e),
+            CobblepotError::LogicError(e) => build_response(e),
+            CobblepotError::UserError(e) => build_response(e),
+            CobblepotError::IoError(e) => build_response(e),
+        }
     }
 }

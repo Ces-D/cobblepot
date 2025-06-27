@@ -84,11 +84,11 @@ mod test {
         )
         .await;
 
-        let create_asset_req = test::TestRequest::with_uri("/account/open")
+        let asset_res = test::TestRequest::with_uri("/account/open")
             .method(actix_web::http::Method::POST)
             .set_json(create_dummy_open_account())
-            .to_request();
-        let asset_res = test::call_service(&app, create_asset_req).await;
+            .send_request(&app)
+            .await;
 
         println!("{:?}", asset_res.response().body());
         assert!(asset_res.status().is_success());
@@ -96,12 +96,12 @@ mod test {
         let created: Account = test::read_body_json(asset_res).await;
         let original_id = created.id;
 
-        let update_asset_req = test::TestRequest::with_uri("/account/update")
+        let update_res = test::TestRequest::with_uri("/account/update")
             .method(actix_web::http::Method::PUT)
             .set_json(create_dummy_update_account(&created))
-            .to_request();
+            .send_request(&app)
+            .await;
 
-        let update_res = test::call_service(&app, update_asset_req).await;
         assert!(update_res.status().is_success());
 
         let update: Account = test::read_body_json(update_res).await;
@@ -120,14 +120,14 @@ mod test {
             "Updated should have a different account type"
         );
 
-        let close_account_req = test::TestRequest::with_uri("/account/close")
+        let close_res = test::TestRequest::with_uri("/account/close")
             .method(actix_web::http::Method::DELETE)
             .set_json(JSONCloseAccount {
                 id: original_id,
                 closed_on: None,
             })
-            .to_request();
-        let close_res = test::call_service(&app, close_account_req).await;
+            .send_request(&app)
+            .await;
         assert!(close_res.status().is_success());
     }
 }

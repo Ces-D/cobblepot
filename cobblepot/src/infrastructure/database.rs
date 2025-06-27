@@ -26,25 +26,23 @@ pub fn database_pool() -> CobblepotResult<DbPool> {
 }
 
 #[cfg(test)]
-/// Creates a connection pool to the Sqlite in-memory database. Runs migrations on each connection
+/// Creates a single migrated connection to an in-memory Sqlite database for testing
 pub fn database_memory_pool() -> CobblepotResult<DbPool> {
-    use diesel::r2d2::CustomizeConnection;
-
-    #[derive(Debug)]
-    struct TestConnectionCustomizer;
-
-    impl CustomizeConnection<SqliteConnection, diesel::r2d2::Error> for TestConnectionCustomizer {
-        fn on_acquire(&self, conn: &mut SqliteConnection) -> Result<(), diesel::r2d2::Error> {
-            use diesel_migrations::MigrationHarness;
-            conn.run_pending_migrations(MIGRATIONS).unwrap();
-            Ok(())
-        }
-    }
-
-    let database_url = ":memory:".to_string();
+    // Use a shared cache in-memory database so all connections share the same data
+    let database_url = format!(
+        "file:memdb{}{}?mode=memory&cache=shared",
+        fastrand::alphanumeric(),
+        fastrand::alphanumeric()
+    );
     let manager = ConnectionManager::<SqliteConnection>::new(database_url);
-    Pool::builder()
-        .connection_customizer(Box::new(TestConnectionCustomizer))
-        .build(manager)
-        .map_err(|e| CobblepotError::LogicError(e.to_string()))
+
+    // Run migrations once on a single connection before creating the pool
+    let mut migration_conn =
+        manager.connect().map_err(|e| CobblepotError::LogicError(e.to_string()))?;
+    let migrations = migration_conn
+        .run_pending_migrations(MIGRATIONS)
+        .map_err(|e| CobblepotError::LogicError(e.to_string()))?;
+    println!("Ran test migrations - {}", migrations.len());
+
+    Pool::builder().build(manager).map_err(|e| CobblepotError::LogicError(e.to_string()))
 }
