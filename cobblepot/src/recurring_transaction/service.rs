@@ -57,11 +57,12 @@ mod test {
     use actix_web::{App, test, web};
 
     use crate::{
-        account::model::{Account, test_utils::create_dummy_open_account},
+        account::model::Account,
         recurring_transaction::model::{
             JSONCloseRecurringTransaction, RecurringTransaction,
             test_utils::create_dummy_open_recurring_transaction,
         },
+        test_utils::create_dummy_open_account,
     };
 
     #[actix_web::test]
@@ -77,7 +78,7 @@ mod test {
 
         let create_asset_req = test::TestRequest::with_uri("/account/open")
             .method(actix_web::http::Method::POST)
-            .set_json(create_dummy_open_account())
+            .set_json(create_dummy_open_account(None))
             .to_request();
         let asset_res = test::call_service(&app, create_asset_req).await;
         assert!(asset_res.status().is_success());

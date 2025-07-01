@@ -1,17 +1,18 @@
 use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentType};
-use chrono::{DateTime, Months, Utc};
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
+use ts_rs::TS;
 
-#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
-#[schema(example=json!(JSONApplyRecurringTransaction{id:0, from:Some(Utc::now().checked_sub_months(Months::new(3)).expect("Failed to calculate date")), to:None}))]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct JSONApplyRecurringTransaction {
     pub id: i32,
     pub from: Option<DateTime<Utc>>,
     pub to: Option<DateTime<Utc>>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct AppliedRecurringTransaction {
     pub id: i32,
     pub account_id: i32,

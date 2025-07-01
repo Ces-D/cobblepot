@@ -3,9 +3,10 @@ use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentTyp
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, hash::Hash};
-use utoipa::ToSchema;
+use ts_rs::TS;
 
-#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct JSONOpenReport {
     pub report_type: ReportType,
     pub id: Option<i32>,
@@ -13,7 +14,8 @@ pub struct JSONOpenReport {
     pub to: Option<DateTime<Utc>>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct AccountBalance {
     pub account_id: i32,
     pub balance_id: i32,
@@ -58,7 +60,8 @@ impl From<&LoadAccountBalance> for AccountBalance {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct BalanceSheet {
     pub from: DateTime<Utc>,
     pub to: DateTime<Utc>,
@@ -80,7 +83,8 @@ impl Responder for BalanceSheet {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct SimpleRecurringTransaction {
     pub id: i32,
     pub name: String,
@@ -90,13 +94,15 @@ pub struct SimpleRecurringTransaction {
     pub status: RecurringStatus,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct ChangeSnapShot {
     pub timeframe: DateTime<Utc>,
     pub average: f32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct ChangeTimeline {
     pub from: DateTime<Utc>,
     pub to: DateTime<Utc>,
@@ -104,7 +110,8 @@ pub struct ChangeTimeline {
     pub snapshots: Vec<ChangeSnapShot>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct AccountDeepDive {
     pub id: i32,
     pub name: String,
@@ -129,51 +136,5 @@ impl Responder for AccountDeepDive {
 
         // Create response and set content type
         HttpResponse::Ok().content_type(ContentType::json()).body(body)
-    }
-}
-
-#[cfg(test)]
-pub mod test_utils {
-    use chrono::{Days, Months, Utc};
-
-    use crate::{
-        account::model::{JSONOpenAccount, test_utils::create_dummy_open_account},
-        balance::model::{JSONOpenBalance, test_utils::create_dummy_open_balance},
-    };
-
-    pub fn create_dummy_open_accounts() -> Vec<JSONOpenAccount> {
-        let mut accounts: Vec<JSONOpenAccount> = vec![];
-
-        for i in 0..13 {
-            let mut acc = create_dummy_open_account();
-            // Every account is at least 12 months old
-            acc.opened_on = Utc::now().checked_sub_months(Months::new(i + 12));
-
-            accounts.push(acc);
-        }
-
-        accounts
-    }
-
-    pub fn create_dummy_account_balances(
-        account_id: i32,
-        entered_on: chrono::DateTime<Utc>,
-        is_monthly: bool,
-    ) -> Vec<JSONOpenBalance> {
-        let mut balances = vec![];
-
-        for i in 0..10 {
-            let mut balance = create_dummy_open_balance(account_id);
-            match is_monthly {
-                true => balance.entered_on = entered_on.checked_add_months(Months::new(i)),
-                false => balance.entered_on = entered_on.checked_add_days(Days::new(i as u64)),
-            }
-            let random = fastrand::u32(1..=10) * i * 100;
-            balance.amount = random as f32;
-
-            balances.push(balance);
-        }
-
-        balances
     }
 }

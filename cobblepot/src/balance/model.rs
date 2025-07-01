@@ -7,9 +7,19 @@ use diesel::{
     sqlite::Sqlite,
 };
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
+use ts_rs::TS;
 
-#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
+pub struct JSONListBalances {
+    pub limit: Option<i64>,
+    pub offset: Option<i64>,
+    pub entered_after: Option<DateTime<Utc>>,
+    pub account_id: Option<i32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct JSONOpenBalance {
     pub memo: Option<String>,
     pub amount: f32,
@@ -17,7 +27,8 @@ pub struct JSONOpenBalance {
     pub account_id: i32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct JSONUpdateBalance {
     pub id: i32,
     pub memo: Option<String>,
@@ -72,9 +83,10 @@ impl From<JSONUpdateBalance> for UpdatableBalance {
     }
 }
 
-#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize, TS)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=balance)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct Balance {
     pub id: i32,
     pub memo: String,
@@ -94,22 +106,25 @@ impl Responder for Balance {
     }
 }
 
+#[derive(Debug, Serialize)]
+pub struct BalanceList(pub Vec<Balance>);
+
+impl Responder for BalanceList {
+    type Body = BoxBody;
+
+    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
+        let body = serde_json::to_string(&self.0).unwrap();
+        HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
+}
+
 #[cfg(test)]
 pub mod test_utils {
     use std::iter::repeat_with;
 
     use chrono::{Months, Utc};
 
-    use crate::balance::model::{Balance, JSONOpenBalance, JSONUpdateBalance};
-
-    pub fn create_dummy_open_balance(account_id: i32) -> JSONOpenBalance {
-        JSONOpenBalance {
-            memo: Some(repeat_with(fastrand::alphanumeric).take(10).collect()),
-            amount: 100.0,
-            entered_on: None,
-            account_id,
-        }
-    }
+    use crate::balance::model::{Balance, JSONUpdateBalance};
 
     /// Changes all but the `id` and `account_id` fields of the original balance
     pub fn create_dummy_update_balance(balance: &Balance) -> JSONUpdateBalance {

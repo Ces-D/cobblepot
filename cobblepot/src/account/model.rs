@@ -7,9 +7,20 @@ use diesel::{
     sqlite::Sqlite,
 };
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
+use ts_rs::TS;
 
-#[derive(Clone, Debug, Serialize, Deserialize, ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
+pub struct JSONListAccounts {
+    pub limit: Option<i64>,
+    pub offset: Option<i64>,
+    pub account_type: Option<AccountType>,
+    pub opened_after: Option<DateTime<Utc>>,
+    pub closed_after: Option<DateTime<Utc>>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct JSONOpenAccount {
     pub name: String,
     pub description: Option<String>,
@@ -19,7 +30,8 @@ pub struct JSONOpenAccount {
     pub closed_on: Option<DateTime<Utc>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct JSONUpdateAccount {
     pub id: i32,
     pub name: Option<String>,
@@ -30,10 +42,10 @@ pub struct JSONUpdateAccount {
     pub closed_on: Option<DateTime<Utc>>,
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, ToSchema)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct JSONCloseAccount {
     pub id: i32,
-    #[schema(example = json!({"closed_on":Utc::now()}))]
     pub closed_on: Option<DateTime<Utc>>,
 }
 
@@ -106,9 +118,10 @@ impl From<JSONCloseAccount> for ClosableAccount {
     }
 }
 
-#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize, TS)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=account)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct Account {
     pub id: i32,
     pub name: String,
@@ -130,24 +143,25 @@ impl Responder for Account {
     }
 }
 
+#[derive(Debug, Serialize)]
+pub struct AccountList(pub Vec<Account>);
+
+impl Responder for AccountList {
+    type Body = BoxBody;
+
+    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
+        let body = serde_json::to_string(&self.0).unwrap();
+        HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
+}
+
 #[cfg(test)]
 pub mod test_utils {
     use chrono::{Months, Utc};
 
-    use crate::account::model::{Account, JSONOpenAccount, JSONUpdateAccount};
+    use crate::account::model::{Account, JSONUpdateAccount};
     use crate::shared::AccountType;
     use std::iter::repeat_with;
-
-    pub fn create_dummy_open_account() -> JSONOpenAccount {
-        JSONOpenAccount {
-            name: repeat_with(fastrand::alphanumeric).take(10).collect(),
-            description: None,
-            owner: None,
-            account_type: None,
-            opened_on: None,
-            closed_on: None,
-        }
-    }
 
     /// Changes all but the `id`, `name`, and `closed_on` fields of the original account
     pub fn create_dummy_update_account(account: &Account) -> JSONUpdateAccount {

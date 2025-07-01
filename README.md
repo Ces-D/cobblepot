@@ -4,86 +4,52 @@
 <img src="https://media.giphy.com/media/UHZMvURcKk8IU/giphy.gif" ></img>
 </p>
 
-## Purpose
+A lightweight, self-hosted personal finance tool that runs locally to help you track accounts, balances, and recurring transactions—then generates deep-dive reports and balance sheets so you always know where your money is going.
 
-Cobblepot is a command-line personal finance tool designed to empower users with a streamlined, efficient way to manage their financial data. Its core functions—managing accounts, tracking account balances, and generating insightful reports such as growth over time and balance sheets—provide a centralized platform to monitor your financial health.
+## 🚀 Key Features
 
-The tool’s purpose is to simplify the often complex world of personal finance by offering:
+- **Account Management**
+  Create, update, and archive multiple accounts (checking, savings, credit, crypto, etc.).
+- **Real-Time Balances**
+  View and add current balances for any account at any time.
+- **Automated Recurring Transactions**
+  Set up trackers for your regular income (paychecks, interest) and expenses (rent, subscriptions) just once—Cobblepot then manually applies each scheduled entry to your balances, so you can monitor their impact and never miss a cycle.
+- **Deep-Dive Reporting**
+  Generate:
 
-- **Account Management:** Easily add, update, and view multiple financial accounts.
-- **Balance Tracking:** Keep an accurate, real-time snapshot of your financial standing.
-- **Simple Reporting:** Generate essential reports that visualize your financial growth and current balance sheets.
+  - **Account History**: transaction-by-transaction breakdown
+  - **Balance Sheets**: snapshot of assets & liabilities over time
+
+- **Local Server & Database**
+  All data stays on your machine (SQLite by default), no external dependencies or cloud lock-in.
+- **Flexible Interface**
+
+  - **REST API** to build your own dashboards or integrations
 
 Inspired by its namesake—the cunning Batman villain—Cobblepot embodies strategic precision and meticulous control. It is built to help you navigate your personal finances with the same level of foresight and determination, ensuring you are always in command of your financial destiny.
 
-## Commands
+## 📦 Installation
 
-### `cobblepot --help`
+1. **Clone the repo**
 
-```bash
-Cobblepot is a command-line personal finance tool designed to empower users with a streamlined, efficient way to manage their financial data
+   ```bash
+   git clone git@github.com:Ces-D/cobblepot.git
+   cd cobblepot
+   ```
 
-Usage: cobblepot <COMMAND>
+2. **Configure**
+   Set the optional environment variable `COBBLEPOT_DB_NAME`
 
-Commands:
-  open    Open a new entity
-  update  Update an existing entity
-  close   Close an existing entity
-  apply   Apply an effect to balances
-  help    Print this message or the help of the given subcommand(s)
+## 🤝 Contributing
 
-Options:
-  -h, --help     Print help
-  -V, --version  Print version
-```
- ### `cobblepot open --help`
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/awesome`)
+3. Commit your changes (`git commit -m "Add awesome feature"`)
+4. Push to your branch (`git push origin feature/awesome`)
+5. Open a Pull Request
 
-```bash
-Open a new entity
+Please adhere to the existing code style and write tests for new functionality.
 
-Usage: cobblepot open <COMMAND>
+## 📄 License
 
-Commands:
-  account    Open a new account
-  balance    Open a new balance
-  recurring  Open a new recurring entity
-  report     Generate a report
-  help       Print this message or the help of the given subcommand(s)
-
-Options:
-  -h, --help  Print help
-```
-
-### `cobblepot update --help`
-
-```bash
-Update an existing entity
-
-Usage: cobblepot update <COMMAND>
-
-Commands:
-  account  Update an existing account
-  balance  Update an existing balance
-  help     Print this message or the help of the given subcommand(s)
-
-Options:
-  -h, --help  Print help
-```
-
-### `cobblepot close --help`
-
-```bash
-Close an existing entity
-
-Usage: cobblepot close <COMMAND>
-
-Commands:
-  account    Close an existing account
-  recurring  Close an existing recurring entity
-  help       Print this message or the help of the given subcommand(s)
-
-Options:
-  -h, --help  Print help
-```
-
-
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.

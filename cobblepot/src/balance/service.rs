@@ -1,13 +1,40 @@
 use crate::{
     balance::model::{
-        Balance, InsertableBalance, JSONOpenBalance, JSONUpdateBalance, UpdatableBalance,
+        Balance, BalanceList, InsertableBalance, JSONListBalances, JSONOpenBalance,
+        JSONUpdateBalance, UpdatableBalance,
     },
     infrastructure::database::DbPool,
-    schema::balance::dsl::{balance, id},
+    schema::balance::dsl::{account_id, balance, entered_on, id},
     shared::CobblepotResult,
 };
 use actix_web::{Scope, web};
-use diesel::{ExpressionMethods, RunQueryDsl, insert_into, query_dsl::methods::FilterDsl, update};
+use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, insert_into, update};
+
+async fn list_balances(
+    pool: web::Data<DbPool>,
+    filters: web::Query<JSONListBalances>,
+) -> CobblepotResult<BalanceList> {
+    let args = filters.into_inner();
+    let bals: CobblepotResult<Vec<Balance>> = web::block(move || {
+        let mut conn = pool.get().unwrap();
+        let mut query = balance.into_boxed();
+
+        if let Some(entered_after) = args.entered_after {
+            query = query.filter(entered_on.gt(entered_after.naive_utc()));
+        }
+        if let Some(acc_id) = args.account_id {
+            query = query.filter(account_id.eq(acc_id));
+        }
+        let res: Vec<Balance> = query
+            .offset(args.offset.unwrap_or(0))
+            .limit(args.limit.unwrap_or(25))
+            .load(&mut conn)?;
+        Ok(res)
+    })
+    .await?;
+
+    Ok(BalanceList(bals?))
+}
 
 async fn insert_new_balance(
     pool: web::Data<DbPool>,
@@ -44,6 +71,7 @@ async fn update_balance(
 
 pub fn balance_scope() -> Scope {
     web::scope("/balance")
+        .route("/list", web::get().to(list_balances))
         .route("/open", web::post().to(insert_new_balance))
         .route("/update", web::put().to(update_balance))
 }
@@ -51,13 +79,56 @@ pub fn balance_scope() -> Scope {
 #[cfg(test)]
 mod test {
     use crate::{
-        account::model::{Account, test_utils::create_dummy_open_account},
-        balance::model::{
-            Balance,
-            test_utils::{create_dummy_open_balance, create_dummy_update_balance},
-        },
+        account::model::Account,
+        balance::model::{Balance, JSONListBalances, test_utils::create_dummy_update_balance},
+        shared::AccountType,
+        test_utils::{create_dummy_open_account, create_dummy_open_balance, seed_database},
     };
     use actix_web::{App, test, web};
+    use chrono::{Months, Utc};
+
+    #[actix_web::test]
+    async fn list_balances_successful() {
+        let database_pool = crate::infrastructure::database::database_memory_pool().unwrap();
+
+        let seed_conn = database_pool.get().unwrap();
+        seed_database(seed_conn, Some(AccountType::Liability)).unwrap();
+
+        let app = test::init_service(
+            App::new()
+                .app_data(web::Data::new(database_pool))
+                .service(super::balance_scope())
+                .service(crate::account::service::account_scope()),
+        )
+        .await;
+
+        let created_after = Utc::now().checked_sub_months(Months::new(15)).unwrap();
+        let filter_query = serde_urlencoded::to_string(JSONListBalances {
+            limit: Some(5),
+            offset: Some(1),
+            entered_after: Some(created_after),
+            account_id: Some(1),
+        })
+        .unwrap();
+
+        let url = format!("/balance/list?{}", filter_query);
+        let filter_balance_res = test::TestRequest::with_uri(url.as_str())
+            .method(actix_web::http::Method::GET)
+            .send_request(&app)
+            .await;
+        assert!(filter_balance_res.status().is_success());
+        let paginated_balances: Vec<Balance> = test::read_body_json(filter_balance_res).await;
+        assert!(
+            paginated_balances.iter().all(|v| v.entered_on.date() > created_after.date_naive()),
+            "All balances should be opened within the last 15 months"
+        );
+        assert!(
+            paginated_balances.iter().all(|v| v.account_id == 1),
+            "All accounts should belong to the first account"
+        );
+
+        assert_eq!(paginated_balances.len(), 5);
+    }
 
     #[actix_web::test]
     async fn balance_lifecycle_successful() {
@@ -72,7 +143,7 @@ mod test {
 
         let create_asset_req = test::TestRequest::with_uri("/account/open")
             .method(actix_web::http::Method::POST)
-            .set_json(create_dummy_open_account())
+            .set_json(create_dummy_open_account(None))
             .to_request();
         let asset_res = test::call_service(&app, create_asset_req).await;
         assert!(asset_res.status().is_success());
@@ -93,7 +164,6 @@ mod test {
             .set_json(create_dummy_update_balance(&created_balance))
             .to_request();
         let balance_res = test::call_service(&app, balance_update_req).await;
-        println!("{}", balance_res.status());
         assert!(balance_res.status().is_success());
         let updated_balance: Balance = test::read_body_json(balance_res).await;
         assert_eq!(updated_balance.amount, 200.0, "The updated amount should be 200.0");

@@ -256,55 +256,16 @@ pub fn report_scope() -> Scope {
 
 #[cfg(test)]
 mod test {
-    use crate::{
-        account::model::InsertableAccount,
-        balance::model::InsertableBalance,
-        infrastructure::database::PoolConnection,
-        report::model::{
-            JSONOpenReport,
-            test_utils::{create_dummy_account_balances, create_dummy_open_accounts},
-        },
-        schema::{account::dsl as account_dsl, balance::dsl as balance_dsl},
-        shared::CobblepotResult,
-    };
+    use crate::{report::model::JSONOpenReport, test_utils::seed_database};
     use actix_web::{App, test, web};
-    use chrono::{Months, NaiveDateTime, Utc};
-    use diesel::{Connection, QueryDsl, RunQueryDsl, insert_into};
-
-    /// seeds the database creating a years worth of accounts. with 10 months worth of balances per account
-    fn seed_database(mut connection: PoolConnection) -> CobblepotResult<()> {
-        connection.transaction(|conn| {
-            let insertable_accounts: Vec<InsertableAccount> =
-                create_dummy_open_accounts().into_iter().map(|v| v.into()).collect();
-            insert_into(account_dsl::account).values(insertable_accounts).execute(conn)?;
-            let inserted_data = account_dsl::account
-                .select((account_dsl::id, account_dsl::opened_on))
-                .load::<(i32, NaiveDateTime)>(conn)?;
-            let insertable_balances: Vec<Vec<InsertableBalance>> = inserted_data
-                .into_iter()
-                .map(|v| {
-                    let (account_id, opened_on) = v;
-                    let balances =
-                        create_dummy_account_balances(account_id, opened_on.and_utc(), true);
-                    let insertable: Vec<InsertableBalance> =
-                        balances.into_iter().map(|b| b.into()).collect();
-                    return insertable;
-                })
-                .collect();
-
-            for insertable in insertable_balances.into_iter() {
-                insert_into(balance_dsl::balance).values(insertable).execute(conn)?;
-            }
-            Ok(())
-        })
-    }
+    use chrono::{Months, Utc};
 
     #[actix_web::test]
     async fn balance_sheet_report_successful() {
         let database_pool = crate::infrastructure::database::database_memory_pool().unwrap();
 
         let seed_conn = database_pool.get().unwrap();
-        seed_database(seed_conn).unwrap();
+        seed_database(seed_conn, None).unwrap();
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(database_pool)).service(super::report_scope()),
@@ -322,7 +283,6 @@ mod test {
             .send_request(&app)
             .await;
 
-        println!("{}", balance_sheet_res.status());
         assert!(balance_sheet_res.status().is_success());
     }
 
@@ -331,7 +291,7 @@ mod test {
         let database_pool = crate::infrastructure::database::database_memory_pool().unwrap();
 
         let seed_conn = database_pool.get().unwrap();
-        seed_database(seed_conn).unwrap();
+        seed_database(seed_conn, None).unwrap();
 
         let app = test::init_service(
             App::new().app_data(web::Data::new(database_pool)).service(super::report_scope()),
@@ -349,7 +309,6 @@ mod test {
             .send_request(&app)
             .await;
 
-        println!("{:?}", deep_dive_res.response().body());
         assert!(deep_dive_res.status().is_success());
     }
 }

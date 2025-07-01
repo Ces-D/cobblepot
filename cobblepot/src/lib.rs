@@ -6,5 +6,5 @@ pub mod recurring_transaction;
 pub mod report;
 pub mod schema;
 pub mod shared;
-
-
+#[cfg(test)]
+pub mod test_utils;

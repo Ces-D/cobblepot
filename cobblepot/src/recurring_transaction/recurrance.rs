@@ -4,11 +4,12 @@ use crate::shared::{Frequency, Weekday};
 use chrono::{DateTime, Month, NaiveDateTime, TimeZone, Utc};
 use rrule::{RRule, RRuleError, RRuleSet, Tz, Validated};
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
+use ts_rs::TS;
 
 use crate::shared::RecurringStatus;
 
-#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct Recurrance {
     pub dt_start: DateTime<Utc>,
     freq: Frequency,
