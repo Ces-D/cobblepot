@@ -7,10 +7,8 @@ use diesel::{
     sqlite::Sqlite,
 };
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct JSONListAccounts {
     pub limit: Option<i64>,
     pub offset: Option<i64>,
@@ -19,8 +17,7 @@ pub struct JSONListAccounts {
     pub closed_after: Option<DateTime<Utc>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct JSONOpenAccount {
     pub name: String,
     pub description: Option<String>,
@@ -30,8 +27,7 @@ pub struct JSONOpenAccount {
     pub closed_on: Option<DateTime<Utc>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct JSONUpdateAccount {
     pub id: i32,
     pub name: Option<String>,
@@ -42,8 +38,7 @@ pub struct JSONUpdateAccount {
     pub closed_on: Option<DateTime<Utc>>,
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct JSONCloseAccount {
     pub id: i32,
     pub closed_on: Option<DateTime<Utc>>,
@@ -118,10 +113,9 @@ impl From<JSONCloseAccount> for ClosableAccount {
     }
 }
 
-#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize, TS)]
+#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=account)]
-#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct Account {
     pub id: i32,
     pub name: String,

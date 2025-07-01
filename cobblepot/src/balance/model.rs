@@ -7,10 +7,8 @@ use diesel::{
     sqlite::Sqlite,
 };
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct JSONListBalances {
     pub limit: Option<i64>,
     pub offset: Option<i64>,
@@ -18,8 +16,7 @@ pub struct JSONListBalances {
     pub account_id: Option<i32>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JSONOpenBalance {
     pub memo: Option<String>,
     pub amount: f32,
@@ -27,8 +24,7 @@ pub struct JSONOpenBalance {
     pub account_id: i32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JSONUpdateBalance {
     pub id: i32,
     pub memo: Option<String>,
@@ -83,10 +79,9 @@ impl From<JSONUpdateBalance> for UpdatableBalance {
     }
 }
 
-#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize, TS)]
+#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=balance)]
-#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct Balance {
     pub id: i32,
     pub memo: String,

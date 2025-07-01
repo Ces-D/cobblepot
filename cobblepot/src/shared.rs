@@ -5,10 +5,8 @@ use actix_web::{
 };
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum AccountType {
     Asset = 0,
     Liability = 1,
@@ -24,8 +22,7 @@ impl From<i32> for AccountType {
     }
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Frequency {
     Yearly = 0,
     Monthly = 1,
@@ -50,8 +47,7 @@ impl Into<rrule::Frequency> for Frequency {
     }
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Weekday {
     Mon = 0,
     Tue = 1,
@@ -76,16 +72,14 @@ impl Into<rrule::Weekday> for Weekday {
     }
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum RecurringStatus {
     Ongoing = 0,
     Completed = 1,
     Closed = 2,
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum ReportType {
     BalanceSheet = 0,
     DeepDiveAccount = 1,

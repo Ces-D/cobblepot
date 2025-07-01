@@ -4,10 +4,8 @@ use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentTyp
 use chrono::NaiveDateTime;
 use diesel::prelude::{Identifiable, Insertable, Queryable};
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JSONOpenRecurringTransaction {
     pub name: String,
     pub description: Option<String>,
@@ -17,8 +15,7 @@ pub struct JSONOpenRecurringTransaction {
     pub account_id: i32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JSONCloseRecurringTransaction {
     pub id: i32,
 }
@@ -54,10 +51,9 @@ impl TryFrom<JSONOpenRecurringTransaction> for InsertableRecurringTransaction {
     }
 }
 
-#[derive(Debug, Queryable, Identifiable, Serialize, Deserialize, TS)]
+#[derive(Debug, Queryable, Identifiable, Serialize, Deserialize)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=recurring_transactions)]
-#[ts(export, export_to = "cobblepot_types.ts")]
 pub struct RecurringTransaction {
     pub id: i32,
     pub name: String,

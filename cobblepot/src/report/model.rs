@@ -3,10 +3,8 @@ use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentTyp
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, hash::Hash};
-use ts_rs::TS;
 
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JSONOpenReport {
     pub report_type: ReportType,
     pub id: Option<i32>,
@@ -14,8 +12,7 @@ pub struct JSONOpenReport {
     pub to: Option<DateTime<Utc>>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AccountBalance {
     pub account_id: i32,
     pub balance_id: i32,
@@ -60,8 +57,7 @@ impl From<&LoadAccountBalance> for AccountBalance {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BalanceSheet {
     pub from: DateTime<Utc>,
     pub to: DateTime<Utc>,
@@ -83,8 +79,7 @@ impl Responder for BalanceSheet {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SimpleRecurringTransaction {
     pub id: i32,
     pub name: String,
@@ -94,15 +89,13 @@ pub struct SimpleRecurringTransaction {
     pub status: RecurringStatus,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChangeSnapShot {
     pub timeframe: DateTime<Utc>,
     pub average: f32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChangeTimeline {
     pub from: DateTime<Utc>,
     pub to: DateTime<Utc>,
@@ -110,8 +103,7 @@ pub struct ChangeTimeline {
     pub snapshots: Vec<ChangeSnapShot>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AccountDeepDive {
     pub id: i32,
     pub name: String,

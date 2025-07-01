@@ -1,18 +1,15 @@
 use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentType};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JSONApplyRecurringTransaction {
     pub id: i32,
     pub from: Option<DateTime<Utc>>,
     pub to: Option<DateTime<Utc>>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "cobblepot_types.ts")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppliedRecurringTransaction {
     pub id: i32,
     pub account_id: i32,
