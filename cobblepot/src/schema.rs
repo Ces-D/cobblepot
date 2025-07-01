@@ -7,8 +7,8 @@ diesel::table! {
         description -> Nullable<Text>,
         owner -> Text,
         account_type -> Integer,
-        opened_on -> Text,
-        closed_on -> Nullable<Text>,
+        opened_on -> Timestamp,
+        closed_on -> Nullable<Timestamp>,
     }
 }
 
@@ -17,9 +17,26 @@ diesel::table! {
         id -> Integer,
         memo -> Text,
         amount -> Float,
-        entered_on -> Text,
+        entered_on -> Timestamp,
         account_id -> Integer,
     }
 }
 
-diesel::allow_tables_to_appear_in_same_query!(account, balance,);
+diesel::table! {
+    recurring_transactions (id) {
+        id -> Integer,
+        name -> Text,
+        description -> Nullable<Text>,
+        account_type -> Integer,
+        amount -> Float,
+        rrule -> Text,
+        start_date -> Timestamp,
+        closed -> Bool,
+        account_id -> Integer,
+    }
+}
+
+diesel::joinable!(balance -> account (account_id));
+diesel::joinable!(recurring_transactions -> account (account_id));
+
+diesel::allow_tables_to_appear_in_same_query!(account, balance, recurring_transactions,);

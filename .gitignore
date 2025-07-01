@@ -19,3 +19,8 @@ Cobblepot_Store/
 **/cobblepot.db
 
 .env
+dev.sh
+TODO.md
+
+node_modules/
+bun.lock
