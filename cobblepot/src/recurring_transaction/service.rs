@@ -2,13 +2,38 @@ use crate::{
     infrastructure::database::DbPool,
     recurring_transaction::model::{
         InsertableRecurringTransaction, JSONCloseRecurringTransaction,
-        JSONOpenRecurringTransaction, RecurringTransaction,
+        JSONListRecurringTransactions, JSONOpenRecurringTransaction, RecurringTransaction,
+        RecurringTransactionList,
     },
-    schema::recurring_transactions::dsl::{closed, id, recurring_transactions},
+    schema::recurring_transactions::dsl::{account_id, closed, id, recurring_transactions},
     shared::CobblepotResult,
 };
 use actix_web::{HttpResponse, Scope, web};
 use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, insert_into, update};
+
+async fn list_recurring_transactions(
+    pool: web::Data<DbPool>,
+    filters: web::Query<JSONListRecurringTransactions>,
+) -> CobblepotResult<RecurringTransactionList> {
+    let args = filters.into_inner();
+    let trans: CobblepotResult<Vec<RecurringTransaction>> = web::block(move || {
+        let mut conn = pool.get().unwrap();
+        let mut query = recurring_transactions.into_boxed();
+
+        if let Some(acc_id) = args.account_id {
+            query = query.filter(account_id.eq(acc_id));
+        }
+
+        let res: Vec<RecurringTransaction> = query
+            .offset(args.offset.unwrap_or(0))
+            .limit(args.limit.unwrap_or(25))
+            .load(&mut conn)?;
+        Ok(res)
+    })
+    .await?;
+
+    Ok(RecurringTransactionList(trans?))
+}
 
 async fn insert_new_recurring_transaction(
     pool: web::Data<DbPool>,
@@ -48,6 +73,7 @@ async fn close_recurring_transaction(
 
 pub fn recurring_transaction_scope() -> Scope {
     web::scope("/recurring_transaction")
+        .route("/list", web::get().to(list_recurring_transactions))
         .route("/open", web::post().to(insert_new_recurring_transaction))
         .route("/close", web::delete().to(close_recurring_transaction))
 }
