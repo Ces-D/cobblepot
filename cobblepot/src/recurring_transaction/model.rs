@@ -6,6 +6,13 @@ use diesel::prelude::{Identifiable, Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct JSONListRecurringTransactions {
+    pub limit: Option<i64>,
+    pub offset: Option<i64>,
+    pub account_id: Option<i32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JSONOpenRecurringTransaction {
     pub name: String,
     pub description: Option<String>,
@@ -73,6 +80,18 @@ impl Responder for RecurringTransaction {
         let body = serde_json::to_string(&self).unwrap();
 
         // Create response and set content type
+        HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct RecurringTransactionList(pub Vec<RecurringTransaction>);
+
+impl Responder for RecurringTransactionList {
+    type Body = BoxBody;
+
+    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
+        let body = serde_json::to_string(&self.0).unwrap();
         HttpResponse::Ok().content_type(ContentType::json()).body(body)
     }
 }
