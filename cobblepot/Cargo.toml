@@ -5,6 +5,9 @@ version.workspace = true
 edition.workspace = true
 authors.workspace = true
 
+[dependencies.cobblepot_core]
+path = "../core/"
+
 [dependencies]
 actix-web = "4.11.0"
 chrono = { version = "0.4.41", features = ["serde"] }

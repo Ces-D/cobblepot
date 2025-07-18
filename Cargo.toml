@@ -1,5 +1,5 @@
 [workspace]
-members = ["cli_docs_macro", "cobblepot"]
+members = ["cobblepot", "core", "financial_markets"]
 
 [workspace.package]
 name = "cobblepot"

@@ -1,4 +1,5 @@
 use crate::shared::{CobblepotError, CobblepotResult};
+use cobblepot_core::environment;
 use diesel::{
     SqliteConnection,
     r2d2::ManageConnection,
@@ -16,7 +17,7 @@ pub type PoolConnection = PooledConnection<ConnectionManager<SqliteConnection>>;
 
 /// Creates a connection pool to the Sqlite database
 pub fn database_pool() -> CobblepotResult<DbPool> {
-    let database_url = super::env::database_url()?;
+    let database_url = environment::database_url()?;
     // Create a connection pool to the Sqlite database
     let manager = ConnectionManager::<SqliteConnection>::new(database_url);
     let mut migration_conn = manager.connect().unwrap();
