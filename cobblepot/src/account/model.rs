@@ -8,6 +8,7 @@ use diesel::{
 };
 use serde::{Deserialize, Serialize};
 
+/// Represents the JSON payload for listing accounts with optional filters.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct JSONListAccounts {
     pub limit: Option<i64>,
@@ -17,6 +18,7 @@ pub struct JSONListAccounts {
     pub closed_after: Option<DateTime<Utc>>,
 }
 
+/// Represents the JSON payload for opening a new account.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct JSONOpenAccount {
     pub name: String,
@@ -27,6 +29,7 @@ pub struct JSONOpenAccount {
     pub closed_on: Option<DateTime<Utc>>,
 }
 
+/// Represents the JSON payload for updating an existing account.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct JSONUpdateAccount {
     pub id: i32,
@@ -38,12 +41,14 @@ pub struct JSONUpdateAccount {
     pub closed_on: Option<DateTime<Utc>>,
 }
 
+/// Represents the JSON payload for closing an existing account.
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct JSONCloseAccount {
     pub id: i32,
     pub closed_on: Option<DateTime<Utc>>,
 }
 
+/// Represents a new account to be inserted into the database.
 #[derive(Debug, Insertable)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=account)]
@@ -69,6 +74,7 @@ impl From<JSONOpenAccount> for InsertableAccount {
     }
 }
 
+/// Represents the fields that can be updated for an existing account.
 #[derive(Debug, AsChangeset, Identifiable)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=account)]
@@ -96,6 +102,7 @@ impl From<JSONUpdateAccount> for UpdatableAccount {
     }
 }
 
+/// Represents the fields needed to close an account.
 #[derive(Debug, AsChangeset, Identifiable)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=account)]
@@ -113,6 +120,7 @@ impl From<JSONCloseAccount> for ClosableAccount {
     }
 }
 
+/// Represents an account as it is stored in the database.
 #[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=account)]
@@ -131,12 +139,11 @@ impl Responder for Account {
 
     fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
         let body = serde_json::to_string(&self).unwrap();
-
-        // Create response and set content type
         HttpResponse::Ok().content_type(ContentType::json()).body(body)
     }
 }
 
+/// A list of accounts, used for responding to API requests.
 #[derive(Debug, Serialize)]
 pub struct AccountList(pub Vec<Account>);
 
@@ -153,8 +160,10 @@ impl Responder for AccountList {
 pub mod test_utils {
     use chrono::{Months, Utc};
 
-    use crate::account::model::{Account, JSONUpdateAccount};
-    use crate::shared::AccountType;
+    use crate::{
+        account::model::{Account, JSONUpdateAccount},
+        shared::AccountType,
+    };
     use std::iter::repeat_with;
 
     /// Changes all but the `id`, `name`, and `closed_on` fields of the original account

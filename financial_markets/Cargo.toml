@@ -1,16 +1,14 @@
 [package]
-name = "financial_markets"
+name = "cobblepot_financial_markets"
 version.workspace = true
 description.workspace = true
 edition.workspace = true
 authors.workspace = true
 
-[dependencies.cobblepot_core]
-path = "../core/"
-
 [dependencies]
-chrono = { version = "0.4.41", features = ["serde"] }
-reqwest = { version = "0.12.22", features = ["json"] }
-serde = { version = "1.0.219", features = ["derive"] }
-strum = { version = "0.27.1", features = ["derive"] }
-url = "2.5.4"
+cobblepot_core = { workspace = true }
+chrono.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+strum.workspace = true
+url.workspace = true

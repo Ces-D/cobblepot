@@ -131,15 +131,3 @@ impl BuildUrl for MetadataRequest {
         Ok(u)
     }
 }
-
-pub struct TiingoError {
-    message: String,
-}
-
-impl From<reqwest::Error> for TiingoError {
-    fn from(err: reqwest::Error) -> Self {
-        Self {
-            message: err.to_string(),
-        }
-    }
-}

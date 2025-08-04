@@ -5,6 +5,7 @@ use chrono::NaiveDateTime;
 use diesel::prelude::{Identifiable, Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 
+/// Represents the JSON payload for listing recurring transactions with optional filters.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JSONListRecurringTransactions {
     pub limit: Option<i64>,
@@ -12,6 +13,7 @@ pub struct JSONListRecurringTransactions {
     pub account_id: Option<i32>,
 }
 
+/// Represents the JSON payload for opening a new recurring transaction.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JSONOpenRecurringTransaction {
     pub name: String,
@@ -22,11 +24,13 @@ pub struct JSONOpenRecurringTransaction {
     pub account_id: i32,
 }
 
+/// Represents the JSON payload for closing a recurring transaction.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JSONCloseRecurringTransaction {
     pub id: i32,
 }
 
+/// Represents a new recurring transaction to be inserted into the database.
 #[derive(Debug, Insertable)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=recurring_transactions)]
@@ -58,6 +62,7 @@ impl TryFrom<JSONOpenRecurringTransaction> for InsertableRecurringTransaction {
     }
 }
 
+/// Represents a recurring transaction as it is stored in the database.
 #[derive(Debug, Queryable, Identifiable, Serialize, Deserialize)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=recurring_transactions)]
@@ -84,6 +89,7 @@ impl Responder for RecurringTransaction {
     }
 }
 
+/// A list of recurring transactions, used for responding to API requests.
 #[derive(Debug, Serialize)]
 pub struct RecurringTransactionList(pub Vec<RecurringTransaction>);
 

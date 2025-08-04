@@ -4,6 +4,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, hash::Hash};
 
+/// Represents the JSON payload for requesting a new report.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JSONOpenReport {
     pub report_type: ReportType,
@@ -12,6 +13,7 @@ pub struct JSONOpenReport {
     pub to: Option<DateTime<Utc>>,
 }
 
+/// Represents a balance for a specific account, used in reports.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AccountBalance {
     pub account_id: i32,
@@ -33,7 +35,7 @@ impl PartialEq for AccountBalance {
 }
 impl Eq for AccountBalance {}
 
-/// A data unit returned from the database
+/// A data unit returned from the database, representing an account balance with its type.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LoadAccountBalance {
     pub account_id: i32,
@@ -57,6 +59,7 @@ impl From<&LoadAccountBalance> for AccountBalance {
     }
 }
 
+/// Represents a balance sheet report, summarizing assets and liabilities.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BalanceSheet {
     pub from: DateTime<Utc>,
@@ -79,6 +82,7 @@ impl Responder for BalanceSheet {
     }
 }
 
+/// A simplified representation of a recurring transaction for use in reports.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SimpleRecurringTransaction {
     pub id: i32,
@@ -89,12 +93,14 @@ pub struct SimpleRecurringTransaction {
     pub status: RecurringStatus,
 }
 
+/// A snapshot of the average change at a specific point in time.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChangeSnapShot {
     pub timeframe: DateTime<Utc>,
     pub average: f32,
 }
 
+/// Represents a timeline of changes, including multiple snapshots.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChangeTimeline {
     pub from: DateTime<Utc>,
@@ -103,6 +109,7 @@ pub struct ChangeTimeline {
     pub snapshots: Vec<ChangeSnapShot>,
 }
 
+/// A detailed, in-depth report for a single account.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AccountDeepDive {
     pub id: i32,
@@ -118,6 +125,8 @@ pub struct AccountDeepDive {
 
     pub timeline: ChangeTimeline,
     pub recurring: Vec<SimpleRecurringTransaction>,
+    pub total_recurring_monthly_asset: f32,
+    pub total_recurring_monthly_liability: f32,
 }
 
 impl Responder for AccountDeepDive {

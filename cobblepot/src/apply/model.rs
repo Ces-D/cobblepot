@@ -2,6 +2,7 @@ use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentTyp
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
+/// Represents the JSON payload for applying a recurring transaction.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JSONApplyRecurringTransaction {
     pub id: i32,
@@ -9,6 +10,7 @@ pub struct JSONApplyRecurringTransaction {
     pub to: Option<DateTime<Utc>>,
 }
 
+/// Represents the result of applying a recurring transaction, including details about the application.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppliedRecurringTransaction {
     pub id: i32,
