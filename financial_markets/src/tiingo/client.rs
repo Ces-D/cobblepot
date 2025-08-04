@@ -1,7 +1,8 @@
 use crate::{
-    tiingo::model::{Metadata, MetadataRequest, TiingoError},
+    tiingo::model::{Metadata, MetadataRequest},
     url::BuildUrl,
 };
+use cobblepot_core::error::CobblepotResult;
 
 use super::model::{HistoricalPricesRequest, PriceData};
 use reqwest::{
@@ -31,13 +32,13 @@ impl TiingoClient {
     pub async fn end_of_day_prices(
         &self,
         req: HistoricalPricesRequest,
-    ) -> Result<Vec<PriceData>, TiingoError> {
+    ) -> CobblepotResult<Vec<PriceData>> {
         let url = req.build_url().unwrap();
         let res = self.client.get(url).send().await?.json::<Vec<PriceData>>().await?;
         Ok(res)
     }
 
-    pub async fn metadata(&self, req: MetadataRequest) -> Result<Metadata, TiingoError> {
+    pub async fn metadata(&self, req: MetadataRequest) -> CobblepotResult<Metadata> {
         let url = req.build_url().unwrap();
         let res = self.client.get(url).send().await?.json::<Metadata>().await?;
         Ok(res)

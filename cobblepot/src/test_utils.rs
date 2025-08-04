@@ -8,8 +8,9 @@ use crate::{
     balance::model::{InsertableBalance, JSONOpenBalance},
     infrastructure::database::PoolConnection,
     schema::{account::dsl as account_dsl, balance::dsl as balance_dsl},
-    shared::{AccountType, CobblepotResult},
+    shared::AccountType,
 };
+use cobblepot_core::error::CobblepotResult;
 
 pub fn create_dummy_open_balance(account_id: i32) -> JSONOpenBalance {
     JSONOpenBalance {

@@ -1,30 +1,58 @@
-use actix_web::{
-    HttpResponse, ResponseError,
-    error::BlockingError,
-    http::{StatusCode, header::ContentType},
-};
-use derive_more::Display;
+use num_enum::FromPrimitive;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, FromPrimitive, Serialize, Deserialize, PartialEq, Eq)]
+#[repr(i32)]
 pub enum AccountType {
+    #[default]
     Asset = 0,
     Liability = 1,
 }
 
-impl From<i32> for AccountType {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => AccountType::Asset,
-            1 => AccountType::Liability,
-            _ => panic!("Invalid AccountType value"),
-        }
-    }
+/// All the typical (and some exotic) instrument types an investor might own.
+#[derive(Clone, Copy, Debug, FromPrimitive, Serialize, Deserialize, PartialEq, Eq)]
+#[repr(i32)]
+pub enum InstrumentType {
+    #[default]
+    Stock = 0, // Equities & Funds
+    Bond = 1,                      // Fixed Income & Money Market
+    ETF = 2,                       // Equities & Funds
+    MutualFund = 3,                // Equities & Funds
+    Cryptocurrency = 4,            // Currencies & Commodities
+    Commodity = 5,                 // Currencies & Commodities
+    Option = 6,                    // Derivatives
+    Future = 7,                    // Derivatives
+    UnitInvestmentTrust = 8,       // Equities & Funds
+    RealEstateInvestmentTrust = 9, // Equities & Funds
+    ExchangeTradedNote = 10,       // Equities & Funds
+    DepositaryReceipt = 11,        // Equities & Funds
+    CertificateOfDeposit = 12,     // Fixed Income & Money Market
+    MoneyMarketFund = 13,          // Fixed Income & Money Market
+    CommercialPaper = 14,          // Fixed Income & Money Market
+    MortgageBackedSecurity = 15,   // Fixed Income & Money Market
+    AssetBackedSecurity = 16,      // Fixed Income & Money Market
+    Currency = 17,                 // Currencies & Commodities
+    Forward = 18,                  // Derivatives
+    Swap = 19,                     // Derivatives
+    CreditDefaultSwap = 20,        // Derivatives
+    InterestRateSwap = 21,         // Derivatives
+    Warrant = 22,                  // Hybrid & Structured Products
+    StructuredProduct = 23,        // Hybrid & Structured Products
+    ContractForDifference = 24,    // Hybrid & Structured Products
+    HedgeFund = 25,                // Alternative & Private
+    PrivateEquity = 26,            // Alternative & Private
+    VentureCapitalFund = 27,       // Alternative & Private
+    RealEstate = 28,               // Alternative & Private
+    Collectible = 29,              // Alternative & Private
+    Annuity = 30,                  // Insurance & Annuities
+    P2PLoan = 31,                  // Others
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, FromPrimitive, Serialize, Deserialize, PartialEq, Eq)]
+#[repr(i32)]
 pub enum Frequency {
     Yearly = 0,
+    #[default]
     Monthly = 1,
     Weekly = 2,
     Daily = 3,
@@ -47,8 +75,10 @@ impl Into<rrule::Frequency> for Frequency {
     }
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, FromPrimitive, Serialize, Deserialize, PartialEq, Eq)]
+#[repr(i32)]
 pub enum Weekday {
+    #[default]
     Mon = 0,
     Tue = 1,
     Wed = 2,
@@ -72,92 +102,19 @@ impl Into<rrule::Weekday> for Weekday {
     }
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, FromPrimitive, Serialize, Deserialize)]
+#[repr(i32)]
 pub enum RecurringStatus {
+    #[default]
     Ongoing = 0,
     Completed = 1,
     Closed = 2,
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, FromPrimitive, Serialize, Deserialize)]
+#[repr(i32)]
 pub enum ReportType {
+    #[default]
     BalanceSheet = 0,
     DeepDiveAccount = 1,
-}
-
-pub type CobblepotResult<T> = Result<T, CobblepotError>;
-
-#[derive(Debug, Display)]
-pub enum CobblepotError {
-    DieselError(diesel::result::Error),
-    EnvError(std::env::VarError),
-    /// App logic error
-    LogicError(String),
-    /// App user error
-    UserError(String),
-    IoError(std::io::Error),
-}
-
-impl From<diesel::result::Error> for CobblepotError {
-    fn from(err: diesel::result::Error) -> Self {
-        CobblepotError::DieselError(err)
-    }
-}
-
-impl From<serde_json::Error> for CobblepotError {
-    fn from(err: serde_json::Error) -> Self {
-        CobblepotError::UserError(err.to_string())
-    }
-}
-
-impl From<rrule::RRuleError> for CobblepotError {
-    fn from(err: rrule::RRuleError) -> Self {
-        CobblepotError::LogicError(err.to_string())
-    }
-}
-
-impl From<std::env::VarError> for CobblepotError {
-    fn from(err: std::env::VarError) -> Self {
-        CobblepotError::EnvError(err)
-    }
-}
-
-impl From<std::io::Error> for CobblepotError {
-    fn from(err: std::io::Error) -> Self {
-        CobblepotError::IoError(err)
-    }
-}
-
-impl From<BlockingError> for CobblepotError {
-    fn from(err: BlockingError) -> Self {
-        CobblepotError::LogicError(err.to_string())
-    }
-}
-
-impl ResponseError for CobblepotError {
-    fn status_code(&self) -> StatusCode {
-        match self {
-            CobblepotError::DieselError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            CobblepotError::EnvError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            CobblepotError::LogicError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            CobblepotError::UserError(_) => StatusCode::BAD_REQUEST,
-            CobblepotError::IoError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-        }
-    }
-
-    fn error_response(&self) -> HttpResponse<actix_web::body::BoxBody> {
-        let build_response = |error: &dyn std::fmt::Display| {
-            HttpResponse::build(self.status_code())
-                .insert_header(ContentType::json())
-                .body(error.to_string())
-        };
-
-        match self {
-            CobblepotError::DieselError(e) => build_response(e),
-            CobblepotError::EnvError(e) => build_response(e),
-            CobblepotError::LogicError(e) => build_response(e),
-            CobblepotError::UserError(e) => build_response(e),
-            CobblepotError::IoError(e) => build_response(e),
-        }
-    }
 }

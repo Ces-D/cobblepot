@@ -6,4 +6,10 @@ edition.workspace = true
 authors.workspace = true
 
 [dependencies]
-log = "0.4.27"
+actix-web.workspace = true
+log.workspace = true
+diesel.workspace = true
+derive_more.workspace = true
+reqwest.workspace = true
+serde_json.workspace = true
+rrule.workspace = true

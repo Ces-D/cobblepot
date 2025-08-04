@@ -15,8 +15,9 @@ use crate::{
         balance::dsl::{account_id, balance, entered_on},
         recurring_transactions::dsl::{id as transaction_id, recurring_transactions},
     },
-    shared::{AccountType, CobblepotError, CobblepotResult},
+    shared::AccountType,
 };
+use cobblepot_core::error::{CobblepotError, CobblepotResult};
 
 fn apply_recurring_balance(
     mut connection: PoolConnection,

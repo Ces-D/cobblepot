@@ -5,8 +5,9 @@ use crate::{
     },
     infrastructure::database::DbPool,
     schema::account::dsl::{account, account_type, closed_on, id, opened_on},
-    shared::CobblepotResult,
 };
+use cobblepot_core::error::CobblepotResult;
+
 use actix_web::{HttpResponse, Scope, web};
 use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, insert_into, update};
 

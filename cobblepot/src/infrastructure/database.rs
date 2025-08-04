@@ -1,9 +1,10 @@
-use crate::shared::{CobblepotError, CobblepotResult};
-use cobblepot_core::environment;
+use cobblepot_core::{
+    environment,
+    error::{CobblepotError, CobblepotResult},
+};
 use diesel::{
     SqliteConnection,
-    r2d2::ManageConnection,
-    r2d2::{ConnectionManager, Pool, PooledConnection},
+    r2d2::{ConnectionManager, ManageConnection, Pool, PooledConnection},
 };
 use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 

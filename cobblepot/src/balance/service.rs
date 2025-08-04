@@ -5,9 +5,9 @@ use crate::{
     },
     infrastructure::database::DbPool,
     schema::balance::dsl::{account_id, balance, entered_on, id},
-    shared::CobblepotResult,
 };
 use actix_web::{Scope, web};
+use cobblepot_core::error::CobblepotResult;
 use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, insert_into, update};
 
 async fn list_balances(

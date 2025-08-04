@@ -6,9 +6,9 @@ use crate::{
         RecurringTransactionList,
     },
     schema::recurring_transactions::dsl::{account_id, closed, id, recurring_transactions},
-    shared::CobblepotResult,
 };
 use actix_web::{HttpResponse, Scope, web};
+use cobblepot_core::error::CobblepotResult;
 use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, insert_into, update};
 
 async fn list_recurring_transactions(
