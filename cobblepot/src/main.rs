@@ -1,5 +1,7 @@
 use actix_web::{App, HttpResponse, HttpServer, web};
-use cobblepot::{account, apply, balance, infrastructure, recurring_transaction, report};
+use cobblepot::{
+    account, apply, balance, financial_market, infrastructure, recurring_transaction, report,
+};
 use env_logger;
 
 #[actix_web::main]
@@ -23,6 +25,7 @@ async fn main() -> std::io::Result<()> {
             .service(report::service::report_scope())
             .service(recurring_transaction::service::recurring_transaction_scope())
             .service(apply::service::apply_scope())
+            .service(financial_market::service::financial_market_scope())
     })
     .bind(("127.0.0.1", 8080))
     .expect("Failed to bind to address");

@@ -39,3 +39,25 @@ impl Responder for AppliedRecurringTransaction {
         HttpResponse::Ok().content_type(ContentType::json()).body(body)
     }
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct JSONApplyMarketInstrument {
+    pub id: i32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AppliedFinancialMarketInstruments {
+    pub applied_count: usize,
+    pub new_balance_id: i32,
+}
+
+impl Responder for AppliedFinancialMarketInstruments {
+    type Body = BoxBody;
+
+    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
+        let body = serde_json::to_string(&self).unwrap();
+
+        // Create response and set content type
+        HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
+}

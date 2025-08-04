@@ -1,7 +1,9 @@
 use crate::{schema::market_instrument, shared::InstrumentType};
-use actix_web::{HttpRequest, HttpResponse, Responder, body::BoxBody};
+use actix_web::{HttpRequest, HttpResponse, Responder, body::BoxBody, http::header::ContentType};
 use chrono::{DateTime, NaiveDateTime, Utc};
-use diesel::{Identifiable, Insertable, Queryable, Selectable, sqlite::Sqlite};
+use diesel::{
+    Identifiable, Insertable, Queryable, Selectable, prelude::AsChangeset, sqlite::Sqlite,
+};
 use serde::{Deserialize, Serialize};
 
 /// Represents the payload for a web form to open a new financial market instrument.
@@ -16,19 +18,57 @@ pub struct JSONOpenFinancialMarketInstrument {
     account_id: i32,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct JSONUpdateFinancialMarketInstrument {
+    pub id: i32,
+    name: Option<String>,
+    ticker: Option<String>,
+    market: Option<String>,
+    quantity: Option<f32>,
+    account_id: Option<i32>,
+}
+
 /// Represents a new financial market instrument to be inserted into the database.
 #[derive(Debug, Insertable)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=market_instrument)]
 pub struct InsertableMarketInstrument {
-    pub name: String,
-    pub ticker: String,
-    pub market: Option<String>,
-    pub instrument_type: i32,
-    pub quantity: f32,
-    pub opened_on: NaiveDateTime,
-    pub updated_on: NaiveDateTime,
-    pub account_id: i32,
+    name: String,
+    ticker: String,
+    market: Option<String>,
+    instrument_type: i32,
+    quantity: f32,
+    opened_on: NaiveDateTime,
+    updated_on: NaiveDateTime,
+    account_id: i32,
+}
+
+/// Represents a new financial market instrument to be inserted into the database.
+#[derive(Debug, AsChangeset, Identifiable)]
+#[diesel(check_for_backend(Sqlite))]
+#[diesel(table_name=market_instrument)]
+pub struct UpdatableMarketInstrument {
+    id: i32,
+    name: Option<String>,
+    ticker: Option<String>,
+    market: Option<String>,
+    quantity: Option<f32>,
+    updated_on: NaiveDateTime,
+    account_id: Option<i32>,
+}
+
+impl From<JSONUpdateFinancialMarketInstrument> for UpdatableMarketInstrument {
+    fn from(value: JSONUpdateFinancialMarketInstrument) -> Self {
+        UpdatableMarketInstrument {
+            id: value.id,
+            name: value.name,
+            ticker: value.ticker,
+            market: value.market,
+            quantity: value.quantity,
+            updated_on: chrono::Utc::now().naive_utc(),
+            account_id: value.account_id,
+        }
+    }
 }
 
 impl From<JSONOpenFinancialMarketInstrument> for InsertableMarketInstrument {
@@ -54,15 +94,27 @@ impl From<JSONOpenFinancialMarketInstrument> for InsertableMarketInstrument {
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=market_instrument)]
 pub struct MarketInstrument {
-    id: i32,
-    name: String,
-    ticker: String,
-    market: Option<String>,
-    instrument_type: i32,
-    quantity: f32,
-    opened_on: NaiveDateTime,
-    updated_on: NaiveDateTime,
-    account_id: i32,
+    pub id: i32,
+    pub name: String,
+    pub ticker: String,
+    pub market: Option<String>,
+    pub instrument_type: i32,
+    pub quantity: f32,
+    pub opened_on: NaiveDateTime,
+    pub updated_on: NaiveDateTime,
+    pub account_id: i32,
+}
+
+/// A list of market instruments, used for responding to API requests.
+#[derive(Debug, Serialize)]
+pub struct MarketInstrumentList(pub Vec<MarketInstrument>);
+
+impl Responder for MarketInstrumentList {
+    type Body = BoxBody;
+    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
+        let body = serde_json::to_string(&self.0).unwrap();
+        HttpResponse::Ok().content_type(ContentType::json()).body(body)
+    }
 }
 
 /// Represents a calculated financial market instrument, enriched with external data.

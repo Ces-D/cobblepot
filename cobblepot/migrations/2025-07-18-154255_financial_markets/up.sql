@@ -11,4 +11,3 @@ CREATE TABLE market_instrument(
     account_id INTEGER NOT NULL,
     FOREIGN KEY (account_id) REFERENCES account(id)
 );
-
