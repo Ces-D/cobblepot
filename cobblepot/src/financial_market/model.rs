@@ -1,4 +1,7 @@
-use crate::{schema::market_instrument, shared::InstrumentType};
+use crate::{
+    schema::market_instrument,
+    shared::{InstrumentType, responder::impl_json_responder},
+};
 use actix_web::{HttpRequest, HttpResponse, Responder, body::BoxBody, http::header::ContentType};
 use chrono::{DateTime, NaiveDateTime, Utc};
 use diesel::{
@@ -109,13 +112,7 @@ pub struct MarketInstrument {
 #[derive(Debug, Serialize)]
 pub struct MarketInstrumentList(pub Vec<MarketInstrument>);
 
-impl Responder for MarketInstrumentList {
-    type Body = BoxBody;
-    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
-        let body = serde_json::to_string(&self.0).unwrap();
-        HttpResponse::Ok().content_type(ContentType::json()).body(body)
-    }
-}
+impl_json_responder!(MarketInstrumentList);
 
 /// Represents a calculated financial market instrument, enriched with external data.
 /// This struct contains fields similar to `MarketInstrument` but is designed for display,
@@ -149,11 +146,4 @@ impl From<MarketInstrument> for CalculatedMarketInstrument {
     }
 }
 
-impl Responder for CalculatedMarketInstrument {
-    type Body = BoxBody;
-
-    fn respond_to(self, _: &HttpRequest) -> HttpResponse<Self::Body> {
-        let body = serde_json::to_string(&self).unwrap();
-        HttpResponse::Ok().json(body)
-    }
-}
+impl_json_responder!(CalculatedMarketInstrument);

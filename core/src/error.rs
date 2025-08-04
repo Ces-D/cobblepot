@@ -17,6 +17,23 @@ pub enum CobblepotError {
     UserError(String),
     IoError(std::io::Error),
     ReqwestError(reqwest::Error),
+    JsonError(serde_json::Error),
+    RRuleError(rrule::RRuleError),
+    BlockingError(BlockingError),
+    DieselR2D2Error(diesel::r2d2::Error),
+    R2D2Error(r2d2::Error),
+}
+
+impl From<diesel::r2d2::Error> for CobblepotError {
+    fn from(err: diesel::r2d2::Error) -> Self {
+        CobblepotError::DieselR2D2Error(err)
+    }
+}
+
+impl From<r2d2::Error> for CobblepotError {
+    fn from(err: r2d2::Error) -> Self {
+        CobblepotError::R2D2Error(err)
+    }
 }
 
 impl From<reqwest::Error> for CobblepotError {
@@ -33,13 +50,13 @@ impl From<diesel::result::Error> for CobblepotError {
 
 impl From<serde_json::Error> for CobblepotError {
     fn from(err: serde_json::Error) -> Self {
-        CobblepotError::UserError(err.to_string())
+        CobblepotError::JsonError(err)
     }
 }
 
 impl From<rrule::RRuleError> for CobblepotError {
     fn from(err: rrule::RRuleError) -> Self {
-        CobblepotError::LogicError(err.to_string())
+        CobblepotError::RRuleError(err)
     }
 }
 
@@ -57,7 +74,7 @@ impl From<std::io::Error> for CobblepotError {
 
 impl From<BlockingError> for CobblepotError {
     fn from(err: BlockingError) -> Self {
-        CobblepotError::LogicError(err.to_string())
+        CobblepotError::BlockingError(err)
     }
 }
 
@@ -74,23 +91,19 @@ impl ResponseError for CobblepotError {
                     .unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),
                 None => StatusCode::INTERNAL_SERVER_ERROR,
             },
+            CobblepotError::JsonError(_) => StatusCode::BAD_REQUEST,
+            CobblepotError::RRuleError(_) => StatusCode::BAD_REQUEST,
+            CobblepotError::BlockingError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            CobblepotError::R2D2Error(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            CobblepotError::DieselR2D2Error(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 
     fn error_response(&self) -> HttpResponse<actix_web::body::BoxBody> {
-        let build_response = |error: &dyn std::fmt::Display| {
-            HttpResponse::build(self.status_code())
-                .insert_header(ContentType::json())
-                .body(error.to_string())
-        };
+        let error_message = self.to_string();
 
-        match self {
-            CobblepotError::DieselError(e) => build_response(e),
-            CobblepotError::EnvError(e) => build_response(e),
-            CobblepotError::LogicError(e) => build_response(e),
-            CobblepotError::UserError(e) => build_response(e),
-            CobblepotError::IoError(e) => build_response(e),
-            CobblepotError::ReqwestError(e) => build_response(e),
-        }
+        HttpResponse::build(self.status_code())
+            .insert_header(ContentType::json())
+            .body(error_message)
     }
 }

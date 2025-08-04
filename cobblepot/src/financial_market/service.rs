@@ -37,7 +37,7 @@ pub async fn get_current_market_value(ticker: String, quantity: f32) -> Cobblepo
 async fn list_financial_instruments(
     pool: web::Data<DbPool>,
 ) -> CobblepotResult<MarketInstrumentList> {
-    let mut conn = pool.get().unwrap();
+    let mut conn = pool.get()?;
     let res = market_instrument.load::<MarketInstrument>(&mut conn)?;
     Ok(MarketInstrumentList(res))
 }
@@ -48,7 +48,7 @@ async fn insert_new_financial_instrument(
 ) -> CobblepotResult<CalculatedMarketInstrument> {
     let args = payload.into_inner();
     let acc: CobblepotResult<MarketInstrument> = web::block(move || {
-        let mut conn = pool.get().unwrap();
+        let mut conn = pool.get()?;
         let insertable: InsertableMarketInstrument = args.into();
         let res = insert_into(market_instrument)
             .values(insertable)
@@ -79,7 +79,7 @@ async fn update_financial_instrument(
     let args = payload.into_inner();
     let instrument_id = args.id;
     let acc: CobblepotResult<MarketInstrument> = web::block(move || {
-        let mut conn = pool.get().unwrap();
+        let mut conn = pool.get()?;
         let updatable: UpdatableMarketInstrument = args.into();
         let res = update(market_instrument.filter(id.eq(instrument_id)))
             .set(updatable)

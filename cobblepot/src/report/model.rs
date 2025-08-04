@@ -1,5 +1,5 @@
-use crate::shared::{AccountType, RecurringStatus, ReportType};
-use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentType};
+use crate::shared::{AccountType, RecurringStatus, ReportType, responder::impl_json_responder};
+use actix_web::{HttpRequest, HttpResponse, Responder, body::BoxBody, http::header::ContentType};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, hash::Hash};
@@ -71,16 +71,7 @@ pub struct BalanceSheet {
     pub net_position: f32,
 }
 
-impl Responder for BalanceSheet {
-    type Body = BoxBody;
-
-    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
-        let body = serde_json::to_string(&self).unwrap();
-
-        // Create response and set content type
-        HttpResponse::Ok().content_type(ContentType::json()).body(body)
-    }
-}
+impl_json_responder!(BalanceSheet);
 
 /// A simplified representation of a recurring transaction for use in reports.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -129,13 +120,4 @@ pub struct AccountDeepDive {
     pub total_recurring_monthly_liability: f32,
 }
 
-impl Responder for AccountDeepDive {
-    type Body = BoxBody;
-
-    fn respond_to(self, _: &actix_web::HttpRequest) -> HttpResponse<Self::Body> {
-        let body = serde_json::to_string(&self).unwrap();
-
-        // Create response and set content type
-        HttpResponse::Ok().content_type(ContentType::json()).body(body)
-    }
-}
+impl_json_responder!(AccountDeepDive);

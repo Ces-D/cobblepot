@@ -17,7 +17,7 @@ async fn list_recurring_transactions(
 ) -> CobblepotResult<RecurringTransactionList> {
     let args = filters.into_inner();
     let trans: CobblepotResult<Vec<RecurringTransaction>> = web::block(move || {
-        let mut conn = pool.get().unwrap();
+        let mut conn = pool.get()?;
         let mut query = recurring_transactions.into_boxed();
 
         if let Some(acc_id) = args.account_id {
@@ -40,16 +40,16 @@ async fn insert_new_recurring_transaction(
     payload: web::Json<JSONOpenRecurringTransaction>,
 ) -> CobblepotResult<RecurringTransaction> {
     let args = payload.into_inner();
-    let transaction = web::block(move || {
-        let mut conn = pool.get().unwrap();
+
+    web::block(move || {
+        let mut conn = pool.get()?;
         let insertable: InsertableRecurringTransaction = args.try_into()?;
         let res = insert_into(recurring_transactions)
             .values(insertable)
             .get_result::<RecurringTransaction>(&mut conn)?;
         Ok(res)
     })
-    .await?;
-    transaction
+    .await?
 }
 
 async fn close_recurring_transaction(
@@ -57,11 +57,12 @@ async fn close_recurring_transaction(
     payload: web::Json<JSONCloseRecurringTransaction>,
 ) -> CobblepotResult<HttpResponse> {
     let args = payload.into_inner();
-    let transaction = web::block(move || {
-        let mut conn = pool.get().unwrap();
-        update(recurring_transactions.filter(id.eq(args.id)))
+    let transaction: CobblepotResult<usize> = web::block(move || {
+        let mut conn = pool.get()?;
+        let res = update(recurring_transactions.filter(id.eq(args.id)))
             .set(closed.eq(true))
-            .execute(&mut conn)
+            .execute(&mut conn)?;
+        Ok(res)
     })
     .await?;
     if transaction.is_ok() {

@@ -1,7 +1,8 @@
 use crate::{serde::date_yyyy_mm_dd, url::BuildUrl};
 use chrono::{DateTime, Utc};
+use cobblepot_core::error::{CobblepotError, CobblepotResult};
 use serde::{Deserialize, Serialize};
-use url::{ParseError, Url};
+use url::Url;
 
 const TIINGO_API_BASE_URL: &str = "https://api.tiingo.com/api/";
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, strum::Display)]
@@ -73,13 +74,16 @@ pub struct HistoricalPricesRequest {
 }
 
 impl BuildUrl for HistoricalPricesRequest {
-    fn build_url(&self) -> Result<Url, ParseError> {
-        let mut u = Url::parse(TIINGO_API_BASE_URL)?;
+    fn build_url(&self) -> CobblepotResult<Url> {
+        let mut u = Url::parse(TIINGO_API_BASE_URL)
+            .map_err(|e| CobblepotError::LogicError(e.to_string()))?;
         let path = vec!["daily", self.ticker.as_str(), "prices"];
 
         // Append each segment (percent‑encoded automatically)
         {
-            let mut p = u.path_segments_mut().unwrap();
+            let mut p = u
+                .path_segments_mut()
+                .map_err(|_| CobblepotError::LogicError("Cannot be base URL".to_string()))?;
             for seg in path {
                 p.push(seg);
             }
@@ -116,13 +120,16 @@ pub struct MetadataRequest {
 }
 
 impl BuildUrl for MetadataRequest {
-    fn build_url(&self) -> Result<Url, ParseError> {
-        let mut u = Url::parse(TIINGO_API_BASE_URL)?;
+    fn build_url(&self) -> CobblepotResult<Url> {
+        let mut u = Url::parse(TIINGO_API_BASE_URL)
+            .map_err(|e| CobblepotError::LogicError(e.to_string()))?;
         let path = vec!["daily", self.ticker.as_str()];
 
         // Append each segment (percent‑encoded automatically)
         {
-            let mut p = u.path_segments_mut().unwrap();
+            let mut p = u
+                .path_segments_mut()
+                .map_err(|_| CobblepotError::LogicError("Cannot be base URL".to_string()))?;
             for seg in path {
                 p.push(seg);
             }

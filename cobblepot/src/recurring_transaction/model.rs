@@ -1,6 +1,9 @@
 use super::recurrance::Recurrance;
-use crate::{schema::recurring_transactions, shared::AccountType};
-use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentType};
+use crate::{
+    schema::recurring_transactions,
+    shared::{AccountType, responder::impl_json_responder},
+};
+use actix_web::{HttpRequest, HttpResponse, Responder, body::BoxBody, http::header::ContentType};
 use chrono::NaiveDateTime;
 use diesel::prelude::{Identifiable, Insertable, Queryable};
 use serde::{Deserialize, Serialize};
@@ -78,29 +81,13 @@ pub struct RecurringTransaction {
     pub account_id: i32,
 }
 
-impl Responder for RecurringTransaction {
-    type Body = BoxBody;
-
-    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
-        let body = serde_json::to_string(&self).unwrap();
-
-        // Create response and set content type
-        HttpResponse::Ok().content_type(ContentType::json()).body(body)
-    }
-}
+impl_json_responder!(RecurringTransaction);
 
 /// A list of recurring transactions, used for responding to API requests.
 #[derive(Debug, Serialize)]
 pub struct RecurringTransactionList(pub Vec<RecurringTransaction>);
 
-impl Responder for RecurringTransactionList {
-    type Body = BoxBody;
-
-    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
-        let body = serde_json::to_string(&self.0).unwrap();
-        HttpResponse::Ok().content_type(ContentType::json()).body(body)
-    }
-}
+impl_json_responder!(RecurringTransactionList);
 
 #[cfg(test)]
 pub mod test_utils {

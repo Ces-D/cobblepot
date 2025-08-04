@@ -1,5 +1,8 @@
-use crate::{schema::account, shared::AccountType};
-use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentType};
+use crate::{
+    schema::account,
+    shared::{AccountType, responder::impl_json_responder},
+};
+use actix_web::{HttpRequest, HttpResponse, Responder, body::BoxBody, http::header::ContentType};
 use chrono::{DateTime, NaiveDateTime, Utc};
 use diesel::{
     Selectable,
@@ -134,27 +137,13 @@ pub struct Account {
     pub closed_on: Option<NaiveDateTime>,
 }
 
-impl Responder for Account {
-    type Body = BoxBody;
-
-    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
-        let body = serde_json::to_string(&self).unwrap();
-        HttpResponse::Ok().content_type(ContentType::json()).body(body)
-    }
-}
+impl_json_responder!(Account);
 
 /// A list of accounts, used for responding to API requests.
 #[derive(Debug, Serialize)]
 pub struct AccountList(pub Vec<Account>);
 
-impl Responder for AccountList {
-    type Body = BoxBody;
-
-    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
-        let body = serde_json::to_string(&self.0).unwrap();
-        HttpResponse::Ok().content_type(ContentType::json()).body(body)
-    }
-}
+impl_json_responder!(AccountList);
 
 #[cfg(test)]
 pub mod test_utils {

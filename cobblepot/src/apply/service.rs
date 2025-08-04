@@ -40,7 +40,7 @@ fn apply_recurring_balance(
         let previous_balance =
             OrderDsl::order(FilterDsl::filter(balance, account_id.eq(accnt_id)), entered_on.desc())
                 .first::<Balance>(conn)?;
-        let new_balance_amount = match AccountType::from(recurring_account_type) {
+        let new_balance_amount = match recurring_account_type {
             AccountType::Asset => previous_balance.amount + total_applied_amount,
             AccountType::Liability => previous_balance.amount - total_applied_amount,
         };
@@ -78,7 +78,7 @@ async fn insert_applied_recurring_transaction(
 
     let first_pool = pool.clone();
     let transaction: Result<RecurringTransaction, CobblepotError> = web::block(move || {
-        let mut conn = first_pool.get().unwrap();
+        let mut conn = first_pool.get()?;
         let res = FilterDsl::filter(recurring_transactions, transaction_id.eq(args.id))
             .first::<RecurringTransaction>(&mut conn)?;
         Ok(res)
@@ -99,7 +99,7 @@ async fn insert_applied_recurring_transaction(
 
             let cloned_name = recurring.name.clone();
             let new_balance = web::block(move || {
-                let conn = pool.get().unwrap();
+                let conn = pool.get()?;
                 apply_recurring_balance(
                     conn,
                     recurring.account_id,
@@ -140,7 +140,7 @@ async fn insert_applied_financial_market_instruments(
     pool: web::Data<DbPool>,
     payload: web::Json<JSONApplyMarketInstrument>,
 ) -> CobblepotResult<AppliedFinancialMarketInstruments> {
-    let mut conn = pool.get().unwrap();
+    let mut conn = pool.get()?;
     let accnt_id = payload.id;
 
     let instruments = FilterDsl::filter(market_instrument, market_account_id.eq(accnt_id))

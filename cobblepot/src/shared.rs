@@ -61,9 +61,9 @@ pub enum Frequency {
     Secondly = 6,
 }
 
-impl Into<rrule::Frequency> for Frequency {
-    fn into(self) -> rrule::Frequency {
-        match self {
+impl From<Frequency> for rrule::Frequency {
+    fn from(val: Frequency) -> Self {
+        match val {
             Frequency::Yearly => rrule::Frequency::Yearly,
             Frequency::Monthly => rrule::Frequency::Monthly,
             Frequency::Weekly => rrule::Frequency::Weekly,
@@ -88,9 +88,9 @@ pub enum Weekday {
     Sun = 6,
 }
 
-impl Into<rrule::Weekday> for Weekday {
-    fn into(self) -> rrule::Weekday {
-        match self {
+impl From<Weekday> for rrule::Weekday {
+    fn from(val: Weekday) -> Self {
+        match val {
             Weekday::Mon => rrule::Weekday::Mon,
             Weekday::Tue => rrule::Weekday::Tue,
             Weekday::Wed => rrule::Weekday::Wed,
@@ -117,4 +117,43 @@ pub enum ReportType {
     #[default]
     BalanceSheet = 0,
     DeepDiveAccount = 1,
+}
+
+pub mod responder {
+
+    /// Macro to implement Responder for types that should be serialized as JSON
+    macro_rules! impl_json_responder {
+        ($type:ty) => {
+            impl Responder for $type {
+                type Body = BoxBody;
+
+                fn respond_to(self, _: &HttpRequest) -> HttpResponse<Self::Body> {
+                    match serde_json::to_string(&self) {
+                        Ok(body) => HttpResponse::Ok().content_type(ContentType::json()).body(body),
+                        Err(_) => HttpResponse::InternalServerError()
+                            .content_type(ContentType::plaintext())
+                            .body("Failed to serialize response"),
+                    }
+                }
+            }
+        };
+
+        // For wrapper types like Lists that need to access .0
+        ($type:ty, inner) => {
+            impl Responder for $type {
+                type Body = BoxBody;
+
+                fn respond_to(self, _: &HttpRequest) -> HttpResponse<Self::Body> {
+                    match serde_json::to_string(&self.0) {
+                        Ok(body) => HttpResponse::Ok().content_type(ContentType::json()).body(body),
+                        Err(_) => HttpResponse::InternalServerError()
+                            .content_type(ContentType::plaintext())
+                            .body("Failed to serialize response"),
+                    }
+                }
+            }
+        };
+    }
+
+    pub(crate) use impl_json_responder;
 }

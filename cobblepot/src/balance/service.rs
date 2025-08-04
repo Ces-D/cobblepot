@@ -16,7 +16,7 @@ async fn list_balances(
 ) -> CobblepotResult<BalanceList> {
     let args = filters.into_inner();
     let bals: CobblepotResult<Vec<Balance>> = web::block(move || {
-        let mut conn = pool.get().unwrap();
+        let mut conn = pool.get()?;
         let mut query = balance.into_boxed();
 
         if let Some(entered_after) = args.entered_after {
@@ -41,14 +41,14 @@ async fn insert_new_balance(
     payload: web::Json<JSONOpenBalance>,
 ) -> CobblepotResult<Balance> {
     let args = payload.into_inner();
-    let bal = web::block(move || {
-        let mut conn = pool.get().unwrap();
+
+    web::block(move || {
+        let mut conn = pool.get()?;
         let insertable: InsertableBalance = args.into();
         let res = insert_into(balance).values(insertable).get_result::<Balance>(&mut conn)?;
         Ok(res)
     })
-    .await?;
-    bal
+    .await?
 }
 
 async fn update_balance(
@@ -57,16 +57,16 @@ async fn update_balance(
 ) -> CobblepotResult<Balance> {
     let args = payload.into_inner();
     let balance_id = args.id;
-    let bal = web::block(move || {
-        let mut conn = pool.get().unwrap();
+
+    web::block(move || {
+        let mut conn = pool.get()?;
         let updatable: UpdatableBalance = args.into();
         let res = update(balance.filter(id.eq(balance_id)))
             .set(updatable)
             .get_result::<Balance>(&mut conn)?;
         Ok(res)
     })
-    .await?;
-    bal
+    .await?
 }
 
 pub fn balance_scope() -> Scope {

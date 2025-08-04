@@ -2,13 +2,18 @@ use actix_web::{App, HttpResponse, HttpServer, web};
 use cobblepot::{
     account, apply, balance, financial_market, infrastructure, recurring_transaction, report,
 };
-use env_logger;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    let database_pool = infrastructure::database::database_pool().unwrap();
+    let database_pool = match infrastructure::database::database_pool() {
+        Ok(pool) => pool,
+        Err(e) => {
+            log::error!("Failed to create database pool: {}", e);
+            std::process::exit(1);
+        }
+    };
 
     let server = HttpServer::new(move || {
         App::new()
@@ -19,7 +24,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(actix_web::middleware::Compress::default())
             .wrap(actix_web::middleware::Logger::default())
             // ~~~ Routes
-            .route("/health_check", web::get().to(|| HttpResponse::Ok()))
+            .route("/health_check", web::get().to(HttpResponse::Ok))
             .service(account::service::account_scope())
             .service(balance::service::balance_scope())
             .service(report::service::report_scope())

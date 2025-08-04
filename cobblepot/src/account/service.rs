@@ -17,7 +17,7 @@ async fn list_accounts(
 ) -> CobblepotResult<AccountList> {
     let args = filters.into_inner();
     let accs: CobblepotResult<Vec<Account>> = web::block(move || {
-        let mut conn = pool.get().unwrap();
+        let mut conn = pool.get()?;
         let mut query = account.into_boxed();
 
         if let Some(acc_type) = args.account_type {
@@ -45,14 +45,14 @@ async fn insert_new_account(
     payload: web::Json<JSONOpenAccount>,
 ) -> CobblepotResult<Account> {
     let args = payload.into_inner();
-    let acc = web::block(move || {
-        let mut conn = pool.get().unwrap();
+
+    web::block(move || {
+        let mut conn = pool.get()?;
         let insertable: InsertableAccount = args.into();
         let res = insert_into(account).values(insertable).get_result::<Account>(&mut conn)?;
         Ok(res)
     })
-    .await?;
-    acc
+    .await?
 }
 
 async fn update_account(
@@ -61,16 +61,16 @@ async fn update_account(
 ) -> CobblepotResult<Account> {
     let args = payload.into_inner();
     let account_id = args.id;
-    let acc = web::block(move || {
-        let mut conn = pool.get().unwrap();
+
+    web::block(move || {
+        let mut conn = pool.get()?;
         let updatable: UpdatableAccount = args.into();
         let res = update(account.filter(id.eq(account_id)))
             .set(updatable)
             .get_result::<Account>(&mut conn)?;
         Ok(res)
     })
-    .await?;
-    acc
+    .await?
 }
 
 async fn close_account(
@@ -78,10 +78,11 @@ async fn close_account(
     payload: web::Json<JSONCloseAccount>,
 ) -> CobblepotResult<HttpResponse> {
     let args = payload.into_inner();
-    let acc = web::block(move || {
-        let mut conn = pool.get().unwrap();
+    let acc: CobblepotResult<usize> = web::block(move || {
+        let mut conn = pool.get()?;
         let closable: ClosableAccount = args.into();
-        update(account.filter(id.eq(args.id))).set(closable).execute(&mut conn)
+        let res = update(account.filter(id.eq(args.id))).set(closable).execute(&mut conn)?;
+        Ok(res)
     })
     .await?;
     if acc.is_ok() {

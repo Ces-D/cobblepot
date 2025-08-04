@@ -1,5 +1,5 @@
-use crate::schema::balance;
-use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentType};
+use crate::{schema::balance, shared::responder::impl_json_responder};
+use actix_web::{HttpRequest, HttpResponse, Responder, body::BoxBody, http::header::ContentType};
 use chrono::{DateTime, NaiveDateTime, Utc};
 use diesel::{
     Selectable,
@@ -96,29 +96,13 @@ pub struct Balance {
     pub account_id: i32,
 }
 
-impl Responder for Balance {
-    type Body = BoxBody;
-
-    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
-        let body = serde_json::to_string(&self).unwrap();
-
-        // Create response and set content type
-        HttpResponse::Ok().content_type(ContentType::json()).body(body)
-    }
-}
+impl_json_responder!(Balance);
 
 /// A list of balance records, used for responding to API requests.
 #[derive(Debug, Serialize)]
 pub struct BalanceList(pub Vec<Balance>);
 
-impl Responder for BalanceList {
-    type Body = BoxBody;
-
-    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
-        let body = serde_json::to_string(&self.0).unwrap();
-        HttpResponse::Ok().content_type(ContentType::json()).body(body)
-    }
-}
+impl_json_responder!(BalanceList);
 
 #[cfg(test)]
 pub mod test_utils {

@@ -1,5 +1,6 @@
-use url::{ParseError, Url};
+use cobblepot_core::error::CobblepotResult;
+use url::Url;
 
 pub trait BuildUrl {
-    fn build_url(&self) -> Result<Url, ParseError>;
+    fn build_url(&self) -> CobblepotResult<Url>;
 }
