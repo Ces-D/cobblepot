@@ -8,8 +8,9 @@ use crate::{
     balance::model::{InsertableBalance, JSONOpenBalance},
     infrastructure::database::PoolConnection,
     schema::{account::dsl as account_dsl, balance::dsl as balance_dsl},
-    shared::{AccountType, CobblepotResult},
+    shared::AccountType,
 };
+use cobblepot_core::error::CobblepotResult;
 
 pub fn create_dummy_open_balance(account_id: i32) -> JSONOpenBalance {
     JSONOpenBalance {
@@ -21,7 +22,7 @@ pub fn create_dummy_open_balance(account_id: i32) -> JSONOpenBalance {
 }
 
 pub fn create_dummy_open_account(account_type: Option<AccountType>) -> JSONOpenAccount {
-    let account_types = vec![AccountType::Asset, AccountType::Liability];
+    let account_types = [AccountType::Asset, AccountType::Liability];
     JSONOpenAccount {
         name: repeat_with(fastrand::alphanumeric).take(10).collect(),
         description: None,
@@ -90,7 +91,7 @@ pub fn seed_database(
                 let balances = create_dummy_account_balances(account_id, opened_on.and_utc(), true);
                 let insertable: Vec<InsertableBalance> =
                     balances.into_iter().map(|b| b.into()).collect();
-                return insertable;
+                insertable
             })
             .collect();
 

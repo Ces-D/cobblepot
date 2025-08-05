@@ -24,3 +24,5 @@ TODO.md
 
 node_modules/
 bun.lock
+
+.tudu

@@ -11,10 +11,11 @@ use crate::{
         account::dsl as account_dsl, balance::dsl as balance_dsl,
         recurring_transactions::dsl as recurring_dsl,
     },
-    shared::{AccountType, CobblepotError, CobblepotResult, RecurringStatus},
+    shared::{AccountType, RecurringStatus},
 };
 use actix_web::{Scope, web};
 use chrono::{DateTime, Datelike, Months, NaiveDate, Utc};
+use cobblepot_core::error::{CobblepotError, CobblepotResult};
 
 fn get_balance_sheet_data(
     mut connection: PoolConnection,
@@ -43,7 +44,7 @@ fn get_balance_sheet_data(
                     balance_id,
                     account_id,
                     entered_on: entered_on.and_utc(),
-                    amount: amount.into(),
+                    amount,
                     account_type: account_t.into(),
                     name,
                 }
@@ -66,8 +67,9 @@ async fn create_balance_sheet_report(
     if from > to {
         return Err(CobblepotError::LogicError("from date must be before to date".to_string()));
     }
-    let b_sheet = web::block(move || {
-        let conn = pool.get().unwrap();
+
+    web::block(move || {
+        let conn = pool.get()?;
         let data = get_balance_sheet_data(conn, from, to)?;
         let mut assets_latest: HashMap<i32, LoadAccountBalance> = HashMap::new();
         let mut liabilities_latest: HashMap<i32, LoadAccountBalance> = HashMap::new();
@@ -102,15 +104,14 @@ async fn create_balance_sheet_report(
         Ok(BalanceSheet {
             from,
             to,
-            assets: assets_latest.values().map(|v| AccountBalance::from(v)).collect(),
-            liabilities: liabilities_latest.values().map(|v| AccountBalance::from(v)).collect(),
+            assets: assets_latest.values().map(AccountBalance::from).collect(),
+            liabilities: liabilities_latest.values().map(AccountBalance::from).collect(),
             assets_total,
             liabilities_total,
             net_position: assets_total - liabilities_total,
         })
     })
-    .await?;
-    b_sheet
+    .await?
 }
 
 fn get_deep_dive_account_data(
@@ -160,8 +161,8 @@ async fn create_deep_dive_account_report(
     }
     let id = args.id.unwrap();
 
-    let deep_dive = web::block(move || {
-        let conn = pool.get().unwrap();
+    web::block(move || {
+        let conn = pool.get()?;
         let (account, balances, recurrings) = get_deep_dive_account_data(conn, id)?;
         let mut recent: Option<AccountBalance> = None;
         let total_balance_entry_count = balances.len();
@@ -212,6 +213,26 @@ async fn create_deep_dive_account_report(
             }
         }
 
+        let mut recurring: Vec<SimpleRecurringTransaction> = Vec::new();
+        let mut total_recurring_monthly_asset = 0.0;
+        let mut total_recurring_monthly_liability = 0.0;
+        for r in recurrings.into_iter() {
+            let simple = SimpleRecurringTransaction {
+                id: r.id,
+                name: r.name,
+                amount: r.amount,
+                account_type: r.account_type.into(),
+                status: recurrance_status(r.rrule.clone(), r.start_date, r.closed)
+                    .unwrap_or(RecurringStatus::Ongoing),
+                apply_dates: recurrance_dates(r.rrule, r.start_date).unwrap_or_default(),
+            };
+            recurring.push(simple);
+            match AccountType::from(r.account_type) {
+                AccountType::Asset => total_recurring_monthly_asset += r.amount,
+                AccountType::Liability => total_recurring_monthly_liability += r.amount,
+            }
+        }
+
         Ok(AccountDeepDive {
             id: account.id,
             name: account.name,
@@ -230,22 +251,12 @@ async fn create_deep_dive_account_report(
                 entry_count: timeline_entry_count,
                 snapshots: timeline_snaps,
             },
-            recurring: recurrings
-                .into_iter()
-                .map(|v| SimpleRecurringTransaction {
-                    id: v.id,
-                    name: v.name,
-                    amount: v.amount,
-                    account_type: v.account_type.into(),
-                    status: recurrance_status(v.rrule.clone(), v.start_date, v.closed)
-                        .unwrap_or(RecurringStatus::Ongoing),
-                    apply_dates: recurrance_dates(v.rrule, v.start_date).unwrap_or(vec![]),
-                })
-                .collect(),
+            recurring,
+            total_recurring_monthly_asset,
+            total_recurring_monthly_liability,
         })
     })
-    .await?;
-    deep_dive
+    .await?
 }
 
 pub fn report_scope() -> Scope {

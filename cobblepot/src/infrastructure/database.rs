@@ -1,8 +1,10 @@
-use crate::shared::{CobblepotError, CobblepotResult};
+use cobblepot_core::{
+    environment,
+    error::{CobblepotError, CobblepotResult},
+};
 use diesel::{
     SqliteConnection,
-    r2d2::ManageConnection,
-    r2d2::{ConnectionManager, Pool, PooledConnection},
+    r2d2::{ConnectionManager, ManageConnection, Pool, PooledConnection},
 };
 use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 
@@ -16,11 +18,13 @@ pub type PoolConnection = PooledConnection<ConnectionManager<SqliteConnection>>;
 
 /// Creates a connection pool to the Sqlite database
 pub fn database_pool() -> CobblepotResult<DbPool> {
-    let database_url = super::env::database_url()?;
+    let database_url = environment::database_url()?;
     // Create a connection pool to the Sqlite database
     let manager = ConnectionManager::<SqliteConnection>::new(database_url);
-    let mut migration_conn = manager.connect().unwrap();
-    let migrations = migration_conn.run_pending_migrations(MIGRATIONS).unwrap();
+    let mut migration_conn = manager.connect()?;
+    let migrations = migration_conn
+        .run_pending_migrations(MIGRATIONS)
+        .map_err(|e| CobblepotError::LogicError(e.to_string()))?;
     println!("Ran migrations - {}", migrations.len());
     Pool::builder().build(manager).map_err(|e| CobblepotError::LogicError(e.to_string()))
 }

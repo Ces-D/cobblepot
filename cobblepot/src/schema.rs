@@ -23,6 +23,20 @@ diesel::table! {
 }
 
 diesel::table! {
+    market_instrument (id) {
+        id -> Integer,
+        name -> Text,
+        ticker -> Text,
+        market -> Nullable<Text>,
+        instrument_type -> Integer,
+        quantity -> Float,
+        opened_on -> Timestamp,
+        updated_on -> Timestamp,
+        account_id -> Integer,
+    }
+}
+
+diesel::table! {
     recurring_transactions (id) {
         id -> Integer,
         name -> Text,
@@ -37,6 +51,12 @@ diesel::table! {
 }
 
 diesel::joinable!(balance -> account (account_id));
+diesel::joinable!(market_instrument -> account (account_id));
 diesel::joinable!(recurring_transactions -> account (account_id));
 
-diesel::allow_tables_to_appear_in_same_query!(account, balance, recurring_transactions,);
+diesel::allow_tables_to_appear_in_same_query!(
+    account,
+    balance,
+    market_instrument,
+    recurring_transactions,
+);

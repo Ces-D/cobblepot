@@ -1,7 +1,10 @@
-use actix_web::{HttpResponse, Responder, body::BoxBody, http::header::ContentType};
+use actix_web::{HttpRequest, HttpResponse, Responder, body::BoxBody, http::header::ContentType};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
+use crate::shared::responder::impl_json_responder;
+
+/// Represents the JSON payload for applying a recurring transaction.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JSONApplyRecurringTransaction {
     pub id: i32,
@@ -9,6 +12,7 @@ pub struct JSONApplyRecurringTransaction {
     pub to: Option<DateTime<Utc>>,
 }
 
+/// Represents the result of applying a recurring transaction, including details about the application.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppliedRecurringTransaction {
     pub id: i32,
@@ -27,13 +31,17 @@ pub struct AppliedRecurringTransaction {
     pub applied_on: Vec<DateTime<Utc>>,
 }
 
-impl Responder for AppliedRecurringTransaction {
-    type Body = BoxBody;
+impl_json_responder!(AppliedRecurringTransaction);
 
-    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
-        let body = serde_json::to_string(&self).unwrap();
-
-        // Create response and set content type
-        HttpResponse::Ok().content_type(ContentType::json()).body(body)
-    }
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct JSONApplyMarketInstrument {
+    pub id: i32,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AppliedFinancialMarketInstruments {
+    pub applied_count: usize,
+    pub new_balance_id: i32,
+}
+
+impl_json_responder!(AppliedFinancialMarketInstruments);
