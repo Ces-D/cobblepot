@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{schema::balance, shared::responder::impl_json_responder};
 use actix_web::{HttpRequest, HttpResponse, Responder, body::BoxBody, http::header::ContentType};
 use chrono::{DateTime, NaiveDateTime, Utc};
@@ -25,6 +27,8 @@ pub struct JSONOpenBalance {
     pub entered_on: Option<DateTime<Utc>>,
     pub account_id: i32,
 }
+
+pub type JSONBatchOpenBalance = HashMap<i32, JSONOpenBalance>;
 
 /// Represents the JSON payload for updating an existing balance record.
 #[derive(Debug, Clone, Serialize, Deserialize)]
