@@ -130,6 +130,7 @@ pub struct CalculatedMarketInstrument {
     pub total_value: f64,
 }
 
+/// Total Value is always defaults to 0. Make sure to overwrite it
 impl From<MarketInstrument> for CalculatedMarketInstrument {
     fn from(value: MarketInstrument) -> Self {
         Self {
@@ -137,7 +138,7 @@ impl From<MarketInstrument> for CalculatedMarketInstrument {
             name: value.name,
             ticker: value.ticker,
             market: value.market,
-            instrument_type: InstrumentType::Stock,
+            instrument_type: InstrumentType::from(value.instrument_type),
             quantity: value.quantity,
             opened_on: Utc::now(),
             account_id: value.account_id,

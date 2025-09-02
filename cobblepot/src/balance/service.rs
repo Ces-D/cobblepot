@@ -1,7 +1,7 @@
 use crate::{
     balance::model::{
-        Balance, BalanceList, InsertableBalance, JSONListBalances, JSONOpenBalance,
-        JSONUpdateBalance, UpdatableBalance,
+        Balance, BalanceList, InsertableBalance, JSONBatchOpenBalance, JSONListBalances,
+        JSONOpenBalance, JSONUpdateBalance, UpdatableBalance,
     },
     infrastructure::database::DbPool,
     schema::balance::dsl::{account_id, balance, entered_on, id},
@@ -41,12 +41,28 @@ async fn insert_new_balance(
     payload: web::Json<JSONOpenBalance>,
 ) -> CobblepotResult<Balance> {
     let args = payload.into_inner();
-
     web::block(move || {
         let mut conn = pool.get()?;
         let insertable: InsertableBalance = args.into();
         let res = insert_into(balance).values(insertable).get_result::<Balance>(&mut conn)?;
         Ok(res)
+    })
+    .await?
+}
+
+async fn insert_new_batch_balances(
+    pool: web::Data<DbPool>,
+    payload: web::Json<JSONBatchOpenBalance>,
+) -> CobblepotResult<()> {
+    let args = payload.into_inner();
+    web::block(move || {
+        let mut conn = pool.get()?;
+        let mut insertable: Vec<InsertableBalance> = Vec::new();
+        for b in args.values() {
+            insertable.push(b.clone().into());
+        }
+        insert_into(balance).values(insertable).execute(&mut conn)?;
+        Ok(())
     })
     .await?
 }
@@ -73,6 +89,7 @@ pub fn balance_scope() -> Scope {
     web::scope("/balance")
         .route("/list", web::get().to(list_balances))
         .route("/open", web::post().to(insert_new_balance))
+        .route("/open-batch", web::post().to(insert_new_batch_balances))
         .route("/update", web::put().to(update_balance))
 }
 
