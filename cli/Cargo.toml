@@ -1,0 +1,20 @@
+[package]
+name = "cli"
+version.workspace = true
+description.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+clap.workspace = true
+env_logger.workspace = true
+thiserror.workspace = true
+diesel.workspace = true
+log.workspace = true
+chrono.workspace = true
+serde.workspace = true
+num_enum.workspace = true
+rustix.workspace = true
+
+cobblepot_core.workspace = true
+cobblepot_data_store.workspace = true
