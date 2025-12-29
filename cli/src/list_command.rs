@@ -1,7 +1,7 @@
 use crate::{
-    alert, list_command,
+    alert,
     logger::table::{ColumnConfig, Table},
-    shared::AccountType,
+    shared::{AccountType, format_money_usd},
     success,
 };
 use clap::{Parser, Subcommand, ValueEnum};
@@ -15,18 +15,18 @@ enum ListCommand {
     Accounts {
         #[clap(short, long, help = "Include only accounts of type")]
         account_type: Option<AccountType>,
-        #[clap(short, long, help = "Include only accounts opened by")]
+        #[clap(short, long, value_parser = crate::shared::parse_date, help = "Include only accounts opened after this date (format: YYYY-MM-DD)")]
         opened_by: Option<chrono::NaiveDateTime>,
     },
     #[clap(about = "List your account balances")]
     Balances {
         #[clap(short, long, help = "Include only balances belonging to this account")]
         account_id: Option<i32>,
-        #[clap(short, long, help = "Include only balances entered by")]
+        #[clap(short, long, value_parser = crate::shared::parse_date, help = "Include only balances entered after this date (format: YYYY-MM-DD)")]
         entered_by: Option<chrono::NaiveDateTime>,
     },
     #[clap(about = "List your financial market instruments")]
-    MarketInsruments {
+    MarketInstruments {
         #[clap(short, long, help = "Include only instruments belonging to this account")]
         account_id: Option<i32>,
     },
@@ -118,7 +118,7 @@ pub fn handle_list_command(args: ListArgs, conn: SqliteConnection) {
         ListCommand::Accounts {
             account_type,
             opened_by,
-        } => match list_command::dto::get_filtered_accounts(conn, account_type, opened_by) {
+        } => match dto::get_filtered_accounts(conn, account_type, opened_by) {
             Ok(r) => {
                 success!("{}", format_accounts_message(account_type, opened_by));
                 let mut table = Table::new(vec![
@@ -145,11 +145,31 @@ pub fn handle_list_command(args: ListArgs, conn: SqliteConnection) {
         ListCommand::Balances {
             account_id,
             entered_by,
-        } => {
-            success!("{}", format_balances_message(account_id, entered_by));
-            todo!();
-        }
-        ListCommand::MarketInsruments {
+        } => match dto::get_filtered_balances(conn, account_id, entered_by) {
+            Ok(r) => {
+                success!("{}", format_balances_message(account_id, entered_by));
+                let mut table = Table::new(vec![
+                    ColumnConfig::new("ID").min_width(5),
+                    ColumnConfig::new("Amount").max_width(30),
+                    ColumnConfig::new("Memo"),
+                    ColumnConfig::new("Entered On"),
+                ]);
+                for balance in r {
+                    table.push_row(vec![
+                        balance.id.to_string().as_str(),
+                        &format_money_usd(balance.amount),
+                        &balance.memo,
+                        &balance.entered_on.format("%Y-%m-%d").to_string(),
+                    ]);
+                }
+                table.display();
+            }
+            Err(e) => {
+                alert!("Failed to list balances");
+                log::error!("List Balances: {}", e)
+            }
+        },
+        ListCommand::MarketInstruments {
             account_id,
         } => {
             success!("{}", format_market_instruments_message(account_id));

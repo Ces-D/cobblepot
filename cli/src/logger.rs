@@ -64,6 +64,54 @@ macro_rules! success {
     }};
 }
 
+/// Prints a message to stdout with a checkmark icon.
+/// The first argument is left-aligned with a minimum width of 30 characters.
+///
+/// # Examples
+///
+/// ```
+/// inform!("Operation completed");
+/// inform!("Label:", value);
+/// inform!("Processed {} items:", count, total);
+/// ```
+#[macro_export]
+macro_rules! inform {
+    // Single argument (left-aligned with min width 30)
+    ($msg:expr) => {{
+        println!(
+            "{}{}{}  {}{:<30}",
+            $crate::logger::colors::BOLD,
+            $crate::logger::colors::GREEN,
+            $crate::logger::icons::SUCCESS,
+            $crate::logger::colors::RESET,
+            $msg,
+        )
+    }};
+    // Two or more arguments: first one is left-aligned with min width 30, rest displayed normally
+    ($first:expr, $($arg:expr),+ $(,)?) => {{
+        let rest_args = [$( $crate::__to_string!($arg) ),+];
+        let rest = rest_args.join(" ");
+        println!(
+            "{}{}{}  {}{:<30}{}",
+            $crate::logger::colors::BOLD,
+            $crate::logger::colors::GREEN,
+            $crate::logger::icons::SUCCESS,
+            $crate::logger::colors::RESET,
+            $first,
+            rest,
+        )
+    }};
+}
+
+/// Helper macro to convert any Display type to String
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __to_string {
+    ($e:expr) => {
+        ToString::to_string(&$e)
+    };
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
@@ -85,8 +133,7 @@ mod tests {
 pub mod table {
     use super::colors;
     use rustix::termios::tcgetwinsize;
-    use std::io::stdout;
-    use std::os::fd::AsFd;
+    use std::{io::stdout, os::fd::AsFd};
 
     const COLUMN_GAP: usize = 5;
 
@@ -283,9 +330,8 @@ pub mod table {
                 .collect();
 
             println!(
-                "{}{}{}{}",
+                "{}{}{}",
                 colors::BOLD,
-                colors::UNDERLINE,
                 header_cells.join(&" ".repeat(COLUMN_GAP)),
                 colors::RESET
             );
