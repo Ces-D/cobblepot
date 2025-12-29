@@ -26,19 +26,15 @@ pub struct BalanceSheet {
 }
 impl BalanceSheet {
     fn update_report_date_range(&mut self, entered_on: chrono::NaiveDateTime) {
-        if self.start.is_none() {
-            self.start = Some(entered_on)
-        } else if Some(entered_on) < self.start {
-            self.start = Some(entered_on)
+        if self.start.is_none() || Some(entered_on) < self.start {
+            self.start = Some(entered_on);
         }
-        if self.end.is_none() {
-            self.end = Some(entered_on)
-        } else if Some(entered_on) > self.end {
-            self.end = Some(entered_on)
+        if self.end.is_none() || Some(entered_on) > self.end {
+            self.end = Some(entered_on);
         }
     }
     pub fn push_balance(&mut self, row: LatestBalanceRow) {
-        self.update_report_date_range(row.entered_on.clone());
+        self.update_report_date_range(row.entered_on);
         let account_type = AccountType::from_primitive(row.account_type);
         match account_type {
             AccountType::Asset => {

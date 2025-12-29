@@ -10,7 +10,7 @@ use diesel::SqliteConnection;
 mod dto;
 
 #[derive(Debug, Subcommand)]
-enum ListCommand {
+pub enum ListCommand {
     #[clap(about = "List your accounts")]
     Accounts {
         #[clap(short, long, help = "Include only accounts of type")]

@@ -27,14 +27,13 @@ impl TiingoClient {
 
     pub async fn end_of_day_prices(&self, req: HistoricalPricesRequest) -> Vec<PriceData> {
         let url = req.build_url();
-        let res =
-            self.client.get(url).send().await.unwrap().json::<Vec<PriceData>>().await.unwrap();
-        res
+        
+        self.client.get(url).send().await.unwrap().json::<Vec<PriceData>>().await.unwrap()
     }
 
     pub async fn metadata(&self, req: MetadataRequest) -> Metadata {
         let url = req.build_url();
-        let res = self.client.get(url).send().await.unwrap().json::<Metadata>().await.unwrap();
-        res
+        
+        self.client.get(url).send().await.unwrap().json::<Metadata>().await.unwrap()
     }
 }

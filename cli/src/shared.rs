@@ -42,7 +42,7 @@ pub enum InstrumentType {
     #[default]
     Stock = 0, // Equities & Funds
     Bond = 1,                      // Fixed Income & Money Market
-    ETF = 2,                       // Equities & Funds
+    Etf = 2,                       // Equities & Funds
     MutualFund = 3,                // Equities & Funds
     Cryptocurrency = 4,            // Currencies & Commodities
     Commodity = 5,                 // Currencies & Commodities

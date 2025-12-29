@@ -9,7 +9,7 @@ use clap::{Parser, Subcommand};
 use diesel::SqliteConnection;
 
 #[derive(Debug, Subcommand)]
-enum CreateCommand {
+pub enum CreateCommand {
     #[clap(about = "Create an account")]
     Account {
         #[clap(help = "Name of the account")]
@@ -79,7 +79,7 @@ pub fn handle_create_command(args: CreateArgs, conn: SqliteConnection) {
                 Ok(res) => success!("Created new account: {} - {}", res.0, res.1),
                 Err(e) => {
                     alert!("Failed to create new account");
-                    log::error!("Create Account: {}", e.to_string());
+                    log::error!("Create Account: {}", e);
                 }
             };
         }

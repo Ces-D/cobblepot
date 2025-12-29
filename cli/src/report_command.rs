@@ -6,7 +6,7 @@ mod balance_sheet;
 mod dto;
 
 #[derive(Debug, Subcommand)]
-enum ReportCommand {
+pub enum ReportCommand {
     BalanceSheet,
     AccountDive {
         #[clap(help = "Id of the account")]
