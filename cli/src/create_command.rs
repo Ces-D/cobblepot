@@ -24,7 +24,7 @@ pub enum CreateCommand {
         opened_on: Option<chrono::NaiveDateTime>,
     },
     #[clap(about = "Create an account balance")]
-    Balances {
+    Balance {
         #[clap(help = "Id of the account this belongs to")]
         account_id: i32,
         #[clap(help = "Current balance amount")]
@@ -83,7 +83,7 @@ pub fn handle_create_command(args: CreateArgs, conn: SqliteConnection) {
                 }
             };
         }
-        CreateCommand::Balances {
+        CreateCommand::Balance {
             account_id,
             amount,
             memo,
