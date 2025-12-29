@@ -5,6 +5,9 @@ description.workspace = true
 edition.workspace = true
 authors.workspace = true
 
+[lib]
+path = "financial_markets.rs"
+
 [dependencies]
 cobblepot_core = { workspace = true }
 chrono.workspace = true
