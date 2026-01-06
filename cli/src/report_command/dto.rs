@@ -1,11 +1,15 @@
+use cobblepot_data_store::UnixTimestamp;
 use diesel::{
-    Connection, QueryResult, QueryableByName, SqliteConnection,
-    sql_types::{Float, Integer, Text, Timestamp},
+    Connection, QueryResult, SqliteConnection,
+    prelude::QueryableByName,
+    sql_types::{Float, Integer, Text},
 };
+use serde::{Deserialize, Serialize};
 
 // Intermediate struct for deserializing raw SQL results.
 // Field names must match the column aliases in the SELECT clause.
-#[derive(QueryableByName)]
+#[derive(Debug, QueryableByName, Serialize, Deserialize)]
+#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct LatestBalanceRow {
     #[diesel(sql_type = Integer)]
     pub account_id: i32,
@@ -17,8 +21,8 @@ pub struct LatestBalanceRow {
     pub balance_id: i32,
     #[diesel(sql_type = Float)]
     pub amount: f32,
-    #[diesel(sql_type = Timestamp)]
-    pub entered_on: chrono::NaiveDateTime,
+    #[diesel(sql_type = Integer)]
+    pub entered_on: UnixTimestamp,
 }
 
 // Retrieves the latest balance entry for each open account using raw SQL.

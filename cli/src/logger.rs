@@ -20,10 +20,9 @@ pub mod icons {
 ///
 /// # Examples
 ///
-/// ```
 /// alert!("Something went wrong");
 /// alert!("Failed to process {} items", count);
-/// ```
+///
 #[macro_export]
 macro_rules! alert {
     ($($arg:tt)*) => {{
@@ -44,10 +43,9 @@ macro_rules! alert {
 ///
 /// # Examples
 ///
-/// ```
-/// success!("Operation completed");
-/// success!("Processed {} items successfully", count);
-/// ```
+///  success!("Operation completed");
+///  success!("Processed {} items successfully", count);
+///
 #[macro_export]
 macro_rules! success {
     ($($arg:tt)*) => {{
@@ -67,11 +65,10 @@ macro_rules! success {
 ///
 /// # Examples
 ///
-/// ```
 /// inform!("Operation completed");
 /// inform!("Label:", value);
 /// inform!("Processed {} items:", count, total);
-/// ```
+///
 #[macro_export]
 macro_rules! inform {
     // Single argument (left-aligned with min width 30)

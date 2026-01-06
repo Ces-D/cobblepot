@@ -34,7 +34,7 @@ impl BalanceSheet {
         }
     }
     pub fn push_balance(&mut self, row: LatestBalanceRow) {
-        self.update_report_date_range(row.entered_on);
+        self.update_report_date_range(row.entered_on.inner());
         let account_type = AccountType::from_primitive(row.account_type);
         match account_type {
             AccountType::Asset => {
@@ -42,7 +42,7 @@ impl BalanceSheet {
                     ids: (row.account_id, row.balance_id),
                     name: row.account_name,
                     balance: row.amount,
-                    entered_on: row.entered_on,
+                    entered_on: row.entered_on.inner(),
                 });
             }
             AccountType::Liability => {
@@ -50,7 +50,7 @@ impl BalanceSheet {
                     ids: (row.account_id, row.balance_id),
                     name: row.account_name,
                     balance: row.amount,
-                    entered_on: row.entered_on,
+                    entered_on: row.entered_on.inner(),
                 });
             }
         }

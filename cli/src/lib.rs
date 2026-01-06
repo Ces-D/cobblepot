@@ -1,3 +1,4 @@
+mod budget_command;
 mod create_command;
 mod list_command;
 mod logger;
@@ -21,9 +22,12 @@ struct App {
     pub command: Command,
 }
 
-pub fn main(database_url: String) {
-    init_logging();
-    let conn = diesel::SqliteConnection::establish(&database_url).unwrap();
+pub fn main() {
+    let is_production = init_logging();
+    cobblepot_core::Config::init(is_production);
+    let conn =
+        diesel::SqliteConnection::establish(&cobblepot_core::Config::global().database_url())
+            .unwrap();
     let app = App::parse();
 
     match app.command {
@@ -33,7 +37,9 @@ pub fn main(database_url: String) {
     }
 }
 
-fn init_logging() {
+/// Returns a bool signifying that RUST_LOG=="info".
+/// This will proxy as in production
+fn init_logging() -> bool {
     const MEMBERS: [&str; 4] = ["cli", "core", "data_store", "financial_markets"];
 
     // Get global log level from env or use default
@@ -49,4 +55,5 @@ fn init_logging() {
     env_logger::Builder::from_env(env).init();
 
     log::warn!("Logging initialized with level: {level}");
+    level == "info"
 }

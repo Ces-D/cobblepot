@@ -1,10 +1,6 @@
 mod dto;
 
-use crate::{
-    alert,
-    shared::{AccountType, InstrumentType},
-    success,
-};
+use crate::{alert, shared::AccountType, success};
 use clap::{Parser, Subcommand};
 use diesel::SqliteConnection;
 
@@ -34,30 +30,21 @@ pub enum CreateCommand {
         #[clap(short, long, value_parser = crate::shared::parse_date, help = "Date balance was entered (format: YYYY-MM-DD)")]
         entered_on: Option<chrono::NaiveDateTime>,
     },
-    #[clap(about = "Create a financial market instruments")]
-    MarketInsruments {
-        #[clap(help = "Ticker of the stock")]
-        ticker: String,
-        name: String,
-        #[clap(help = "Id of the account this belongs to")]
-        account_id: i32,
-        #[clap(short, long, default_value = "stock")]
-        instrument_type: Option<InstrumentType>,
-        #[clap(short, long, help = "")]
-        market: Option<String>,
-        #[clap(long, value_parser = crate::shared::parse_date, help = "Date instrument was opened (format: YYYY-MM-DD)")]
-        opened_on: Option<chrono::NaiveDateTime>,
-    },
-    #[clap(about = "Create a recurring transaction")]
-    RecurringTransactions {
-        name: String,
-        rrule: String,
-        amount: f32,
-        #[clap(value_parser = crate::shared::parse_date, help = "Start date for recurring transaction (format: YYYY-MM-DD)")]
-        start_date: chrono::NaiveDateTime,
-        description: Option<String>,
-        account_type: Option<AccountType>,
-    },
+    // TODO: add this feature again
+    // #[clap(about = "Create a financial market instruments")]
+    // MarketInsruments {
+    //     #[clap(help = "Ticker of the stock")]
+    //     ticker: String,
+    //     name: String,
+    //     #[clap(help = "Id of the account this belongs to")]
+    //     account_id: i32,
+    //     #[clap(short, long, default_value = "stock")]
+    //     instrument_type: Option<InstrumentType>,
+    //     #[clap(short, long, help = "")]
+    //     market: Option<String>,
+    //     #[clap(long, value_parser = crate::shared::parse_date, help = "Date instrument was opened (format: YYYY-MM-DD)")]
+    //     opened_on: Option<chrono::NaiveDateTime>,
+    // },
 }
 
 #[derive(Debug, Parser)]
@@ -95,21 +82,5 @@ pub fn handle_create_command(args: CreateArgs, conn: SqliteConnection) {
                 log::error!("Create Balance: {}", e);
             }
         },
-        CreateCommand::MarketInsruments {
-            ticker,
-            name,
-            account_id,
-            instrument_type,
-            market,
-            opened_on,
-        } => todo!(),
-        CreateCommand::RecurringTransactions {
-            name,
-            rrule,
-            amount,
-            start_date,
-            description,
-            account_type,
-        } => todo!(),
     }
 }
