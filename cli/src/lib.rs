@@ -1,4 +1,3 @@
-mod budget_command;
 mod create_command;
 mod list_command;
 mod logger;

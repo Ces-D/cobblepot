@@ -1,4 +1,4 @@
-CREATE TABLE account (
+CREATE TABLE IF NOT EXISTS account (
     id INTEGER PRIMARY KEY NOT NULL,
     name TEXT NOT NULL,
     description TEXT,
@@ -8,7 +8,7 @@ CREATE TABLE account (
     closed_on INTEGER 
 );
 
-CREATE TABLE balance (
+CREATE TABLE IF NOT EXISTS balance (
     id INTEGER PRIMARY KEY NOT NULL,
     memo TEXT NOT NULL,
     amount REAL NOT NULL,

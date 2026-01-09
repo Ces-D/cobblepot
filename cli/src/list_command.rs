@@ -6,6 +6,7 @@ use crate::{
 };
 use clap::{Parser, Subcommand, ValueEnum};
 use diesel::SqliteConnection;
+use rrule::Tz;
 
 mod dto;
 
@@ -25,6 +26,7 @@ pub enum ListCommand {
         #[clap(short, long, value_parser = crate::shared::parse_date, help = "Include only balances entered after this date (format: YYYY-MM-DD)")]
         entered_by: Option<chrono::NaiveDateTime>,
     },
+    Budgets,
     // #[clap(about = "List your financial market instruments")]
     // MarketInstruments {
     //     #[clap(short, long, help = "Include only instruments belonging to this account")]
@@ -80,6 +82,10 @@ fn format_balances_message(
     }
 }
 
+fn format_budgets_message() -> String {
+    format!("Listed all balances")
+}
+
 pub fn handle_list_command(args: ListArgs, conn: SqliteConnection) {
     match args.command {
         ListCommand::Accounts {
@@ -130,6 +136,46 @@ pub fn handle_list_command(args: ListArgs, conn: SqliteConnection) {
                     ]);
                 }
                 table.display();
+            }
+            Err(e) => {
+                alert!("Failed to list balances");
+                log::error!("List Balances: {}", e)
+            }
+        },
+        ListCommand::Budgets => match dto::get_filtered_budgets(conn) {
+            Ok(r) => {
+                success!("{}", format_budgets_message());
+                let mut table = Table::new(vec![
+                    ColumnConfig::new("ID").max_width(5),
+                    ColumnConfig::new("Name"),
+                    ColumnConfig::new("Description").max_width(30),
+                    ColumnConfig::new("Anticipated Amount"),
+                    ColumnConfig::new("DT Start"),
+                    ColumnConfig::new("DT End"),
+                ]);
+                for (budget, budget_recurrence) in r {
+                    let dates: (String, String) = budget_recurrence
+                        .map(|mut v| {
+                            let rrule_dt_start =
+                                v.dt_start.inner().and_local_timezone(Tz::UTC).unwrap();
+                            let validated = v.recurrence_rule.validate(rrule_dt_start).unwrap();
+                            let until =
+                                validated.get_until().expect("Validate logic should set UNTIL");
+                            return (
+                                v.dt_start.inner().format("%Y-%m-%d").to_string(),
+                                until.format("%Y-%m-%d").to_string(),
+                            );
+                        })
+                        .unwrap_or_else(|| ("".to_string(), "".to_string()));
+                    table.push_row(vec![
+                        budget.id.to_string().as_str(),
+                        &budget.name,
+                        &budget.description.unwrap_or_else(|| "".to_string()),
+                        &format_money_usd(budget.anticipated_amount),
+                        &dates.0,
+                        &dates.1,
+                    ]);
+                }
             }
             Err(e) => {
                 alert!("Failed to list balances");

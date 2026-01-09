@@ -1,6 +1,6 @@
 use crate::shared::AccountType;
 use chrono::{Months, Utc};
-use cobblepot_data_store::{Account, Balance};
+use cobblepot_data_store::{Account, Balance, Budget, BudgetRecurrence};
 use diesel::{Connection, QueryResult, SqliteConnection};
 
 pub fn get_filtered_accounts(
@@ -63,4 +63,25 @@ pub fn get_filtered_balances(
             Ok(res)
         }),
     }
+}
+
+pub fn get_filtered_budgets(
+    mut conn: SqliteConnection,
+) -> QueryResult<Vec<(Budget, Option<BudgetRecurrence>)>> {
+    // TODO: add a flag for filtering based on closed -> Use the UNTIL on rrule to populate a dt_end
+    use cobblepot_data_store::schema::{budget, budget_recurrence};
+    use diesel::{
+        ExpressionMethods, JoinOnDsl, NullableExpressionMethods, QueryDsl, RunQueryDsl,
+        SelectableHelper,
+    };
+    conn.transaction(|conn| {
+        let res = budget::table
+            .left_join(
+                budget_recurrence::table
+                    .on(budget::budget_recurrence_id.eq(budget_recurrence::id.nullable())),
+            )
+            .select((Budget::as_select(), Option::<BudgetRecurrence>::as_select()))
+            .load(conn)?;
+        Ok(res)
+    })
 }

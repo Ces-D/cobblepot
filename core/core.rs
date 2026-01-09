@@ -14,7 +14,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            db_name: "cobblepot.data".to_string(),
+            db_name: "cobblepot.db".to_string(),
             tiingo_api_key: Default::default(),
             is_production: Default::default(),
         }

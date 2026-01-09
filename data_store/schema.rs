@@ -28,9 +28,7 @@ diesel::table! {
         name -> Text,
         description -> Nullable<Text>,
         anticipated_amount -> Float,
-        starts_on -> Integer,
-        ends_on -> Nullable<Integer>,
-        recurrence_rule -> Nullable<Text>,
+        budget_recurrence_id -> Nullable<Integer>,
     }
 }
 
@@ -41,6 +39,7 @@ diesel::table! {
         description -> Nullable<Text>,
         amount -> Float,
         budget_id -> Integer,
+        budget_recurrence_id -> Nullable<Integer>,
     }
 }
 
@@ -52,7 +51,18 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    budget_recurrence (id) {
+        id -> Integer,
+        dt_start -> Integer,
+        recurrence_rule -> Text,
+        budget_id -> Nullable<Integer>,
+        budget_item_id -> Nullable<Integer>,
+    }
+}
+
 diesel::joinable!(balance -> account (account_id));
+diesel::joinable!(budget -> budget_recurrence (budget_recurrence_id));
 diesel::joinable!(budget_item -> budget (budget_id));
 diesel::joinable!(budget_item_account -> account (account_id));
 diesel::joinable!(budget_item_account -> budget_item (budget_item_id));
@@ -63,4 +73,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     budget,
     budget_item,
     budget_item_account,
+    budget_recurrence,
 );

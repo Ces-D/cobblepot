@@ -1,53 +1,15 @@
-use chrono::{DateTime, NaiveDateTime};
 use diesel::{
-    AsExpression, FromSqlRow, Selectable,
-    backend::Backend,
-    deserialize::{self, FromSql},
+    Selectable,
     prelude::{Identifiable, Queryable},
-    serialize::{self, Output, ToSql},
-    sql_types::Integer,
     sqlite::Sqlite,
 };
 use serde::{Deserialize, Serialize};
 
+mod recurrence_rule;
 pub mod schema;
-
-/// A wrapper type that converts between NaiveDateTime and UNIX timestamp (Integer in SQLite)
-#[derive(Debug, Clone, Copy, AsExpression, FromSqlRow, Serialize, Deserialize)]
-#[diesel(sql_type = Integer)]
-pub struct UnixTimestamp(pub NaiveDateTime);
-
-impl UnixTimestamp {
-    pub fn new(dt: NaiveDateTime) -> Self {
-        UnixTimestamp(dt)
-    }
-
-    pub fn inner(&self) -> NaiveDateTime {
-        self.0
-    }
-}
-
-impl<DB> FromSql<Integer, DB> for UnixTimestamp
-where
-    DB: Backend,
-    i32: FromSql<Integer, DB>,
-{
-    fn from_sql(bytes: DB::RawValue<'_>) -> deserialize::Result<Self> {
-        let timestamp = i32::from_sql(bytes)?;
-        let dt = DateTime::from_timestamp(timestamp as i64, 0)
-            .ok_or_else(|| "Invalid timestamp")?
-            .naive_utc();
-        Ok(UnixTimestamp(dt))
-    }
-}
-
-impl ToSql<Integer, Sqlite> for UnixTimestamp {
-    fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Sqlite>) -> serialize::Result {
-        let timestamp = self.0.and_utc().timestamp() as i32;
-        out.set_value(timestamp);
-        Ok(serialize::IsNull::No)
-    }
-}
+mod unix_timestamp;
+pub use recurrence_rule::RecurrenceRule;
+pub use unix_timestamp::UnixTimestamp;
 
 /// Represents an account as it is stored in the database.
 #[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize)]
@@ -82,9 +44,8 @@ pub struct Budget {
     pub id: i32,
     pub name: String,
     pub description: Option<String>,
-    pub starts_on: UnixTimestamp,
-    pub ends_on: Option<UnixTimestamp>,
-    pub recurrence_rule: Option<String>,
+    pub anticipated_amount: f32,
+    pub budget_recurrence_id: Option<i32>,
 }
 
 #[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize)]
@@ -96,6 +57,7 @@ pub struct BudgetItem {
     pub description: Option<String>,
     pub amount: f32,
     pub budget_id: i32,
+    pub budget_recurrence_id: Option<i32>,
 }
 
 #[derive(Debug, Queryable, Serialize, Deserialize)]
@@ -105,6 +67,17 @@ pub struct BudgetItemAccount {
     pub account_id: i32,
     pub budget_item_id: i32,
     pub allocation_percentage: Option<i32>,
+}
+
+#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize)]
+#[diesel(check_for_backend(Sqlite))]
+#[diesel(table_name=schema::budget_recurrence)]
+pub struct BudgetRecurrence {
+    pub id: i32,
+    pub dt_start: UnixTimestamp,
+    pub recurrence_rule: RecurrenceRule,
+    pub budget_id: Option<i32>,
+    pub budget_item_id: Option<i32>,
 }
 
 // TODO:
