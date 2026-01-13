@@ -32,7 +32,7 @@ where
     fn from_sql(bytes: DB::RawValue<'_>) -> deserialize::Result<Self> {
         let timestamp = i32::from_sql(bytes)?;
         let dt = DateTime::from_timestamp(timestamp as i64, 0)
-            .ok_or_else(|| "Invalid timestamp")?
+            .ok_or("Invalid timestamp")?
             .naive_utc();
         Ok(UnixTimestamp(dt))
     }

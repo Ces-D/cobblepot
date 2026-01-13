@@ -84,7 +84,7 @@ fn format_balances_message(
 }
 
 fn format_budgets_message() -> String {
-    format!("Listed all budgets")
+    "Listed all budgets".to_string()
 }
 
 pub fn handle_list_command(args: ListArgs, conn: SqliteConnection) {
@@ -162,10 +162,10 @@ pub fn handle_list_command(args: ListArgs, conn: SqliteConnection) {
                             let validated = v.recurrence_rule.validate(rrule_dt_start).unwrap();
                             let until =
                                 validated.get_until().expect("Validate logic should set UNTIL");
-                            return (
+                            (
                                 v.dt_start.inner().format("%Y-%m-%d").to_string(),
                                 until.format("%Y-%m-%d").to_string(),
-                            );
+                            )
                         })
                         .unwrap_or_else(|| ("".to_string(), "".to_string()));
                     table.push_row(vec![

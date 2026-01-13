@@ -1,6 +1,5 @@
 use crate::{
     inform,
-    logger::table::{ColumnConfig, Table},
     report_command::dto::{BudgetData, LatestBalanceRow},
     shared::format_money_usd,
     success,
@@ -64,16 +63,11 @@ impl BudgetReport {
                 bia.item_recurrence_dt_start,
                 bia.item_recurrence_rule.clone(),
             ) {
-                if !budget_item_recurrences.contains_key(&bia.item_id) {
-                    budget_item_recurrences.insert(
-                        bia.item_id,
-                        BudgetRecurrence {
+                budget_item_recurrences.entry(bia.item_id).or_insert(BudgetRecurrence {
                             id,
                             dt_start,
                             recurrence_rule,
-                        },
-                    );
-                }
+                        });
             };
             if let Some((account_id, allocation_percent)) =
                 bia.account_id.zip(bia.allocation_percentage)
@@ -194,7 +188,7 @@ fn get_next_occurences(
     rule: rrule::RRule<rrule::Validated>,
     dt_start: &UnixTimestamp,
 ) -> RRuleResult {
-    log::trace!("Starting next occurences {}", rule.to_string());
+    log::trace!("Starting next occurences {}", rule);
     let temp_set =
         RRuleSet::new(dt_start.inner().and_utc().with_timezone(&rrule::Tz::UTC)).rrule(rule);
     // let temp_set = RRuleSet::from_str(rule.to_string().as_str()).unwrap();
@@ -206,7 +200,7 @@ fn display_recurrence_rule(dt_start: &UnixTimestamp, rule: &RecurrenceRule, amou
     match rule.clone().validate(dt_start.inner().and_utc().with_timezone(&rrule::Tz::UTC)) {
         Ok(validated) => {
             let next_occurences = get_next_occurences(validated.clone(), dt_start);
-            if next_occurences.dates.len() > 0 {
+            if !next_occurences.dates.is_empty() {
                 println!(
                     "   Next {} Occurrences Total: {:>21}",
                     next_occurences.dates.len(),

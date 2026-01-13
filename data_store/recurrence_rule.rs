@@ -36,7 +36,7 @@ impl RecurrenceRule {
         let effective_count =
             unvalidated.get_count().map(|c| c.min(MAX_COUNT)).unwrap_or_else(|| {
                 log::info!("Setting COUNT for recurrence to MAX: {}", MAX_COUNT);
-                return MAX_COUNT;
+                MAX_COUNT
             });
         unvalidated = unvalidated.count(effective_count);
         // Ensure UNTIL is always set by calculating it from occurrences if missing
@@ -45,7 +45,7 @@ impl RecurrenceRule {
             if let Some(last) = temp_set.into_iter().last() {
                 log::info!(
                     "Setting UNTIL for recurrence to {}",
-                    last.format("%d/%m/%Y %H:%M").to_string()
+                    last.format("%d/%m/%Y %H:%M")
                 );
                 unvalidated = unvalidated.until(last);
             }
