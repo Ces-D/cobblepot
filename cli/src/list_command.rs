@@ -26,6 +26,7 @@ pub enum ListCommand {
         #[clap(short, long, value_parser = crate::shared::parse_date, help = "Include only balances entered after this date (format: YYYY-MM-DD)")]
         entered_by: Option<chrono::NaiveDateTime>,
     },
+    #[clap(about = "List your budgets")]
     Budgets,
     // #[clap(about = "List your financial market instruments")]
     // MarketInstruments {
@@ -83,7 +84,7 @@ fn format_balances_message(
 }
 
 fn format_budgets_message() -> String {
-    format!("Listed all balances")
+    format!("Listed all budgets")
 }
 
 pub fn handle_list_command(args: ListArgs, conn: SqliteConnection) {
@@ -176,10 +177,11 @@ pub fn handle_list_command(args: ListArgs, conn: SqliteConnection) {
                         &dates.1,
                     ]);
                 }
+                table.display();
             }
             Err(e) => {
-                alert!("Failed to list balances");
-                log::error!("List Balances: {}", e)
+                alert!("Failed to list budgets");
+                log::error!("List Budgets: {}", e)
             }
         },
     }

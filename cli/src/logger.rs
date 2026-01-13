@@ -74,7 +74,7 @@ macro_rules! inform {
     // Single argument (left-aligned with min width 30)
     ($msg:expr) => {{
         println!(
-            "{}{}{}  {}{:<30}",
+            "{}{}{}  {}{:<35}",
             $crate::logger::colors::BOLD,
             $crate::logger::colors::GREEN,
             $crate::logger::icons::SUCCESS,
@@ -87,7 +87,7 @@ macro_rules! inform {
         let rest_args = [$( $crate::__to_string!($arg) ),+];
         let rest = rest_args.join(" ");
         println!(
-            "{}{}{}  {}{:<30}{}",
+            "{}{}{}  {}{:<35}{}",
             $crate::logger::colors::BOLD,
             $crate::logger::colors::GREEN,
             $crate::logger::icons::SUCCESS,

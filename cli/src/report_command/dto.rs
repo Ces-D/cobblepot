@@ -1,12 +1,11 @@
-use cobblepot_data_store::UnixTimestamp;
+use cobblepot_data_store::{RecurrenceRule, UnixTimestamp};
 use diesel::{
     Connection, QueryResult, SqliteConnection,
     prelude::QueryableByName,
-    sql_types::{Float, Integer, Text},
+    sql_types::{Float, Integer, Nullable, Text},
 };
 use serde::{Deserialize, Serialize};
 
-// Intermediate struct for deserializing raw SQL results.
 // Field names must match the column aliases in the SELECT clause.
 #[derive(Debug, QueryableByName, Serialize, Deserialize)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
@@ -27,23 +26,7 @@ pub struct LatestBalanceRow {
 
 // Retrieves the latest balance entry for each open account using raw SQL.
 //
-// This function uses Diesel's `sql_query` to execute a raw SQL statement because
-// Diesel's type-safe query builder has limitations with correlated subqueries
-// in join contexts.
-//
 // # SQL Query Breakdown
-//
-// ```sql
-// SELECT a.id as account_id, b.id as balance_id, b.amount, b.entered_on
-// FROM account a
-// INNER JOIN balance b ON b.account_id = a.id
-// WHERE a.closed_on IS NULL
-//   AND b.entered_on = (
-//       SELECT MAX(b2.entered_on)
-//       FROM balance b2
-//       WHERE b2.account_id = a.id
-//   )
-// ```
 //
 // 1. `FROM account a INNER JOIN balance b ON b.account_id = a.id`
 //    - Joins the account and balance tables on the foreign key relationship
@@ -82,22 +65,16 @@ pub struct LatestBalanceRow {
 // - Account 1: Only the latest balance (id=12) is returned
 // - Account 2: Excluded because closed_on is not NULL
 // - Account 3: Has only one balance, so that one is returned
-//
-// # QueryableByName
-//
-// The `LatestBalanceRow` struct uses `#[derive(QueryableByName)]` which maps
-// SQL result columns by name (not position) to struct fields. Each field requires
-// a `#[diesel(sql_type = ...)]` annotation to tell Diesel how to deserialize
-// the column value.
 pub fn get_open_accounts_with_latest_balance(
-    mut conn: SqliteConnection,
+    conn: &mut SqliteConnection,
 ) -> QueryResult<Vec<LatestBalanceRow>> {
     use diesel::{RunQueryDsl, sql_query};
 
     // Wrap in a transaction for consistency (read-only, but maintains isolation)
     conn.transaction(|conn| {
         let results = sql_query(
-            "SELECT a.id as account_id, a.account_type, a.name as account_name, b.id as balance_id, b.amount, b.entered_on
+            "SELECT a.id as account_id, a.account_type, a.name as account_name,
+                    b.id as balance_id, b.amount, b.entered_on
              FROM account a
              INNER JOIN balance b ON b.account_id = a.id
              WHERE a.closed_on IS NULL
@@ -114,41 +91,123 @@ pub fn get_open_accounts_with_latest_balance(
     })
 }
 
-// Two-step approach using Diesel's type-safe query builder:
-// 1. Get all open account IDs
-// 2. For each account, query the latest balance entry
-// Slower option N+1 but type safe
-// fn get_open_accounts_with_latest_balance_two_step(
-//     mut conn: SqliteConnection,
-// ) -> QueryResult<Vec<AccountBalance>> {
-//     use cobblepot_data_store::schema::{account, balance};
-//     use diesel::{ExpressionMethods, OptionalExtension, QueryDsl, RunQueryDsl};
+// Budget item with its recurrence and account allocation info.
 //
-//     conn.transaction(|conn| {
-//         // Step 1: Get all open account IDs
-//         let open_account_ids: Vec<i32> =
-//             account::table.filter(account::closed_on.is_null()).select(account::id).load(conn)?;
+// This struct represents a denormalized view that joins budget_item with its
+// optional recurrence and account allocations in a single query.
+#[derive(Debug, QueryableByName, Serialize, Deserialize)]
+#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
+pub struct BudgetItemWithAllocationRow {
+    #[diesel(sql_type = Integer)]
+    pub item_id: i32,
+    #[diesel(sql_type = Text)]
+    pub item_name: String,
+    #[diesel(sql_type = Nullable<Text>)]
+    pub item_description: Option<String>,
+    #[diesel(sql_type = Float)]
+    pub item_amount: f32,
+    #[diesel(sql_type = Nullable<Integer>)]
+    pub item_recurrence_id: Option<i32>,
+    #[diesel(sql_type = Nullable<Integer>)]
+    pub item_recurrence_dt_start: Option<UnixTimestamp>,
+    #[diesel(sql_type = Nullable<Text>)]
+    pub item_recurrence_rule: Option<RecurrenceRule>,
+    #[diesel(sql_type = Nullable<Integer>)]
+    pub account_id: Option<i32>,
+    #[diesel(sql_type = Nullable<Integer>)]
+    pub allocation_percentage: Option<i32>,
+}
+
+pub type BudgetData = (
+    (cobblepot_data_store::Budget, Option<i32>, Option<UnixTimestamp>, Option<RecurrenceRule>),
+    Vec<BudgetItemWithAllocationRow>,
+);
+
+// Retrieves budget items with their recurrence and account allocations in a single query.
 //
-//         // Step 2: For each account, get the latest balance entry
-//         let mut results = Vec::new();
-//         for account_id in open_account_ids {
-//             let latest_balance: Option<(i32, f32, chrono::NaiveDateTime)> = balance::table
-//                 .filter(balance::account_id.eq(account_id))
-//                 .order(balance::entered_on.desc())
-//                 .select((balance::id, balance::amount, balance::entered_on))
-//                 .first(conn)
-//                 .optional()?;
+// # SQL Query Breakdown
 //
-//             if let Some((balance_id, amount, entered_on)) = latest_balance {
-//                 results.push(AccountBalance {
-//                     account_id,
-//                     balance_id,
-//                     balance: amount,
-//                     entered_on,
-//                 });
-//             }
-//         }
+// 1. `FROM budget_item bi`
+//    - Base table containing the budget items
 //
-//         Ok(results)
-//     })
-// }
+// 2. `LEFT JOIN budget_recurrence bir ON bir.id = bi.budget_recurrence_id`
+//    - Joins optional recurrence rules for each budget item
+//    - LEFT JOIN ensures items without recurrence are still included
+//
+// 3. `LEFT JOIN budget_item_account bia ON bia.budget_item_id = bi.id`
+//    - Joins the junction table that links budget items to accounts
+//    - LEFT JOIN ensures items without account allocations are included
+//    - This is a one-to-many relationship: one item can have multiple allocations
+//
+// 4. `LEFT JOIN account a ON a.id = bia.account_id`
+//    - Joins the account table to get account names
+//
+// # Result Structure
+//
+// The query returns denormalized rows. Items with multiple account allocations
+// will appear multiple times (once per allocation). Items without allocations
+// appear once with NULL allocation fields.
+//
+// # Example
+//
+// Given this data:
+//
+// | budget_item.id | name      | budget_item_account (account_id, %) |
+// |----------------|-----------|-------------------------------------|
+// | 1              | Rent      | (10, 100)                           |
+// | 2              | Groceries | (10, 50), (11, 50)                  |
+// | 3              | Gas       | (none)                              |
+//
+// Result:
+//
+// | item_id | item_name | account_id | account_name | allocation_percentage |
+// |---------|-----------|------------|--------------|----------------------|
+// | 1       | Rent      | 10         | Checking     | 100                  |
+// | 2       | Groceries | 10         | Checking     | 50                   |
+// | 2       | Groceries | 11         | Savings      | 50                   |
+// | 3       | Gas       | NULL       | NULL         | NULL                 |
+//
+// The caller should group results by `item_id` to reconstruct the one-to-many
+// relationship between budget items and their account allocations.
+pub fn get_budget_data(mut conn: SqliteConnection, budget_id: i32) -> QueryResult<BudgetData> {
+    conn.transaction(|conn| {
+        use cobblepot_data_store::{
+            Budget,
+            schema::{budget, budget_recurrence},
+        };
+        use diesel::{
+            ExpressionMethods, NullableExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper,
+            sql_query,
+        };
+        let budget_with_recurrence = budget::table
+            .left_outer_join(budget_recurrence::table)
+            .select((
+                Budget::as_select(),
+                budget_recurrence::id.nullable(),
+                budget_recurrence::dt_start.nullable(),
+                budget_recurrence::recurrence_rule.nullable(),
+            ))
+            .filter(budget::id.eq(budget_id))
+            .first::<(Budget, Option<i32>, Option<UnixTimestamp>, Option<RecurrenceRule>)>(conn)?;
+        let budget_items_with_allocations = sql_query(
+            "SELECT
+            bi.id as item_id,
+            bi.name as item_name,
+            bi.description as item_description,
+            bi.amount as item_amount,
+            bir.id as item_recurrence_id,
+            bir.dt_start as item_recurrence_dt_start,
+            bir.recurrence_rule as item_recurrence_rule,
+            bia.account_id,
+            bia.allocation_percentage
+        FROM budget_item bi
+        LEFT JOIN budget_recurrence bir ON bir.id = bi.budget_recurrence_id
+        LEFT JOIN budget_item_account bia ON bia.budget_item_id = bi.id
+        WHERE bi.budget_id = ?
+        ORDER BY bi.id, bia.account_id",
+        )
+        .bind::<Integer, _>(budget_id)
+        .load::<BudgetItemWithAllocationRow>(conn)?;
+        Ok((budget_with_recurrence, budget_items_with_allocations))
+    })
+}

@@ -62,10 +62,11 @@ diesel::table! {
 }
 
 diesel::joinable!(balance -> account (account_id));
-diesel::joinable!(budget -> budget_recurrence (budget_recurrence_id));
 diesel::joinable!(budget_item -> budget (budget_id));
 diesel::joinable!(budget_item_account -> account (account_id));
 diesel::joinable!(budget_item_account -> budget_item (budget_item_id));
+diesel::joinable!(budget_recurrence -> budget_item (budget_item_id));
+diesel::joinable!(budget_recurrence -> budget (budget_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     account,

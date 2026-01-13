@@ -36,7 +36,7 @@ pub enum CreateCommand {
         name: String,
         #[clap(short, long, help = "Description of the budget")]
         description: Option<String>,
-        #[clap(short, long, help = "Expected dollar limit")]
+        #[clap(help = "Expected dollar limit")]
         anticipated_amount: f32,
         #[clap(short='s', long, value_parser = crate::shared::parse_date, help = "Date budget recurrence starts (format: YYYY-MM-DD)")]
         r_start: Option<chrono::NaiveDateTime>,
