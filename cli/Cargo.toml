@@ -15,6 +15,7 @@ chrono.workspace = true
 serde.workspace = true
 num_enum.workspace = true
 rustix.workspace = true
+rrule.workspace = true
 
 cobblepot_core.workspace = true
 cobblepot_data_store.workspace = true

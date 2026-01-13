@@ -13,3 +13,4 @@ diesel.workspace = true
 log.workspace = true
 serde.workspace = true
 chrono.workspace = true
+rrule.workspace = true
