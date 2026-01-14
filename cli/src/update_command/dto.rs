@@ -73,7 +73,7 @@ pub fn update_budget(
 
                 // Get the dt_start to validate against (new one or existing)
                 let dt_start_for_validation =
-                    r_start.clone().unwrap_or_else(|| current_recurrence.dt_start.clone());
+                    r_start.unwrap_or_else(|| current_recurrence.dt_start);
 
                 // Get the rrule to validate (new one or existing)
                 let mut rrule_to_validate =
@@ -150,7 +150,7 @@ pub fn update_budget_item(
 
                 // Get the dt_start to validate against (new one or existing)
                 let dt_start_for_validation =
-                    r_start.clone().unwrap_or_else(|| current_recurrence.dt_start.clone());
+                    r_start.unwrap_or_else(|| current_recurrence.dt_start);
 
                 // Get the rrule to validate (new one or existing)
                 let mut rrule_to_validate =

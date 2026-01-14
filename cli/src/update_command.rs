@@ -74,8 +74,8 @@ pub fn handle_update_command(args: UpdateArgs, conn: SqliteConnection) {
                 name,
                 description,
                 anticipated_amount,
-                r_start.map(|v| UnixTimestamp::new(v)),
-                r_rule.map(|v| RecurrenceRule::new(v)),
+                r_start.map(UnixTimestamp::new),
+                r_rule.map(RecurrenceRule::new),
             ) {
                 Ok(res) => success!("Updated budget: {} - {}", res.0, res.1),
                 Err(e) => {
@@ -103,8 +103,8 @@ pub fn handle_update_command(args: UpdateArgs, conn: SqliteConnection) {
                 name,
                 description,
                 amount,
-                r_start.map(|v| UnixTimestamp::new(v)),
-                r_rule.map(|v| RecurrenceRule::new(v)),
+                r_start.map(UnixTimestamp::new),
+                r_rule.map(RecurrenceRule::new),
             ) {
                 Ok(res) => success!("Updated budget item: {} - {}", res.0, res.1),
                 Err(e) => {

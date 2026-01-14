@@ -157,7 +157,7 @@ impl BudgetReport {
                 }
             }
         }
-        return true;
+        true
     }
 
     pub fn display(&self) {
