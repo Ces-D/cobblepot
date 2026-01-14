@@ -1,7 +1,7 @@
 use crate::{
     alert,
     logger::table::{ColumnConfig, Table},
-    shared::{AccountType, format_money_usd},
+    shared::{AccountType, format_money_usd, get_next_occurences},
     success,
 };
 use clap::{Parser, Subcommand, ValueEnum};
@@ -28,6 +28,11 @@ pub enum ListCommand {
     },
     #[clap(about = "List your budgets")]
     Budgets,
+    #[clap(about = "List a budgets items")]
+    BudgetItems {
+        #[clap(help = "The budget id")]
+        budget_id: i32,
+    },
     // #[clap(about = "List your financial market instruments")]
     // MarketInstruments {
     //     #[clap(short, long, help = "Include only instruments belonging to this account")]
@@ -85,6 +90,10 @@ fn format_balances_message(
 
 fn format_budgets_message() -> String {
     "Listed all budgets".to_string()
+}
+
+fn format_budget_items_message(budget_id: i32) -> String {
+    format!("Listed all budget items for budget {}", budget_id)
 }
 
 pub fn handle_list_command(args: ListArgs, conn: SqliteConnection) {
@@ -175,6 +184,59 @@ pub fn handle_list_command(args: ListArgs, conn: SqliteConnection) {
                         &format_money_usd(budget.anticipated_amount),
                         &dates.0,
                         &dates.1,
+                    ]);
+                }
+                table.display();
+            }
+            Err(e) => {
+                alert!("Failed to list budgets");
+                log::error!("List Budgets: {}", e)
+            }
+        },
+        ListCommand::BudgetItems {
+            budget_id,
+        } => match dto::get_filtered_budget_items(conn, budget_id) {
+            Ok(r) => {
+                success!("{}", format_budget_items_message(budget_id));
+                let mut table = Table::new(vec![
+                    ColumnConfig::new("ID").max_width(5),
+                    ColumnConfig::new("Name").max_width(30),
+                    ColumnConfig::new("Description"),
+                    ColumnConfig::new("Amount"),
+                    ColumnConfig::new("R ID").max_width(5),
+                    ColumnConfig::new("DTStart"),
+                    ColumnConfig::new("Next Occurrence"),
+                ]);
+                for (bi, recurrence) in r {
+                    table.push_row(vec![
+                        bi.id.to_string().as_str(),
+                        &bi.name,
+                        &bi.description.unwrap_or_else(|| "".to_string()),
+                        &format_money_usd(bi.amount),
+                        &recurrence
+                            .clone()
+                            .map(|v| v.id.to_string())
+                            .unwrap_or_else(|| "".to_string()),
+                        &recurrence
+                            .clone()
+                            .map(|v| v.dt_start.inner().format("%Y-%m-%d").to_string())
+                            .unwrap_or_else(|| "".to_string()),
+                        &recurrence
+                            .map(|v| {
+                                let rrule_dt_start =
+                                    v.dt_start.inner().and_local_timezone(Tz::UTC).unwrap();
+                                match v.recurrence_rule.clone().validate(rrule_dt_start) {
+                                    Ok(r) => {
+                                        let next = get_next_occurences(r, &v.dt_start);
+                                        match next.dates.first() {
+                                            Some(d) => d.format("%Y-%m-%d").to_string(),
+                                            None => "".to_string(),
+                                        }
+                                    }
+                                    Err(_) => "".to_string(),
+                                }
+                            })
+                            .unwrap_or_else(|| "".to_string()),
                     ]);
                 }
                 table.display();

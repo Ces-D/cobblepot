@@ -3,6 +3,7 @@ mod list_command;
 mod logger;
 mod report_command;
 mod shared;
+mod update_command;
 
 use clap::{Parser, Subcommand};
 use diesel::Connection;
@@ -12,6 +13,7 @@ enum Command {
     List(list_command::ListArgs),
     Create(create_command::CreateArgs),
     Report(report_command::ReportArgs),
+    Update(update_command::UpdateArgs),
 }
 
 #[derive(Debug, clap::Parser)]
@@ -33,6 +35,7 @@ pub fn main() {
         Command::List(list_args) => list_command::handle_list_command(list_args, conn),
         Command::Create(create_args) => create_command::handle_create_command(create_args, conn),
         Command::Report(report_args) => report_command::handle_report_command(report_args, conn),
+        Command::Update(update_args) => update_command::handle_update_command(update_args, conn),
     }
 }
 

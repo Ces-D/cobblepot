@@ -69,7 +69,7 @@ pub struct BudgetItemAccount {
     pub allocation_percentage: Option<i32>,
 }
 
-#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize)]
+#[derive(Debug, Queryable, Identifiable, Selectable, Serialize, Deserialize, Clone)]
 #[diesel(check_for_backend(Sqlite))]
 #[diesel(table_name=schema::budget_recurrence)]
 pub struct BudgetRecurrence {

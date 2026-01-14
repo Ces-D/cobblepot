@@ -27,26 +27,24 @@ impl RecurrenceRule {
         RRule::from_str(&self.0)
     }
     /// Validates the recurrence rule with the following constraints:
-    /// - COUNT is capped at 100 (defaults to 100 if not set)
+    /// - COUNT is capped at 100 (defaults to 30 if not set)
     /// - UNTIL is always present (calculated from occurrences if not provided)
     pub fn validate(&mut self, dt_start: DateTime<Tz>) -> Result<RRule<Validated>, RRuleError> {
         const MAX_COUNT: u32 = 100;
         let mut unvalidated = RRule::from_str(&self.0)?;
+        const DEFAULT_COUNT: u32 = 30;
         // Ensure count never exceeds MAX_COUNT, default to MAX_COUNT if not set
         let effective_count =
             unvalidated.get_count().map(|c| c.min(MAX_COUNT)).unwrap_or_else(|| {
-                log::info!("Setting COUNT for recurrence to MAX: {}", MAX_COUNT);
-                MAX_COUNT
+                log::info!("Setting COUNT for recurrence to DEFAULT: {}", DEFAULT_COUNT);
+                DEFAULT_COUNT
             });
         unvalidated = unvalidated.count(effective_count);
         // Ensure UNTIL is always set by calculating it from occurrences if missing
         if unvalidated.get_until().is_none() {
             let temp_set: RRuleSet = unvalidated.clone().build(dt_start)?;
             if let Some(last) = temp_set.into_iter().last() {
-                log::info!(
-                    "Setting UNTIL for recurrence to {}",
-                    last.format("%d/%m/%Y %H:%M")
-                );
+                log::info!("Setting UNTIL for recurrence to {}", last.format("%d/%m/%Y %H:%M"));
                 unvalidated = unvalidated.until(last);
             }
         }

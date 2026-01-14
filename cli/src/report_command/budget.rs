@@ -1,11 +1,10 @@
 use crate::{
     inform,
     report_command::dto::{BudgetData, LatestBalanceRow},
-    shared::format_money_usd,
+    shared::{format_money_usd, get_next_occurences, zip_all},
     success,
 };
 use cobblepot_data_store::{RecurrenceRule, UnixTimestamp};
-use rrule::{RRuleResult, RRuleSet};
 use std::collections::HashMap;
 
 #[derive(Debug)]
@@ -64,10 +63,10 @@ impl BudgetReport {
                 bia.item_recurrence_rule.clone(),
             ) {
                 budget_item_recurrences.entry(bia.item_id).or_insert(BudgetRecurrence {
-                            id,
-                            dt_start,
-                            recurrence_rule,
-                        });
+                    id,
+                    dt_start,
+                    recurrence_rule,
+                });
             };
             if let Some((account_id, allocation_percent)) =
                 bia.account_id.zip(bia.allocation_percentage)
@@ -125,10 +124,10 @@ impl BudgetReport {
         total
     }
 
-    fn display_budget_item_account(&self) {
+    fn display_budget_item_account(&self) -> bool {
         let supporting_account_ids = self.budget_item_accounts.keys();
         if supporting_account_ids.len() == 0 {
-            return;
+            return false;
         }
         success!("Involved Accounts");
         for account_id in supporting_account_ids {
@@ -158,6 +157,7 @@ impl BudgetReport {
                 }
             }
         }
+        true
     }
 
     pub fn display(&self) {
@@ -167,33 +167,12 @@ impl BudgetReport {
         let total_amount = self.display_budget_items();
         println!();
         println!();
-        self.display_budget_item_account();
-        println!();
-        println!();
+        if self.display_budget_item_account() {
+            println!();
+            println!();
+        };
         inform!("Total Amount", format_money_usd(total_amount));
     }
-}
-
-fn zip_all<A, B, C>(a: Option<A>, b: Option<B>, c: Option<C>) -> Option<(A, B, C)> {
-    match a.zip(b) {
-        Some(e) => match c {
-            Some(r) => Some((e.0, e.1, r)),
-            None => None,
-        },
-        None => None,
-    }
-}
-
-fn get_next_occurences(
-    rule: rrule::RRule<rrule::Validated>,
-    dt_start: &UnixTimestamp,
-) -> RRuleResult {
-    log::trace!("Starting next occurences {}", rule);
-    let temp_set =
-        RRuleSet::new(dt_start.inner().and_utc().with_timezone(&rrule::Tz::UTC)).rrule(rule);
-    // let temp_set = RRuleSet::from_str(rule.to_string().as_str()).unwrap();
-    let after_now = temp_set.after(chrono::Utc::now().with_timezone(&rrule::Tz::UTC));
-    after_now.all(10)
 }
 
 fn display_recurrence_rule(dt_start: &UnixTimestamp, rule: &RecurrenceRule, amount: f32) {
@@ -209,7 +188,7 @@ fn display_recurrence_rule(dt_start: &UnixTimestamp, rule: &RecurrenceRule, amou
                 let mut next = "   ".to_string();
                 for (index, dt) in next_occurences.dates.iter().enumerate() {
                     let iter = format!(
-                        "{} -> {:<15}",
+                        "{} -> {:<25}",
                         &dt.format("%Y-%m-%d").to_string(),
                         format_money_usd((index as f32 + 1.0) * amount)
                     );
