@@ -1,6 +1,6 @@
 use crate::shared::AccountType;
 use chrono::{Months, Utc};
-use cobblepot_data_store::{Account, Balance, Budget, BudgetRecurrence};
+use cobblepot_data_store::{Account, Balance, Budget, BudgetItem, BudgetRecurrence};
 use diesel::{Connection, QueryResult, SqliteConnection};
 
 pub fn get_filtered_accounts(
@@ -81,6 +81,27 @@ pub fn get_filtered_budgets(
                     .on(budget::budget_recurrence_id.eq(budget_recurrence::id.nullable())),
             )
             .select((Budget::as_select(), Option::<BudgetRecurrence>::as_select()))
+            .load(conn)?;
+        Ok(res)
+    })
+}
+
+pub fn get_filtered_budget_items(
+    mut conn: SqliteConnection,
+    budget_id: i32,
+) -> QueryResult<Vec<(BudgetItem, Option<BudgetRecurrence>)>> {
+    use cobblepot_data_store::schema::{budget_item, budget_recurrence};
+    use diesel::{
+        ExpressionMethods, JoinOnDsl, NullableExpressionMethods, QueryDsl, RunQueryDsl,
+        SelectableHelper, query_dsl::methods::FilterDsl,
+    };
+    conn.transaction(|conn| {
+        let res = FilterDsl::filter(budget_item::table, budget_item::budget_id.eq(budget_id))
+            .left_join(
+                budget_recurrence::table
+                    .on(budget_item::budget_recurrence_id.eq(budget_recurrence::id.nullable())),
+            )
+            .select((BudgetItem::as_select(), Option::<BudgetRecurrence>::as_select()))
             .load(conn)?;
         Ok(res)
     })
